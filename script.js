@@ -585,6 +585,7 @@ function addRecord(section, event) {
     });
 
     if (section === 'planes') {
+        // Asegúrate de que el ID del input sea 'plan-fechaAprobacion' en el HTML
         const fechaAprobacion = formData.fechaAprobacion;
         if (fechaAprobacion) {
             const approvalDateObj = new Date(fechaAprobacion);
@@ -717,7 +718,7 @@ function formatHeader(header) {
         nombreEvento: 'Nombre del Evento',
         duracion: 'Duración',
         lugarInstalacion: 'Lugar de Instalación',
-        fechaAprobacion: 'Fecha de Aprobación', // New header
+        fechaAprobacion: 'Fecha de Aprobación', 
         cantidadGuardias: 'Cantidad de Guardias',
         nombreEmpresa: 'Nombre Empresa', 
         rut: 'RUT',
@@ -725,7 +726,7 @@ function formatHeader(header) {
         estadoAprobacion: 'Estado de Aprobación',
         id: 'ID',
         monto: 'Monto (UF)',
-        estadoVigencia: 'Estado de Vigencia' // New header
+        estadoVigencia: 'Estado de Vigencia' 
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
