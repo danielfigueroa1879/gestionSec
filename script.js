@@ -1,36 +1,36 @@
 // Variables globales para la navegación jerárquica de directivas
 let empresasRRHHList = [];
 let currentDirectivasSubSectionType = ''; // Nueva variable para rastrear la subsección activa de directivas
+let currentEmpresaSelected = ''; // Variable para almacenar la empresa seleccionada en detalles de RRHH
 
 // Función para generar datos de ejemplo
 function generateSampleData() {
     const database = {
         estudios: [],
         planes: [],
-        medidas: [],
+        medidas: [], // Medidas generales, separadas de servicentros y sobre-500-uf
         servicentros: [],
-        directivas: [], // Esto se mantiene vacío, las subcategorías lo usarán
+        'sobre-500-uf': [], // Nuevo array para registros "Sobre 500 UF"
+        directivas: [], 
         'empresas-rrhh': [], 
         'guardias-propios': [],
         'eventos-masivos': [],
         'directivas-generales': []
     };
 
-    // Crear lista de empresas únicas de RRHH primero (300 empresas)
+    // Crear lista de empresas únicas de RRHH (300 empresas)
     empresasRRHHList = [];
-    // Define a list of common RUT suffixes for realism (last digit or 'K')
     const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
 
     for (let i = 1; i <= 300; i++) {
         const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
-        // Generate a realistic-looking RUT
         const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
         const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
 
         empresasRRHHList.push({
             id: i,
             nombre: empresaName,
-            rut: rut, // Added RUT here
+            rut: rut,
             directivasCount: 0
         });
     }
@@ -66,7 +66,7 @@ function generateSampleData() {
         });
     }
 
-    // Generar 90 medidas de seguridad
+    // Generar 90 medidas de seguridad (generales)
     const categorias = ['Preventiva', 'Correctiva', 'Detectiva', 'Compensatoria'];
     const prioridades = ['Alta', 'Media', 'Baja'];
     const estados = ['Implementada', 'En proceso', 'Pendiente', 'Suspendida'];
@@ -88,7 +88,7 @@ function generateSampleData() {
     const ubicaciones = ['Norte', 'Sur', 'Centro', 'Este', 'Oeste'];
     const responsablesServicentros = ['Carlos Mendez', 'Laura Silva', 'Roberto Díaz', 'Patricia Morales', 'Fernando Castro'];
     
-    for (let i = 1; i <= 90; i++) {
+    for (let i = 1; i <= 90; i++) { // 90 registros para Servicentros
         database.servicentros.push({
             codigo: `SER-${String(i).padStart(3, '0')}`,
             nombre: `Servicentro ${i}`,
@@ -100,6 +100,21 @@ function generateSampleData() {
             capacidad: `${Math.floor(Math.random() * 50) + 10} vehículos`,
             responsable: responsablesServicentros[Math.floor(Math.random() * responsablesServicentros.length)],
             estado: Math.random() > 0.2 ? 'Operativo' : 'Mantenimiento'
+        });
+    }
+
+    // Generar 95 registros de "Sobre 500 UF"
+    const tiposGasto = ['Infraestructura', 'Tecnología', 'Personal Especializado', 'Consultoría Legal', 'Adquisición Equipos'];
+    const responsablesUF = ['Gerente Financiero', 'Director de Operaciones', 'Jefe de Proyectos', 'Asesoría Externa'];
+
+    for (let i = 1; i <= 95; i++) { // 95 registros para Sobre 500 UF
+        database['sobre-500-uf'].push({
+            id: `UF-${String(i).padStart(3, '0')}`,
+            descripcion: `Inversión en ${tiposGasto[Math.floor(Math.random() * tiposGasto.length)]} para el proyecto X${i}.`,
+            monto: (Math.random() * 1000 + 500).toFixed(2), // Monto aleatorio entre 500 y 1500
+            fecha: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            responsable: responsablesUF[Math.floor(Math.random() * responsablesUF.length)],
+            estado: Math.random() > 0.3 ? 'Aprobado' : 'Pendiente'
         });
     }
 
@@ -115,7 +130,7 @@ function generateSampleData() {
         database['empresas-rrhh'].push({
             numero: `RRHH-${String(i).padStart(4, '0')}`,
             empresa: empresaAsignada.nombre,
-            rut: empresaAsignada.rut, // Agrega el RUT a los registros de directivas de RRHH
+            rut: empresaAsignada.rut,
             tipoDirectiva: tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)],
             lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
@@ -142,7 +157,7 @@ function generateSampleData() {
             numero: `GUARD-${String(i).padStart(3, '0')}`,
             empresa: i <= 4 ? condominios[i-1] : `Empresa Seguridad ${String(i).padStart(2, '0')}`,
             tipoServicio: tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)],
-            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)], // Usar lugares de instalación generales
+            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
             fechaAprobacion: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
             cantidadGuardias: `${Math.floor(Math.random() * 12) + 3} guardias`,
@@ -170,7 +185,7 @@ function generateSampleData() {
         database['eventos-masivos'].push({
             numero: `EVENT-${String(i).padStart(3, '0')}`,
             nombreEmpresa: empresa,
-            rut: ruts[Math.floor(Math.random() * ruts.length)], // Agrega el RUT a los registros de eventos masivos
+            rut: ruts[Math.floor(Math.random() * ruts.length)],
             fechaEvento: fechaEvento,
             nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`,
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
@@ -248,6 +263,8 @@ function showTab(section, tab) {
     } else if (tab === 'agregar') {
         activeButton = Array.from(tabButtons).find(btn => btn.textContent.includes('Agregar'));
     } else if (tab === 'servicentros') {
+        // Este caso ya no debería ser una pestaña directamente, sino un botón en 'medidas-consultar'
+        // Se mantiene para compatibilidad si alguna otra parte del código lo llama, pero el flujo principal ha cambiado
         activeButton = Array.from(tabButtons).find(btn => btn.textContent.includes('Servicentros'));
     }
     
@@ -260,7 +277,34 @@ function showTab(section, tab) {
     tabContents.forEach(content => content.classList.remove('active')); // Oculta todo el contenido de las pestañas
     
     document.getElementById(`${section}-${tab}`).classList.add('active'); // Muestra el contenido de la pestaña
+    
+    // Si la pestaña actual es la de consulta de medidas, actualiza los contadores de subsecciones
+    if (section === 'medidas' && tab === 'consultar') {
+        updateMedidasSubSectionCounts();
+    }
 }
+
+// Función para mostrar las subsecciones de medidas (Servicentros, Sobre 500 UF)
+function showMedidasSubSection(subSectionType) {
+    // Oculta la vista principal de consulta de medidas
+    document.getElementById('medidas-consultar').classList.remove('active');
+    // Oculta cualquier otra lista de medidas que pudiera estar activa
+    document.getElementById('medidas-servicentros-records').classList.remove('active');
+    document.getElementById('medidas-sobre-500-uf-records').classList.remove('active');
+
+    // Muestra el contenedor de registros de la subsección seleccionada
+    document.getElementById(`medidas-${subSectionType}-records`).classList.add('active');
+    loadData(subSectionType); // Carga los datos correspondientes
+}
+
+// Función para volver a la pantalla de consulta principal de Medidas
+function backToMedidasConsultar() {
+    document.getElementById('medidas-servicentros-records').classList.remove('active');
+    document.getElementById('medidas-sobre-500-uf-records').classList.remove('active');
+    document.getElementById('medidas-consultar').classList.add('active');
+    updateMedidasSubSectionCounts(); // Actualiza los contadores de los botones al regresar
+}
+
 
 // Nueva función genérica para mostrar las subsecciones de directivas
 function showDirectivasSubSection(subSectionType) {
@@ -303,6 +347,24 @@ function showDirectivasSubSection(subSectionType) {
     }
 }
 
+// Función para volver a la vista principal de Directivas
+function backToDirectivasMain() {
+    // Oculta todas las listas de subsecciones
+    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
+    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
+    document.getElementById('directivas-generales-list').classList.remove('active');
+    
+    // Muestra la vista principal de consultar directivas
+    document.getElementById('directivas-consultar').classList.add('active');
+}
+
+// Función para volver a la vista de consulta desde la vista de registros de Estudios, Planes o Medidas
+function backToConsultar(section) {
+    document.getElementById(`${section}-records`).classList.remove('active');
+    document.getElementById(`${section}-consultar`).classList.add('active');
+}
+
 // Función específica para renderizar la lista de Empresas RRHH (solo Nombre y RUT)
 function renderEmpresasRRHHList() {
     const resultsContainer = document.getElementById('empresas-rrhh-results');
@@ -328,7 +390,6 @@ function renderEmpresasRRHHList() {
     resultsContainer.innerHTML = tableHTML;
 }
 
-
 // Función para mostrar los detalles de directivas de una empresa RRHH específica
 function showEmpresaDirectivasDetails(empresaNombre) {
     currentEmpresaSelected = empresaNombre;
@@ -345,7 +406,7 @@ function showEmpresaDirectivasDetails(empresaNombre) {
     loadCompanySpecificDirectivas(empresaNombre);
 }
 
-// Carga y muestra los detalles de directivas para una empresa específica
+// Carga y muestra los detalles de directivas para una empresa específica en formato de tabla
 function loadCompanySpecificDirectivas(empresaNombre) {
     const resultsContainer = document.getElementById('empresa-specific-details-results');
     const directivasEmpresa = database['empresas-rrhh'].filter(directiva => directiva.empresa === empresaNombre);
@@ -355,31 +416,34 @@ function loadCompanySpecificDirectivas(empresaNombre) {
         return;
     }
 
-    let cardsHTML = '';
-    directivasEmpresa.forEach(directiva => {
-        cardsHTML += `
-            <div class="directiva-detail-card">
-                <div class="detail-label">Número de Directiva:</div>
-                <div class="detail-value">${directiva.numero || 'N/A'}</div>
+    // Encabezados de la tabla para esta vista específica
+    const headers = [
+        'numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 
+        'fechaAprobacion', 'cantidadGuardias'
+    ];
 
-                <div class="detail-label">Tipo de Directiva:</div>
-                <div class="detail-value">${directiva.tipoDirectiva || 'N/A'}</div>
-
-                <div class="detail-label">Lugar de Instalación:</div>
-                <div class="detail-value">${directiva.lugarInstalacion || 'N/A'}</div>
-
-                <div class="detail-label">Dirección:</div>
-                <div class="detail-value">${directiva.direccion || 'N/A'}</div>
-
-                <div class="detail-label">Fecha de Aprobación:</div>
-                <div class="detail-value">${directiva.fechaAprobacion || 'N/A'}</div>
-
-                <div class="detail-label">Cantidad de Guardias:</div>
-                <div class="detail-value">${directiva.cantidadGuardias || 'N/A'}</div>
-            </div>
-        `;
+    let tableHTML = '<table class="data-table"><thead><tr>';
+    headers.forEach(header => {
+        tableHTML += `<th>${formatHeader(header)}</th>`;
     });
-    resultsContainer.innerHTML = cardsHTML;
+    tableHTML += '</tr></thead><tbody>';
+
+    directivasEmpresa.forEach((directiva, index) => {
+        // En este contexto, 'index' se refiere al índice dentro de 'data' (filtrada).
+        // Para 'showDetails', necesitamos el índice original de la directiva en 'database['empresas-rrhh']'.
+        // Se encuentra el índice original del objeto 'directiva' dentro del array completo 'database['empresas-rrhh']'.
+        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
+        headers.forEach(header => {
+            let value = directiva[header] || 'N/A';
+            if (typeof value === 'string' && value.length > 50) {
+                value = value.substring(0, 50) + '...';
+            }
+            tableHTML += `<td>${value}</td>`;
+        });
+        tableHTML += '</tr>';
+    });
+    tableHTML += '</tbody></table>';
+    resultsContainer.innerHTML = tableHTML;
 }
 
 // Función para buscar en los detalles de directivas de una empresa específica
@@ -389,7 +453,9 @@ function searchCompanySpecificDirectivas(searchTerm) {
         (directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
          directiva.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
          directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.cantidadGuardias.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+         directiva.cantidadGuardias.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const resultsContainer = document.getElementById('empresa-specific-details-results');
@@ -398,31 +464,37 @@ function searchCompanySpecificDirectivas(searchTerm) {
         return;
     }
 
-    let cardsHTML = '';
-    filteredDirectivas.forEach(directiva => {
-        cardsHTML += `
-            <div class="directiva-detail-card">
-                <div class="detail-label">Número de Directiva:</div>
-                <div class="detail-value">${directiva.numero || 'N/A'}</div>
+    // Reutilizar la función para crear la tabla
+    const tableHTML = createTableForCompanySpecificDirectivas(filteredDirectivas);
+    resultsContainer.innerHTML = tableHTML;
+}
 
-                <div class="detail-label">Tipo de Directiva:</div>
-                <div class="detail-value">${directiva.tipoDirectiva || 'N/A'}</div>
+// Helper para crear tabla específica para directivas de instalaciones (reutilizado por search)
+function createTableForCompanySpecificDirectivas(data) {
+    const headers = [
+        'numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 
+        'fechaAprobacion', 'cantidadGuardias'
+    ];
 
-                <div class="detail-label">Lugar de Instalación:</div>
-                <div class="detail-value">${directiva.lugarInstalacion || 'N/A'}</div>
-
-                <div class="detail-label">Dirección:</div>
-                <div class="detail-value">${directiva.direccion || 'N/A'}</div>
-
-                <div class="detail-label">Fecha de Aprobación:</div>
-                <div class="detail-value">${directiva.fechaAprobacion || 'N/A'}</div>
-
-                <div class="detail-label">Cantidad de Guardias:</div>
-                <div class="detail-value">${directiva.cantidadGuardias || 'N/A'}</div>
-            </div>
-        `;
+    let tableHTML = '<table class="data-table"><thead><tr>';
+    headers.forEach(header => {
+        tableHTML += `<th>${formatHeader(header)}</th>`;
     });
-    resultsContainer.innerHTML = cardsHTML;
+    tableHTML += '</tr></thead><tbody>';
+
+    data.forEach((directiva, index) => {
+        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
+        headers.forEach(header => {
+            let value = directiva[header] || 'N/A';
+            if (typeof value === 'string' && value.length > 50) {
+                value = value.substring(0, 50) + '...';
+            }
+            tableHTML += `<td>${value}</td>`;
+        });
+        tableHTML += '</tr>';
+    });
+    tableHTML += '</tbody></table>';
+    return tableHTML;
 }
 
 
@@ -464,24 +536,23 @@ function searchEmpresasRRHH(searchTerm) {
 }
 
 
-// Función genérica para mostrar la vista de registros de cualquier sección (Estudios, Planes, Medidas, y ahora subsecciones de Directivas)
+// Función genérica para mostrar la vista de registros de cualquier sección (Estudios, Planes, Medidas generales, y subsecciones de Directivas)
 function showRecords(section) {
     // Ocultar la vista de consultar si aplica (solo para secciones principales)
     if (document.getElementById(`${section}-consultar`)) {
         document.getElementById(`${section}-consultar`).classList.remove('active');
     }
     // Ocultar cualquier lista de subsecciones de directivas si estamos en ese contexto
-    // Se asegura de ocultar todas las listas posibles antes de mostrar la correcta
     document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
     document.getElementById('directivas-guardias-propios-list').classList.remove('active');
     document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
     document.getElementById('directivas-generales-list').classList.remove('active');
     document.getElementById('directivas-empresa-specific-details').classList.remove('active');
 
-
-    // Mostrar la vista de registros (o la lista específica de la subsección)
+    // Mostrar la vista de registros (o la lista específica de la subsección si aplica)
+    // Para las secciones principales como estudios y planes
     document.getElementById(`${section}-records`).classList.add('active');
-    loadData(section); // Carga los datos correspondientes a la sección/subsección
+    loadData(section); // Carga los datos correspondientes a la sección
 }
 
 
@@ -514,7 +585,7 @@ function addRecord(section, event) {
 
 // Carga y muestra los datos de una sección en formato de tabla
 function loadData(section) {
-    const resultsContainer = document.getElementById(`${section}-results`);
+    const resultsContainer = document.getElementById(`${section}-results`) || document.getElementById(`medidas-${section}-records`).querySelector('.search-container').nextElementSibling; // Ajuste para las nuevas secciones de medidas
     const data = database[section];
     
     if (data.length === 0) {
@@ -541,13 +612,11 @@ function createTable(section, data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((row, index) => {
-        // Para las subsecciones de directivas, el click debe abrir el modal de detalles
-        // La sección 'empresas-rrhh' tiene un manejo especial con showEmpresaDirectivasDetails
-        if (section.startsWith('directivas-') && section !== 'empresas-rrhh') {
-            tableHTML += `<tr onclick="showDetails('${section}', ${index})">`; // Abre el modal de detalles
-        } else {
-            tableHTML += `<tr onclick="showDetails('${section}', ${index})">`; // Comportamiento general
-        }
+        // En este contexto, 'index' se refiere al índice dentro de 'data' (filtrada).
+        // Para 'showDetails', necesitamos el índice original de la directiva en 'database[section]'.
+        // Se encuentra el índice original del objeto 'row' dentro del array completo 'database[section]'.
+        const originalIndex = database[section].indexOf(row);
+        tableHTML += `<tr onclick="showDetails('${section}', ${originalIndex !== -1 ? originalIndex : index})">`;
 
         headers.forEach(header => {
             let value = row[header] || '-';
@@ -577,10 +646,10 @@ function formatHeader(header) {
         revision: 'Revisión',
         objetivo: 'Objetivo',
         alcance: 'Alcance',
-        numero: 'Número',
+        numero: 'Número de Directiva',
         area: 'Área',
         version: 'Versión',
-        fecha: 'Fecha',
+        fecha: 'Fecha de Emisión',
         titulo: 'Título',
         contenido: 'Contenido',
         fechaInicio: 'Fecha Inicio',
@@ -594,21 +663,22 @@ function formatHeader(header) {
         horario: 'Horario',
         capacidad: 'Capacidad',
         empresa: 'Nombre Empresa', 
-        tipoDirectiva: 'Tipo Directiva',
-        tipoServicio: 'Tipo Servicio',
+        tipoDirectiva: 'Tipo de Directiva',
+        tipoServicio: 'Tipo de Servicio',
         numeroGuardias: 'Número Guardias',
         turno: 'Turno',
-        tipoEvento: 'Tipo Evento',
-        nombreEvento: 'Nombre Evento',
+        tipoEvento: 'Tipo de Evento',
+        nombreEvento: 'Nombre del Evento',
         duracion: 'Duración',
         lugarInstalacion: 'Lugar de Instalación',
         fechaAprobacion: 'Fecha de Aprobación',
         cantidadGuardias: 'Cantidad de Guardias',
-        nombreEmpresa: 'Nombre Empresa',
+        nombreEmpresa: 'Nombre Empresa', 
         rut: 'RUT',
         fechaEvento: 'Fecha del Evento',
-        estadoAprobacion: 'Estado Aprobación',
-        id: 'ID'
+        estadoAprobacion: 'Estado de Aprobación',
+        id: 'ID',
+        monto: 'Monto (UF)' // Nuevo encabezado para "Sobre 500 UF"
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
@@ -617,14 +687,13 @@ function formatHeader(header) {
 function searchData(section, searchTerm) {
     const data = database[section];
     const filteredData = data.filter(item => {
-        // Busca en todos los valores de cada objeto
         return Object.values(item).some(value => 
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
     
-    const resultsContainer = document.getElementById(`${section}-results`);
-    const table = createTable(section, filteredData); // Vuelve a crear la tabla con los resultados filtrados
+    const resultsContainer = document.getElementById(`${section}-results`) || document.getElementById(`medidas-${section}-records`).querySelector('.search-container').nextElementSibling;
+    const table = createTable(section, filteredData);
     resultsContainer.innerHTML = table;
 }
 
@@ -635,8 +704,8 @@ function showDetails(section, index) {
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     
-    modalTitle.textContent = `Detalles - ${formatHeader('codigo')}: ${item.codigo || item.numero || item.nombre}`;
-    modalTitle.className = `modal-title ${section}`; // Aplica la clase de estilo de la sección al título del modal
+    modalTitle.textContent = `Detalles - ${formatHeader('codigo')}: ${item.codigo || item.numero || item.nombre || item.nombreEmpresa || item.id}`;
+    modalTitle.className = `modal-title ${section}`; 
     
     let detailsHTML = '';
     Object.keys(item).forEach(key => {
@@ -649,7 +718,7 @@ function showDetails(section, index) {
     });
     
     modalBody.innerHTML = detailsHTML;
-    modal.style.display = 'block'; // Muestra el modal
+    modal.style.display = 'block'; 
 }
 
 // Cierra el modal de detalles
@@ -662,35 +731,63 @@ function updateCounts() {
     document.getElementById('estudios-count').textContent = `${database.estudios.length} registros`;
     document.getElementById('planes-count').textContent = `${database.planes.length} registros`;
     
-    const totalMedidas = database.medidas.length + database.servicentros.length;
+    // El contador de "Medidas" ahora suma todas las subcategorías relevantes
+    const totalMedidas = database.medidas.length + database.servicentros.length + database['sobre-500-uf'].length;
     document.getElementById('medidas-count').textContent = `${totalMedidas} registros`;
     
     // Suma todos los registros de las subcategorías de directivas
     const totalDirectivas = database['empresas-rrhh'].length + database['guardias-propios'].length + database['eventos-masivos'].length + database['directivas-generales'].length;
     document.getElementById('directivas-count').textContent = `${totalDirectivas} registros`;
+
+    // Actualiza los contadores en los botones de la sección de Medidas (si están visibles)
+    updateMedidasSubSectionCounts();
 }
+
+// Función para actualizar los contadores en los botones de "Medidas de Seguridad"
+function updateMedidasSubSectionCounts() {
+    const servicentrosCountElement = document.getElementById('servicentros-count-sub');
+    const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-sub');
+
+    if (servicentrosCountElement) {
+        servicentrosCountElement.textContent = database.servicentros.length;
+    }
+    if (sobre500UFCountElement) {
+        sobre500UFCountElement.textContent = database['sobre-500-uf'].length;
+    }
+}
+
 
 // Muestra un mensaje de alerta temporal en la interfaz
 function showAlert(section, message, type) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`; // Asigna la clase de estilo (success o error)
+    alertDiv.className = `alert alert-${type}`; 
     alertDiv.textContent = message;
     
-    // Determina dónde insertar la alerta: si es una sección principal con formulario
-    let targetElement = document.querySelector(`#${section}-agregar form`);
+    let targetElement;
+    // Si estamos en la sección de Medidas y es el formulario de agregar
+    if (section === 'medidas' && document.querySelector(`#medidas-agregar form`)) {
+        targetElement = document.querySelector(`#medidas-agregar form`);
+    } else if (section === 'directivas' && document.querySelector(`#directivas-agregar form`)) {
+        targetElement = document.querySelector(`#directivas-agregar form`);
+    } else if (section === 'estudios' && document.querySelector(`#estudios-agregar form`)) {
+        targetElement = document.querySelector(`#estudios-agregar form`);
+    } else if (section === 'planes' && document.querySelector(`#planes-agregar form`)) {
+        targetElement = document.querySelector(`#planes-agregar form`);
+    }
+
     if (targetElement) {
         targetElement.insertBefore(alertDiv, targetElement.firstChild);
     } else {
-        // En caso de que no haya un formulario directo (ej. en listas de subsecciones)
-        // Puedes ajustar esto para que la alerta aparezca en un lugar más apropiado
-        const containerElement = document.querySelector(`#directivas-${currentDirectivasSubSectionType}-list .section-header`);
+        // En caso de que no haya un formulario directo o sea una vista de lista
+        // Se puede ajustar para que la alerta aparezca en un lugar más apropiado
+        const containerElement = document.querySelector(`.section.active .section-header`);
         if (containerElement) {
             containerElement.parentNode.insertBefore(alertDiv, containerElement.nextSibling);
         }
     }
     
     setTimeout(() => {
-        alertDiv.remove(); // Elimina la alerta después de 3 segundos
+        alertDiv.remove(); 
     }, 3000);
 }
 
@@ -704,12 +801,13 @@ window.onclick = function(event) {
 
 // Inicializa la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
-    updateCounts(); // Actualiza los contadores iniciales
+    updateCounts(); // Actualiza todos los contadores iniciales
     console.log('Sistema cargado con:', {
         'Estudios de Seguridad': database.estudios.length,
         'Planes de Seguridad': database.planes.length, 
-        'Medidas de Seguridad': database.medidas.length,
+        'Medidas de Seguridad (General)': database.medidas.length,
         'Servicentros': database.servicentros.length,
+        'Sobre 500 UF': database['sobre-500-uf'].length,
         'Empresas RRHH': empresasRRHHList.length + ' empresas con ' + database['empresas-rrhh'].length + ' registros totales',
         'Guardias Propios': database['guardias-propios'].length,
         'Eventos Masivos': database['eventos-masivos'].length,
