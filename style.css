@@ -300,6 +300,8 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-left: auto; /* Centra la tabla horizontalmente */
+    margin-right: auto; /* Centra la tabla horizontalmente */
 }
 
 .data-table th,
@@ -308,6 +310,7 @@ body {
     text-align: left;
     border-bottom: 1px solid #eee;
     vertical-align: middle; 
+    font-size: 0.85em; /* Tamaño de letra más pequeño */
 }
 
 .data-table th {
@@ -419,6 +422,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    font-size: 0.9em; /* Tamaño de letra más pequeño en el modal también */
 }
 
 /* Estilos para cada elemento de detalle en el modal */
