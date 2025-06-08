@@ -35,23 +35,33 @@ function generateSampleData() {
         });
     }
 
-    // Generar 5 estudios de seguridad
+    // Generar 5 estudios de seguridad (Vigencia de 2 años)
     const tiposEstudio = ['Análisis de Riesgos', 'Evaluación de Vulnerabilidades', 'Auditoría de Seguridad', 'Impacto Ambiental'];
     const responsables = ['Dr. Carlos López', 'Ing. María González', 'Dr. Juan Pérez', 'Lic. Ana Torres', 'Ing. Pedro Sánchez'];
     
     for (let i = 1; i <= 5; i++) {
+        const startDate = `2025-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(startDateObj);
+        endDateObj.setFullYear(endDateObj.getFullYear() + 2); // 2 años de vigencia
+        const fechaFin = endDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = endDateObj > today ? 'Vigente' : 'Vencido';
+
         database.estudios.push({
             codigo: `EST-${String(i).padStart(3, '0')}`,
             tipo: tiposEstudio[Math.floor(Math.random() * tiposEstudio.length)],
-            fechaInicio: `2025-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-            fechaFin: `2025-${String(Math.floor(Math.random() * 6) + 7).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fechaInicio: startDate,
+            fechaFin: fechaFin,
             objeto: `Evaluación de seguridad en área ${i}`,
             metodologia: `Metodología basada en estándares internacionales ISO 27001 y análisis cuantitativo de riesgos`,
-            responsable: responsables[i - 1]
+            responsable: responsables[i - 1],
+            estadoVigencia: estadoVigencia // Nuevo campo para el estado de vigencia
         });
     }
 
-    // Generar 61 planes de seguridad
+    // Generar 61 planes de seguridad (Vigencia de 3 años)
     const tiposPlanes = ['Emergencia', 'Contingencia', 'Evacuación', 'Recuperación'];
     const areas = ['Edificio Principal', 'Planta de Producción', 'Laboratorio', 'Almacén', 'Oficinas Administrativas'];
     
@@ -64,7 +74,7 @@ function generateSampleData() {
         const approvalDateObj = new Date(fechaAprobacion);
         const vigenciaDateObj = new Date(approvalDateObj);
         vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formatoولندا-MM-DD
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
@@ -81,7 +91,7 @@ function generateSampleData() {
         });
     }
 
-    // Generar 90 medidas de seguridad (generales)
+    // Generar 90 medidas de seguridad (generales) (Vigencia de 3 años)
     const categorias = ['Preventiva', 'Correctiva', 'Detectiva', 'Compensatoria'];
     const prioridades = ['Alta', 'Media', 'Baja'];
     const estados = ['Implementada', 'En proceso', 'Pendiente', 'Suspendida'];
@@ -114,7 +124,7 @@ function generateSampleData() {
         });
     }
 
-    // Generar 90 servicentros
+    // Generar 90 servicentros (Vigencia de 3 años)
     const tiposServicentros = ['Gasolinera', 'Taller Mecánico', 'Lavado de Autos', 'Cambio de Aceite', 'Revisión Técnica'];
     const ubicaciones = ['Norte', 'Sur', 'Centro', 'Este', 'Oeste'];
     const responsablesServicentros = ['Carlos Mendez', 'Laura Silva', 'Roberto Díaz', 'Patricia Morales', 'Fernando Castro'];
@@ -150,7 +160,7 @@ function generateSampleData() {
         });
     }
 
-    // Generar 95 registros de "Sobre 500 UF"
+    // Generar 95 registros de "Sobre 500 UF" (Vigencia de 3 años)
     const tiposGasto = ['Infraestructura', 'Tecnología', 'Personal Especializado', 'Consultoría Legal', 'Adquisición Equipos'];
     const responsablesUF = ['Gerente Financiero', 'Director de Operaciones', 'Jefe de Proyectos', 'Asesoría Externa'];
 
@@ -181,7 +191,7 @@ function generateSampleData() {
         });
     }
 
-    // Generar subcategorías de directivas de funcionamiento
+    // Generar subcategorías de directivas de funcionamiento (Vigencia de 3 años)
     
     // 1. Generar 800 registros de Empresas de RRHH (distribuidos en 300 empresas)
     const tiposDirectivaRRHH = ['Contratación', 'Capacitación', 'Evaluación', 'Bienestar', 'Nómina', 'Beneficios'];
@@ -190,6 +200,20 @@ function generateSampleData() {
     
     for (let i = 1; i <= 800; i++) {
         const empresaAsignada = empresasRRHHList[Math.floor(Math.random() * empresasRRHHList.length)];
+        
+        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
         database['empresas-rrhh'].push({
             numero: `RRHH-${String(i).padStart(4, '0')}`,
             empresa: empresaAsignada.nombre,
@@ -197,32 +221,47 @@ function generateSampleData() {
             tipoDirectiva: tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)],
             lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
-            fechaAprobacion: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fechaAprobacion: fechaAprobacion,
             cantidadGuardias: `${Math.floor(Math.random() * 15) + 2} guardias`,
             area: 'Recursos Humanos',
             version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`,
             titulo: `Directiva ${tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)]} - ${empresaAsignada.nombre}`,
             contenido: `Procedimiento específico de recursos humanos para ${empresaAsignada.nombre}. Establece los lineamientos para la gestión del personal.`,
             responsable: `Jefe RRHH ${empresaAsignada.nombre}`,
-            estado: Math.random() > 0.1 ? 'Vigente' : 'En revisión'
+            estado: Math.random() > 0.1 ? 'Vigente' : 'En revisión', // Estado general (no de vigencia)
+            vigencia: vigencia, // Nueva fecha de vigencia
+            estadoVigencia: estadoVigencia // Estado de vigencia (Vigente/Vencido)
         });
         
         // Incrementar contador de directivas para esta empresa
         empresaAsignada.directivasCount++;
     }
 
-    // 2. Generar 50 registros de Empresas con Guardias Propios  
+    // 2. Generar 50 registros de Empresas con Guardias Propios (Vigencia de 3 años)
     const tiposGuardias = ['Seguridad Industrial', 'Vigilancia Perimetral', 'Control de Acceso', 'Rondas Nocturnas'];
     const condominios = ['Condominio Mistral V', 'Condominio Las Torres', 'Condominio Portal del Sol', 'Condominio Vista Hermosa'];
     
     for (let i = 1; i <= 50; i++) {
+        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
         database['guardias-propios'].push({
             numero: `GUARD-${String(i).padStart(3, '0')}`,
             empresa: i <= 4 ? condominios[i-1] : `Empresa Seguridad ${String(i).padStart(2, '0')}`,
             tipoServicio: tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)],
             lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
-            fechaAprobacion: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fechaAprobacion: fechaAprobacion,
             cantidadGuardias: `${Math.floor(Math.random() * 12) + 3} guardias`,
             area: 'Seguridad Privada',
             version: `${Math.floor(Math.random() * 3) + 1}.0`,
@@ -230,11 +269,13 @@ function generateSampleData() {
             contenido: `Directiva para el manejo de guardias propios en servicios de seguridad privada. Incluye protocolos de actuación.`,
             turno: Math.random() > 0.5 ? '24/7' : 'Diurno',
             responsable: `Jefe Seguridad Emp-${String(i).padStart(2, '0')}`,
-            estado: 'Activo'
+            estado: 'Activo', // Estado general (no de vigencia)
+            vigencia: vigencia, // Nueva fecha de vigencia
+            estadoVigencia: estadoVigencia // Estado de vigencia (Vigente/Vencido)
         });
     }
 
-    // 3. Generar 50 registros de Eventos Masivos
+    // 3. Generar 50 registros de Eventos Masivos (Vigencia de 3 años)
     const tiposEventos = ['Conciertos', 'Eventos Deportivos', 'Ferias', 'Festivales', 'Conferencias'];
     const ubicacionesEventos = ['Estadio Nacional', 'Arena Movistar', 'Centro de Eventos', 'Parque OHiggins', 'Teatro Municipal'];
     const empresasEventos = ['Productora Musical SPA', 'Eventos & Shows Ltda', 'Mega Eventos SA', 'Show Business SPA', 'Entertainment Group Ltda'];
@@ -245,6 +286,19 @@ function generateSampleData() {
         const fechaEvento = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const aprobado = Math.random() > 0.2;
         
+        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
         database['eventos-masivos'].push({
             numero: `EVENT-${String(i).padStart(3, '0')}`,
             nombreEmpresa: empresa,
@@ -252,7 +306,7 @@ function generateSampleData() {
             fechaEvento: fechaEvento,
             nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`,
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
-            fechaAprobacion: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fechaAprobacion: fechaAprobacion,
             estadoAprobacion: aprobado ? 'APROBADO' : 'RECHAZADO',
             cantidadGuardias: `${Math.floor(Math.random() * 50) + 10} guardias`,
             tipoEvento: tiposEventos[Math.floor(Math.random() * tiposEventos.length)],
@@ -264,24 +318,42 @@ function generateSampleData() {
             capacidad: `${Math.floor(Math.random() * 50000) + 5000} personas`,
             duracion: `${Math.floor(Math.random() * 8) + 2} horas`,
             responsable: `Coordinador Eventos ${String(i).padStart(2, '0')}`,
-            estado: aprobado ? 'Aprobado' : 'Rechazado'
+            estado: aprobado ? 'Aprobado' : 'Rechazado', // Estado general (no de vigencia)
+            vigencia: vigencia, // Nueva fecha de vigencia
+            estadoVigencia: estadoVigencia // Estado de vigencia (Vigente/Vencido)
         });
     }
 
-    // 4. Generar 300 Directivas Generales (resto para completar 1200)
+    // 4. Generar 300 Directivas Generales (Vigencia de 3 años)
     const areasGenerales = ['Operaciones', 'Mantenimiento', 'Calidad', 'Administración', 'Logística'];
     for (let i = 1; i <= 300; i++) {
         const area = areasGenerales[Math.floor(Math.random() * areasGenerales.length)];
+        
+        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
         database['directivas-generales'].push({
             numero: `GEN-${String(i).padStart(4, '0')}`,
             area: area,
             version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`,
-            fecha: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fecha: fechaAprobacion, // Usamos fechaAprobacion para la 'fecha' de emisión
             titulo: `Directiva General ${i} - ${area}`,
             contenido: `Directiva general para el área de ${area}. Establece procedimientos estándar de funcionamiento organizacional.`,
             alcance: 'Toda la organización',
             responsable: `Jefe de ${area}`,
-            estado: Math.random() > 0.15 ? 'Vigente' : 'En actualización'
+            estado: Math.random() > 0.15 ? 'Vigente' : 'En actualización', // Estado general (no de vigencia)
+            vigencia: vigencia, // Nueva fecha de vigencia
+            estadoVigencia: estadoVigencia // Estado de vigencia (Vigente/Vencido)
         });
     }
 
@@ -491,7 +563,7 @@ function loadCompanySpecificDirectivas(empresaNombre) {
     // Encabezados de la tabla para esta vista específica
     const headers = [
         'numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 
-        'fechaAprobacion', 'cantidadGuardias'
+        'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -507,10 +579,19 @@ function loadCompanySpecificDirectivas(empresaNombre) {
         tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
+            let cellClass = '';
+            // Aplica el estilo de color para el estado de vigencia
+            if (header === 'estadoVigencia') {
+                if (value === 'Vigente') {
+                    cellClass = 'status-vigente';
+                } else if (value === 'Vencido') {
+                    cellClass = 'status-vencido';
+                }
+            }
             if (typeof value === 'string' && value.length > 50) {
                 value = value.substring(0, 50) + '...';
             }
-            tableHTML += `<td>${value}</td>`;
+            tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
     });
@@ -545,7 +626,7 @@ function searchCompanySpecificDirectivas(searchTerm) {
 function createTableForCompanySpecificDirectivas(data) {
     const headers = [
         'numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 
-        'fechaAprobacion', 'cantidadGuardias'
+        'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -558,10 +639,19 @@ function createTableForCompanySpecificDirectivas(data) {
         tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
+            let cellClass = '';
+            // Aplica el estilo de color para el estado de vigencia
+            if (header === 'estadoVigencia') {
+                if (value === 'Vigente') {
+                    cellClass = 'status-vigente';
+                } else if (value === 'Vencido') {
+                    cellClass = 'status-vencido';
+                }
+            }
             if (typeof value === 'string' && value.length > 50) {
                 value = value.substring(0, 50) + '...';
             }
-            tableHTML += `<td>${value}</td>`;
+            tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
     });
@@ -641,38 +731,78 @@ function addRecord(section, event) {
     const inputs = form.querySelectorAll('input, textarea, select');
     
     inputs.forEach(input => {
-        // Adjusted to handle 'medidas-generales' as the form ID for adding new records that can be for 'medidas', 'servicentros', or 'sobre-500-uf' conceptually
-        let key = input.id.replace(`${section.split('-')[0]}-`, '').replace('-', ''); // Use split to get 'medida' from 'medidas-generales'
+        let key;
+        // Ajuste para manejar IDs de input de manera más genérica
+        if (input.id.startsWith('estudio-')) {
+            key = input.id.replace('estudio-', '');
+        } else if (input.id.startsWith('plan-')) {
+            key = input.id.replace('plan-', '');
+        } else if (input.id.startsWith('medida-')) {
+            key = input.id.replace('medida-', '');
+        } else if (input.id.startsWith('directiva-')) {
+            key = input.id.replace('directiva-', '');
+        } else {
+            key = input.id;
+        }
         formData[key] = input.value;
     });
 
-    // Handle validity calculation for 'planes' and the new 'medidas-generales' input form
-    const targetSection = (section === 'medidas-generales') ? 'medidas' : section; // Determine where to add the record
+    let targetArray = database[section]; // Por defecto, añade a la sección principal
 
-    if (targetSection === 'planes' || targetSection === 'medidas' || targetSection === 'servicentros' || targetSection === 'sobre-500-uf') {
+    // Lógica para calcular la vigencia y el estado de vigencia al agregar un registro
+    if (section === 'planes' || section === 'medidas-generales') { // Para planes y medidas generales (3 años de vigencia)
         const fechaAprobacion = formData.fechaAprobacion;
         if (fechaAprobacion) {
             const approvalDateObj = new Date(fechaAprobacion);
             const vigenciaDateObj = new Date(approvalDateObj);
-            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
+            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años
             formData.vigencia = vigenciaDateObj.toISOString().split('T')[0];
 
             const today = new Date();
             formData.estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
         } else {
             showAlert(section, 'La fecha de aprobación es requerida para este tipo de registro.', 'error');
-            return; // Detiene la adición si falta la fecha de aprobación
+            return;
         }
+        if (section === 'medidas-generales') {
+            targetArray = database.medidas; // Asegura que se añade al array correcto de medidas
+        }
+    } else if (section === 'estudios') { // Para estudios (2 años de vigencia)
+        const fechaInicio = formData.fechaInicio;
+        if (fechaInicio) {
+            const startDateObj = new Date(fechaInicio);
+            const endDateObj = new Date(startDateObj);
+            endDateObj.setFullYear(endDateObj.getFullYear() + 2); // 2 años
+            formData.fechaFin = endDateObj.toISOString().split('T')[0];
+
+            const today = new Date();
+            formData.estadoVigencia = endDateObj > today ? 'Vigente' : 'Vencido';
+        } else {
+            showAlert(section, 'La fecha de inicio es requerida para un estudio.', 'error');
+            return;
+        }
+    } else if (section === 'directivas') { // Para directivas generales (3 años de vigencia)
+        // La directiva general en el formulario de "Agregar Nueva" tiene un campo 'fecha',
+        // que se usará como fecha de aprobación para calcular su vigencia.
+        const fechaEmision = formData.fecha; 
+        if (fechaEmision) {
+            const emissionDateObj = new Date(fechaEmision);
+            const vigenciaDateObj = new Date(emissionDateObj);
+            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años
+            formData.vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+            const today = new Date();
+            formData.estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+        } else {
+            showAlert(section, 'La fecha de emisión es requerida para una directiva.', 'error');
+            return;
+        }
+        // Las directivas agregadas desde el formulario principal van al array `database.directivas`
+        // Los datos de sample para subcategorías se generan aparte en `generateSampleData`
+        targetArray = database.directivas; // Se mantiene como directivas generales añadidas al array 'directivas'
     }
 
-    // If adding a record via the 'medidas-generales' form, it's added to the general 'medidas' array for simplicity
-    // If the user wants to categorize these specifically into servicentros or sobre-500-uf from this form,
-    // additional logic would be needed to select the sub-category. For now, it goes into 'medidas'.
-    if (section === 'medidas-generales') {
-        database.medidas.push(formData); // Add to the main measures array
-    } else {
-        database[section].push(formData); // Add to the specific section array
-    }
+    targetArray.push(formData); // Añade el nuevo registro al array correspondiente
     
     form.reset(); // Limpia el formulario
     
@@ -680,10 +810,13 @@ function addRecord(section, event) {
     
     updateCounts(); // Actualiza los contadores en la página de inicio
     
-    // Redirect back to the correct tab/view after adding
+    // Redirige de vuelta a la pestaña de consultar correcta después de agregar
     if (section === 'medidas-generales') {
-        showTab('medidas', 'consultar'); // Go back to the main measures options
-    } else {
+        showTab('medidas', 'consultar'); 
+    } else if (section === 'directivas') {
+        showTab('directivas', 'consultar'); // Redirige a la consulta de directivas
+    }
+    else {
         showTab(section, 'consultar'); 
     }
 }
@@ -718,28 +851,28 @@ function createTable(section, data) {
         return '<div class="no-data">No se encontraron resultados</div>';
     }
 
-    // Determine headers based on section to show relevant columns for specific sections
-    let headers = Object.keys(data[0]);
+    // Determina los encabezados basados en la sección para mostrar las columnas relevantes
+    let headers = Object.keys(data[0]); // Por defecto, toma todas las claves
     if (section === 'planes') {
         headers = ['codigo', 'tipo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'revision', 'objetivo', 'alcance'];
     } else if (section === 'servicentros') {
-        // Adjusted headers for servicentros to show validity
         headers = ['codigo', 'nombre', 'tipo', 'ubicacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado', 'responsable'];
     } else if (section === 'sobre-500-uf') {
-        // Adjusted headers for sobre-500-uf to show validity
         headers = ['id', 'descripcion', 'monto', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'responsable', 'estado'];
     } else if (section === 'medidas') {
-        // Adjusted headers for general medidas to show validity
         headers = ['codigo', 'categoria', 'prioridad', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado', 'descripcion', 'responsable'];
+    } else if (section === 'estudios') { // Encabezados para Estudios de Seguridad
+        headers = ['codigo', 'tipo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'objeto', 'metodologia', 'responsable'];
     } else if (section === 'empresas-rrhh') {
-        // Headers for Empresas RRHH (detailed view)
-        headers = ['numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
+        headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
     } else if (section === 'guardias-propios') {
-        headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'fechaAprobacion', 'cantidadGuardias', 'turno', 'responsable', 'estado'];
+        headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'turno', 'responsable', 'estado'];
     } else if (section === 'eventos-masivos') {
-        headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'fechaAprobacion', 'estadoAprobacion', 'cantidadGuardias', 'tipoEvento', 'ubicacion', 'capacidad', 'duracion', 'responsable', 'estado'];
+        headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estadoAprobacion', 'cantidadGuardias', 'tipoEvento', 'ubicacion', 'capacidad', 'duracion', 'responsable', 'estado'];
     } else if (section === 'directivas-generales') {
-        headers = ['numero', 'area', 'version', 'fecha', 'titulo', 'alcance', 'responsable', 'estado'];
+        headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'alcance', 'responsable', 'estado'];
+    } else if (section === 'directivas') { // Para el array 'directivas' genérico, si se usa
+        headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'contenido', 'alcance', 'responsable', 'estado'];
     }
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -750,12 +883,7 @@ function createTable(section, data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((row, index) => {
-        // NOTA: Para las secciones de directivas anidadas, el 'index' en 'showDetails' debe referirse al índice ORIGINAL
-        // en el array completo 'database[section]', no al índice dentro del array 'data' filtrado.
-        // Se corrige esto obteniendo el índice original.
-        const originalIndex = database[section].indexOf(row);
-        // Si el elemento no se encuentra (lo cual es raro si 'data' es un filtro de 'database[section]'),
-        // se usa el índice actual como fallback, aunque lo ideal es que 'originalIndex' siempre sea válido.
+        const originalIndex = database[section].indexOf(row); // Obtiene el índice original del elemento en la base de datos
         const detailIndex = originalIndex !== -1 ? originalIndex : index; 
 
         tableHTML += `<tr onclick="showDetails('${section}', ${detailIndex})">`;
@@ -763,8 +891,8 @@ function createTable(section, data) {
         headers.forEach(header => {
             let value = row[header] || '-';
             let cellClass = '';
-            // Apply color coding for plan status for all relevant sections
-            if (header === 'estadoVigencia' || header === 'estadoAprobacion') { // Apply to any field named estadoVigencia or estadoAprobacion
+            // Aplica el estilo de color para el estado de vigencia o aprobación
+            if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
                 if (value === 'Vigente' || value === 'APROBADO') {
                     cellClass = 'status-vigente';
                 } else if (value === 'Vencido' || value === 'RECHAZADO') {
@@ -772,7 +900,8 @@ function createTable(section, data) {
                 }
             }
             
-            if (typeof value === 'string' && value.length > 50 && header !== 'rut') { // Truncate long text, but not RUT
+            // Trunca texto largo si es necesario, excepto para RUTs
+            if (typeof value === 'string' && value.length > 50 && header !== 'rut') { 
                 value = value.substring(0, 50) + '...';
             }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
@@ -790,7 +919,7 @@ function formatHeader(header) {
         codigo: 'Código',
         categoria: 'Categoría',
         prioridad: 'Prioridad',
-        estado: 'Estado', // General status (e.g., implemented, pending)
+        estado: 'Estado', // Estado general (ej: implementada, pendiente)
         descripcion: 'Descripción',
         responsable: 'Responsable',
         tipo: 'Tipo',
@@ -831,7 +960,7 @@ function formatHeader(header) {
         estadoAprobacion: 'Estado de Aprobación',
         id: 'ID',
         monto: 'Monto (UF)',
-        estadoVigencia: 'Estado de Vigencia' // Validity status (Vigente/Vencido)
+        estadoVigencia: 'Estado de Vigencia' // Estado de vigencia (Vigente/Vencido)
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
@@ -874,8 +1003,8 @@ function showDetails(section, index) {
     Object.keys(item).forEach(key => {
         let value = item[key] || 'No especificado';
         let detailClass = '';
-        // Apply status class in modal as well
-        if (key === 'estadoVigencia' || key === 'estadoAprobacion') { // Apply to any field named estadoVigencia or estadoAprobacion
+        // Aplica la clase de estado en el modal también
+        if (key === 'estadoVigencia' || key === 'estadoAprobacion') { 
             if (value === 'Vigente' || value === 'APROBADO') {
                 detailClass = 'status-vigente';
             } else if (value === 'Vencido' || value === 'RECHAZADO') {
@@ -922,8 +1051,6 @@ function updateMedidasSubSectionCounts() {
     const servicentrosCountElement = document.getElementById('servicentros-count-sub');
     const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-sub');
 
-    // El botón 'Medidas Generales' ha sido eliminado de index.html, por lo que no intentamos actualizar su contador aquí.
-    // Solo actualizamos los contadores de 'Servicentros' y 'Sobre 500 UF'.
     if (servicentrosCountElement) {
         servicentrosCountElement.textContent = database.servicentros.length;
     }
@@ -940,18 +1067,16 @@ function showAlert(section, message, type) {
     alertDiv.textContent = message;
     
     let targetElement;
-    // Determine the correct form or container to insert the alert
-    // Si la sección es 'medidas-generales', se refiere al formulario de agregar medidas (general)
+    // Determina el formulario o contenedor correcto para insertar la alerta
     if (section === 'medidas-generales') { 
         targetElement = document.querySelector(`#medidas-agregar form`);
     } else if (document.querySelector(`#${section}-agregar form`)) {
         targetElement = document.querySelector(`#${section}-agregar form`);
     } else {
-        // Fallback para vistas de lista u otras secciones sin un formulario directo
         const currentActiveSection = document.querySelector('.section.active');
         if (currentActiveSection) {
             targetElement = currentActiveSection.querySelector('.section-header') || currentActiveSection;
-            if (targetElement.nextSibling) { // Inserta después del encabezado si es posible
+            if (targetElement.nextSibling) { 
                 targetElement.parentNode.insertBefore(alertDiv, targetElement.nextSibling);
                 setTimeout(() => { alertDiv.remove(); }, 3000);
                 return;
