@@ -120,9 +120,9 @@
                         <textarea id="estudio-metodologia" placeholder="Metodología utilizada..." required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="estudio-responsable">Responsable del Estudio</label>
-                        <input type="text" id="estudio-responsable" placeholder="Nombre del responsable" required>
-                    </div>
+                            <label for="estudio-responsable">Responsable del Estudio</label>
+                            <input type="text" id="estudio-responsable" placeholder="Nombre del responsable" required>
+                        </div>
                     <button type="submit" class="btn btn-success">💾 Guardar Estudio</button>
                 </form>
             </div>
@@ -221,9 +221,7 @@
                     <h3 style="color: #27ae60; margin-bottom: 20px;">📋 Opciones de Consulta de Medidas de Seguridad</h3>
                     <p style="color: #666; margin-bottom: 30px;">Selecciona una categoría para ver los registros</p>
                     <div class="medidas-menu-buttons">
-                        <button class="btn medidas" onclick="showRecords('medidas')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
-                            🛡️ Medidas Generales (<span id="medidas-count-sub">0</span> registros)
-                        </button>
+                        <!-- Botón "Medidas Generales" ELIMINADO -->
                         <button class="btn medidas" onclick="showMedidasSubSection('servicentros')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
                             🏪 Servicentros (<span id="servicentros-count-sub">0</span> registros)
                         </button>
@@ -234,7 +232,7 @@
                 </div>
             </div>
 
-            <!-- Contenedor para los registros de Medidas Generales -->
+            <!-- Contenedor para los registros de Medidas Generales (aún se necesita para el script) -->
             <div id="medidas-records" class="tab-content">
                 <div class="section-header">
                     <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
