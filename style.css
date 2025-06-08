@@ -298,10 +298,11 @@ body {
     margin-top: 20px;
     background: white;
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: auto; /* Permite desplazamiento horizontal si el contenido es demasiado ancho */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto; /* Centra la tabla horizontalmente */
     margin-right: auto; /* Centra la tabla horizontalmente */
+    table-layout: fixed; /* Ayuda a que las columnas no se expandan infinitamente */
 }
 
 .data-table th,
@@ -310,7 +311,10 @@ body {
     text-align: left;
     border-bottom: 1px solid #eee;
     vertical-align: middle; 
-    font-size: 0.85em; /* Tamaño de letra más pequeño */
+    font-size: 0.8em; /* Tamaño de letra más pequeño */
+    white-space: nowrap; /* Evita que el texto se envuelva */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
 }
 
 .data-table th {
