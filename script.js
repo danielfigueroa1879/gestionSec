@@ -435,10 +435,6 @@ function showTab(section, tab) {
         activeButton = Array.from(tabButtons).find(btn => btn.textContent.includes('Consultar'));
     } else if (tab === 'agregar') {
         activeButton = Array.from(tabButtons).find(btn => btn.textContent.includes('Agregar'));
-    } else if (tab === 'servicentros') {
-        // Este caso ya no debería ser una pestaña directamente, sino un botón en 'medidas-consultar'
-        // Se mantiene para compatibilidad si alguna otra parte del código lo llama, pero el flujo principal ha cambiado
-        activeButton = Array.from(tabButtons).find(btn => btn.textContent.includes('Servicentros'));
     }
     
     if (activeButton) {
@@ -449,7 +445,22 @@ function showTab(section, tab) {
     const tabContents = document.querySelectorAll(`#${section} .tab-content`);
     tabContents.forEach(content => content.classList.remove('active')); // Oculta todo el contenido de las pestañas
     
-    document.getElementById(`${section}-${tab}`).classList.add('active'); // Muestra el contenido de la pestaña
+    // Specific handling for 'medidas' section
+    if (section === 'medidas') {
+        if (tab === 'consultar') {
+            document.getElementById('medidas-consultar').classList.add('active');
+            // Ensure sub-pages are hidden when returning to main consult tab
+            document.getElementById('servicentros-page').classList.remove('active');
+            document.getElementById('sobre-500-uf-page').classList.remove('active');
+        } else if (tab === 'agregar') {
+            document.getElementById('medidas-agregar').classList.add('active');
+            // Ensure sub-pages are hidden when going to add tab
+            document.getElementById('servicentros-page').classList.remove('active');
+            document.getElementById('sobre-500-uf-page').classList.remove('active');
+        }
+    } else {
+        document.getElementById(`${section}-${tab}`).classList.add('active'); // Muestra el contenido de la pestaña
+    }
     
     // Si la pestaña actual es la de consulta de medidas, actualiza los contadores de subsecciones
     if (section === 'medidas' && tab === 'consultar') {
@@ -457,36 +468,22 @@ function showTab(section, tab) {
     }
 }
 
-// Función para mostrar las subsecciones de medidas (Medidas Generales, Servicentros, Sobre 500 UF)
-function showMedidasSubSection(subSectionType) {
-    // Oculta la vista principal de consulta de medidas
-    document.getElementById('medidas-consultar').classList.remove('active');
-    // Oculta cualquier otra lista de medidas que pudiera estar activa
-    document.getElementById('medidas-servicentros-records').classList.remove('active');
-    document.getElementById('medidas-sobre-500-uf-records').classList.remove('active');
-    document.getElementById('medidas-records').classList.remove('active'); // Ocultar también medidas generales si está visible
+// Función para mostrar las subsecciones de medidas (Servicentros, Sobre 500 UF)
+function showSubMedidaPage(subSectionType) {
+    // Hide all tab-content divs within 'medidas' section first
+    document.querySelectorAll('#medidas .tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
 
-
-    // Muestra el contenedor de registros de la subsección seleccionada
-    // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
-    // NOTA: 'medidas' (general) ahora se gestiona internamente, no a través de un botón directo en el menú principal de Medidas.
-    if (subSectionType === 'medidas') { // Esta ruta solo se usa si se llama internamente, no por un botón directo.
-        document.getElementById('medidas-records').classList.add('active');
-    } else {
-        document.getElementById(`medidas-${subSectionType}-records`).classList.add('active');
+    // Activate the specific page
+    if (subSectionType === 'servicentros') {
+        document.getElementById('servicentros-page').classList.add('active');
+        loadData('servicentros');
+    } else if (subSectionType === 'sobre-500-uf') {
+        document.getElementById('sobre-500-uf-page').classList.add('active');
+        loadData('sobre-500-uf');
     }
-    loadData(subSectionType); // Carga los datos correspondientes
 }
-
-// Función para volver a la pantalla de consulta principal de Medidas
-function backToMedidasConsultar() {
-    document.getElementById('medidas-servicentros-records').classList.remove('active');
-    document.getElementById('medidas-sobre-500-uf-records').classList.remove('active');
-    document.getElementById('medidas-records').classList.remove('active'); // Ocultar también medidas generales si está visible
-    document.getElementById('medidas-consultar').classList.add('active');
-    updateMedidasSubSectionCounts(); // Actualiza los contadores de los botones al regresar
-}
-
 
 // Nueva función genérica para mostrar las subsecciones de directivas
 function showDirectivasSubSection(subSectionType) {
@@ -539,12 +536,6 @@ function backToDirectivasMain() {
     
     // Muestra la vista principal de consultar directivas
     document.getElementById('directivas-consultar').classList.add('active');
-}
-
-// Función para volver a la vista de consulta desde la vista de registros de Estudios, Planes o Medidas
-function backToConsultar(section) {
-    document.getElementById(`${section}-records`).classList.remove('active');
-    document.getElementById(`${section}-consultar`).classList.add('active');
 }
 
 // Función específica para renderizar la lista de Empresas RRHH (solo Nombre y RUT y Dirección)
@@ -648,7 +639,7 @@ function searchCompanySpecificDirectivas(searchTerm) {
          directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
          directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
          (directiva.rut && directiva.rut.toLowerCase().includes(searchTerm.toLowerCase())) || // Search by RUT
-         (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Comuna
+         (directiva.comuna && directiba.comuna.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Comuna
     );
 
     const resultsContainer = document.getElementById('empresa-specific-details-results');
@@ -739,30 +730,6 @@ function searchEmpresasRRHH(searchTerm) {
 }
 
 
-// Función genérica para mostrar la vista de registros de cualquier sección (Estudios, Planes, Medidas generales, y subsecciones de Directivas)
-function showRecords(section) {
-    // Ocultar la vista de consultar si aplica (solo para secciones principales)
-    if (document.getElementById(`${section}-consultar`)) {
-        document.getElementById(`${section}-consultar`).classList.remove('active');
-    }
-    // Ocultar cualquier lista de subsecciones de directivas si estamos en ese contexto
-    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
-    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
-    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-    document.getElementById('directivas-generales-list').classList.remove('active');
-    document.getElementById('directivas-empresa-specific-details').classList.remove('active');
-
-    // Muestra la vista de registros (o la lista específica de la subsección si aplica)
-    // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
-    if (section === 'medidas') { 
-        document.getElementById('medidas-records').classList.add('active');
-    } else {
-        document.getElementById(`${section}-records`).classList.add('active');
-    }
-    loadData(section); // Carga los datos correspondientes a la sección
-}
-
-
 // Funciones para manejar datos (agregar, cargar, buscar, mostrar detalles)
 function addRecord(section, event) {
     event.preventDefault(); // Evita el envío del formulario por defecto
@@ -791,7 +758,7 @@ function addRecord(section, event) {
     let targetArray = database[section]; // Por defecto, añade a la sección principal
 
     // Lógica para calcular la vigencia y el estado de vigencia al agregar un registro
-    if (section === 'planes' || section === 'medidas-generales' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'empresas-rrhh' || section === 'guardias-propios' || section === 'directivas-generales') { // Para estas secciones (3 años de vigencia)
+    if (section === 'planes' || section === 'medidas' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'empresas-rrhh' || section === 'guardias-propios' || section === 'directivas-generales') { // Para estas secciones (3 años de vigencia)
         const fechaAprobacion = formData.fechaAprobacion || formData.fecha; // Use fecha for directivas
         if (fechaAprobacion) {
             const approvalDateObj = new Date(fechaAprobacion);
@@ -804,9 +771,6 @@ function addRecord(section, event) {
         } else {
             showAlert(section, 'La fecha de aprobación o emisión es requerida para este tipo de registro.', 'error');
             return;
-        }
-        if (section === 'medidas-generales') {
-            targetArray = database.medidas; // Asegura que se añade al array correcto de medidas
         }
     } else if (section === 'estudios') { // Para estudios (2 años de vigencia)
         const fechaInicio = formData.fechaInicio;
@@ -848,7 +812,7 @@ function addRecord(section, event) {
     updateCounts(); // Actualiza los contadores en la página de inicio
     
     // Redirige de vuelta a la pestaña de consultar correcta después de agregar
-    if (section === 'medidas-generales') {
+    if (section === 'medidas') { // This covers both "medidas" (general) if adding via this form
         showTab('medidas', 'consultar'); 
     } else if (section === 'directivas') {
         showTab('directivas', 'consultar'); // Redirige a la consulta de directivas
@@ -860,15 +824,8 @@ function addRecord(section, event) {
 
 // Carga y muestra los datos de una sección en formato de tabla
 function loadData(section) {
-    // Ajuste para seleccionar el contenedor de resultados correcto, ya sea directo o dentro de medidas-subseccion-records
-    let resultsContainerId;
-    if (section === 'medidas') {
-        resultsContainerId = 'medidas-results';
-    } else if (section === 'servicentros' || section === 'sobre-500-uf') {
-        resultsContainerId = `${section}-results`; // Dentro de medidas-servicentros-records o medidas-sobre-500-uf-records
-    } else {
-        resultsContainerId = `${section}-results`; // Para estudios, planes, etc.
-    }
+    // Ajuste para seleccionar el contenedor de resultados correcto
+    let resultsContainerId = `${section}-results`;
     const resultsContainer = document.getElementById(resultsContainerId);
 
     const data = database[section];
@@ -1020,15 +977,8 @@ function searchData(section, searchTerm) {
         );
     });
     
-    // Ajuste para seleccionar el contenedor de resultados correcto, ya sea directo o dentro de medidas-subseccion-records
-    let resultsContainerId;
-    if (section === 'medidas') {
-        resultsContainerId = 'medidas-results';
-    } else if (section === 'servicentros' || section === 'sobre-500-uf') {
-        resultsContainerId = `${section}-results`; // Dentro de medidas-servicentros-records o medidas-sobre-500-uf-records
-    } else {
-        resultsContainerId = `${section}-results`; // Para estudios, planes, etc.
-    }
+    // Ajuste para seleccionar el contenedor de resultados correcto
+    let resultsContainerId = `${section}-results`;
     const resultsContainer = document.getElementById(resultsContainerId);
 
     const table = createTable(section, filteredData);
@@ -1110,7 +1060,8 @@ function updateCounts() {
     document.getElementById('planes-count').textContent = `${database.planes.length} registros`;
     
     // El contador de "Medidas" ahora suma todas las subcategorías relevantes
-    const totalMedidas = database.medidas.length + database.servicentros.length + database['sobre-500-uf'].length;
+    // database.medidas.length (Medidas Generales) ya no se muestra en el menú principal
+    const totalMedidas = database.servicentros.length + database['sobre-500-uf'].length;
     document.getElementById('medidas-count').textContent = `${totalMedidas} registros`;
     
     // Suma todos los registros de las subcategorías de directivas
@@ -1143,9 +1094,7 @@ function showAlert(section, message, type) {
     
     let targetElement;
     // Determina el formulario o contenedor correcto para insertar la alerta
-    if (section === 'medidas-generales') { 
-        targetElement = document.querySelector(`#medidas-agregar form`);
-    } else if (document.querySelector(`#${section}-agregar form`)) {
+    if (document.querySelector(`#${section}-agregar form`)) {
         targetElement = document.querySelector(`#${section}-agregar form`);
     } else {
         const currentActiveSection = document.querySelector('.section.active');
