@@ -483,13 +483,21 @@ body {
 
 /* Estilos para el estado de vigencia de los planes */
 .status-vigente {
-    color: #28a745; /* Verde */
+    background-color: #28a745; /* Verde */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
     font-weight: bold;
+    display: inline-block; /* Para que el padding y background funcionen correctamente */
 }
 
 .status-vencido {
-    color: #dc3545; /* Rojo */
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
     font-weight: bold;
+    display: inline-block; /* Para que el padding y background funcionen correctamente */
 }
 
 /* Media queries para responsividad en dispositivos móviles */
