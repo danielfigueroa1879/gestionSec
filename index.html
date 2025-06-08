@@ -186,7 +186,7 @@
                         </div>
                         <div class="form-group">
                             <label for="plan-revision">Fecha de Revisión</label>
-                            <input type="date" id="plan-revision" required>
+                            <input type="date" id="plan-revision"> <!-- Make revision optional -->
                         </div>
                     </div>
                     <div class="form-group">
@@ -259,7 +259,7 @@
 
             <!-- La pestaña "Agregar Nueva" para medidas generales permanece igual -->
             <div id="medidas-agregar" class="tab-content">
-                <form onsubmit="addRecord('medidas', event)">
+                <form onsubmit="addRecord('medidas-generales', event)"> <!-- Renamed to medidas-generales for clarity on what is added -->
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="medida-codigo">Código de Medida</label>
@@ -293,6 +293,10 @@
                                 <option value="Pendiente">Pendiente</option>
                                 <option value="Suspendida">Suspendida</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="medida-fechaAprobacion">Fecha de Aprobación</label>
+                            <input type="date" id="medida-fechaAprobacion" required>
                         </div>
                     </div>
                     <div class="form-group">
