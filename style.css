@@ -291,7 +291,7 @@ body {
     font-size: 16px;
 }
 
-/* Estilos para las tablas de datos */
+/* Estilos para las tablas de datos (default: no truncar) */
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -305,13 +305,6 @@ body {
     table-layout: fixed; /* Ayuda a que las columnas no se expandan infinitamente */
 }
 
-/* Estilos para la primera columna (códigos/IDs/números) */
-.data-table th:first-child,
-.data-table td:first-child {
-    width: 100px; /* Ancho fijo para la primera columna, ajustado */
-    min-width: 80px; /* Asegura que no sea demasiado pequeña */
-}
-
 .data-table th,
 .data-table td {
     padding: 15px;
@@ -319,10 +312,18 @@ body {
     border-bottom: 1px solid #eee;
     vertical-align: middle; 
     font-size: 0.9em; /* Tamaño de letra ligeramente más grande */
-    white-space: nowrap; /* Evita que el texto se envuelva */
-    overflow: hidden; /* Oculta el texto que se desborda */
-    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
+    white-space: normal; /* Permite que el texto se envuelva por defecto */
+    overflow: visible; /* Asegura que el contenido sea visible, no oculto */
+    text-overflow: clip; /* Elimina los puntos suspensivos por defecto */
 }
+
+/* Estilos para la primera columna (códigos/IDs/números) */
+.data-table th:first-child,
+.data-table td:first-child {
+    width: 100px; /* Ancho fijo para la primera columna, ajustado */
+    min-width: 80px; /* Asegura que no sea demasiado pequeña */
+}
+
 
 .data-table th {
     background: #f8f9fa;
@@ -340,14 +341,13 @@ body {
     background: #f8f9fa;
 }
 
-/* Estilos específicos para la tabla de Empresas RRHH para que el texto se vea completo */
-#empresas-rrhh-results .data-table th,
-#empresas-rrhh-results .data-table td {
-    white-space: normal; /* Permite que el texto se envuelva */
-    overflow: visible; /* Asegura que el contenido sea visible, no oculto */
-    text-overflow: clip; /* Elimina los puntos suspensivos */
+/* Estilos para la tabla de eventos masivos (con truncado) */
+.data-table.truncate-text th,
+.data-table.truncate-text td {
+    white-space: nowrap; /* Evita que el texto se envuelva */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
 }
-
 
 /* Mensaje cuando no hay datos */
 .no-data {
@@ -506,7 +506,7 @@ body {
     margin-top: 30px;
 }
 
-/* Estilos para el estado de vigencia de los planes */
+/* Estilos para el estado de vigencia y aprobación */
 .status-vigente {
     background-color: #28a745; /* Verde */
     color: white;
@@ -524,6 +524,14 @@ body {
     font-weight: bold;
     display: inline-block; /* Para que el padding y background funcionen correctamente */
 }
+
+/* Estilo específico para el texto "Aprobado" y "Rechazado" en la tabla de Eventos Masivos */
+.eventos-masivos-table .status-vigente,
+.eventos-masivos-table .status-vencido {
+    font-size: 0.7em; /* Tamaño de letra más pequeño */
+    padding: 3px 8px; /* Ajustar padding para el tamaño más pequeño */
+}
+
 
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
