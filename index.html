@@ -370,7 +370,7 @@
                     <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
                 </div>
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar empresas..." onkeyup="searchData('empresas-rrhh', this.value)">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar empresas..." onkeyup="searchEmpresasRRHH(this.value)">
                 </div>
                 <div id="empresas-rrhh-results"></div>
             </div>
@@ -409,6 +409,20 @@
                     <input type="text" class="search-input" placeholder="🔍 Buscar directivas generales..." onkeyup="searchData('directivas-generales', this.value)">
                 </div>
                 <div id="directivas-generales-results"></div>
+            </div>
+
+            <!-- Nueva sección para el detalle de directivas de una empresa específica -->
+            <div id="directivas-empresa-specific-details" class="tab-content">
+                <div class="section-header">
+                    <h3 class="section-title directivas" id="empresa-specific-details-title"></h3>
+                    <button class="btn btn-secondary" onclick="backToEmpresasList()">⬅️ Volver a Empresas RRHH</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar directivas de esta empresa..." onkeyup="searchCompanySpecificDirectivas(this.value)">
+                </div>
+                <div id="empresa-specific-details-results" class="details-cards-container">
+                    <!-- Los detalles de las directivas se cargarán aquí -->
+                </div>
             </div>
 
             <!-- Formulario para agregar nuevas directivas (se mantiene) -->
