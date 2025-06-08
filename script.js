@@ -64,7 +64,7 @@ function generateSampleData() {
         const approvalDateObj = new Date(fechaAprobacion);
         const vigenciaDateObj = new Date(approvalDateObj);
         vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formatoولندا-MM-DD
 
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
@@ -359,7 +359,8 @@ function showMedidasSubSection(subSectionType) {
 
     // Muestra el contenedor de registros de la subsección seleccionada
     // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
-    if (subSectionType === 'medidas') {
+    // NOTA: 'medidas' (general) ahora se gestiona internamente, no a través de un botón directo en el menú principal de Medidas.
+    if (subSectionType === 'medidas') { // Esta ruta solo se usa si se llama internamente, no por un botón directo.
         document.getElementById('medidas-records').classList.add('active');
     } else {
         document.getElementById(`medidas-${subSectionType}-records`).classList.add('active');
@@ -622,7 +623,7 @@ function showRecords(section) {
 
     // Muestra la vista de registros (o la lista específica de la subsección si aplica)
     // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
-    if (section === 'medidas') { // This `if` block is new/modified
+    if (section === 'medidas') { 
         document.getElementById('medidas-records').classList.add('active');
     } else {
         document.getElementById(`${section}-records`).classList.add('active');
@@ -730,8 +731,16 @@ function createTable(section, data) {
     } else if (section === 'medidas') {
         // Adjusted headers for general medidas to show validity
         headers = ['codigo', 'categoria', 'prioridad', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado', 'descripcion', 'responsable'];
+    } else if (section === 'empresas-rrhh') {
+        // Headers for Empresas RRHH (detailed view)
+        headers = ['numero', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
+    } else if (section === 'guardias-propios') {
+        headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'fechaAprobacion', 'cantidadGuardias', 'turno', 'responsable', 'estado'];
+    } else if (section === 'eventos-masivos') {
+        headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'fechaAprobacion', 'estadoAprobacion', 'cantidadGuardias', 'tipoEvento', 'ubicacion', 'capacidad', 'duracion', 'responsable', 'estado'];
+    } else if (section === 'directivas-generales') {
+        headers = ['numero', 'area', 'version', 'fecha', 'titulo', 'alcance', 'responsable', 'estado'];
     }
-    // For other sections, use Object.keys(data[0]) as default
 
     let tableHTML = '<table class="data-table"><thead><tr>';
     
@@ -741,17 +750,24 @@ function createTable(section, data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((row, index) => {
-        const originalIndex = database[section].indexOf(row); // Get original index
-        tableHTML += `<tr onclick="showDetails('${section}', ${originalIndex !== -1 ? originalIndex : index})">`;
+        // NOTA: Para las secciones de directivas anidadas, el 'index' en 'showDetails' debe referirse al índice ORIGINAL
+        // en el array completo 'database[section]', no al índice dentro del array 'data' filtrado.
+        // Se corrige esto obteniendo el índice original.
+        const originalIndex = database[section].indexOf(row);
+        // Si el elemento no se encuentra (lo cual es raro si 'data' es un filtro de 'database[section]'),
+        // se usa el índice actual como fallback, aunque lo ideal es que 'originalIndex' siempre sea válido.
+        const detailIndex = originalIndex !== -1 ? originalIndex : index; 
+
+        tableHTML += `<tr onclick="showDetails('${section}', ${detailIndex})">`;
 
         headers.forEach(header => {
             let value = row[header] || '-';
             let cellClass = '';
             // Apply color coding for plan status for all relevant sections
-            if (header === 'estadoVigencia') { // Apply to any field named estadoVigencia
-                if (value === 'Vigente') {
+            if (header === 'estadoVigencia' || header === 'estadoAprobacion') { // Apply to any field named estadoVigencia or estadoAprobacion
+                if (value === 'Vigente' || value === 'APROBADO') {
                     cellClass = 'status-vigente';
-                } else if (value === 'Vencido') {
+                } else if (value === 'Vencido' || value === 'RECHAZADO') {
                     cellClass = 'status-vencido';
                 }
             }
@@ -859,10 +875,10 @@ function showDetails(section, index) {
         let value = item[key] || 'No especificado';
         let detailClass = '';
         // Apply status class in modal as well
-        if (key === 'estadoVigencia') { // Apply to any field named estadoVigencia
-            if (value === 'Vigente') {
+        if (key === 'estadoVigencia' || key === 'estadoAprobacion') { // Apply to any field named estadoVigencia or estadoAprobacion
+            if (value === 'Vigente' || value === 'APROBADO') {
                 detailClass = 'status-vigente';
-            } else if (value === 'Vencido') {
+            } else if (value === 'Vencido' || value === 'RECHAZADO') {
                 detailClass = 'status-vencido';
             }
         }
@@ -903,13 +919,11 @@ function updateCounts() {
 
 // Función para actualizar los contadores en los botones de "Medidas de Seguridad"
 function updateMedidasSubSectionCounts() {
-    const medidasGeneralCountElement = document.getElementById('medidas-count-sub');
     const servicentrosCountElement = document.getElementById('servicentros-count-sub');
     const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-sub');
 
-    if (medidasGeneralCountElement) {
-        medidasGeneralCountElement.textContent = database.medidas.length;
-    }
+    // El botón 'Medidas Generales' ha sido eliminado de index.html, por lo que no intentamos actualizar su contador aquí.
+    // Solo actualizamos los contadores de 'Servicentros' y 'Sobre 500 UF'.
     if (servicentrosCountElement) {
         servicentrosCountElement.textContent = database.servicentros.length;
     }
@@ -927,16 +941,17 @@ function showAlert(section, message, type) {
     
     let targetElement;
     // Determine the correct form or container to insert the alert
-    if (section === 'medidas-generales') { // For the combined measures add form
+    // Si la sección es 'medidas-generales', se refiere al formulario de agregar medidas (general)
+    if (section === 'medidas-generales') { 
         targetElement = document.querySelector(`#medidas-agregar form`);
     } else if (document.querySelector(`#${section}-agregar form`)) {
         targetElement = document.querySelector(`#${section}-agregar form`);
     } else {
-        // Fallback for list views or other sections without a direct form
+        // Fallback para vistas de lista u otras secciones sin un formulario directo
         const currentActiveSection = document.querySelector('.section.active');
         if (currentActiveSection) {
             targetElement = currentActiveSection.querySelector('.section-header') || currentActiveSection;
-            if (targetElement.nextSibling) { // Insert after the header if possible
+            if (targetElement.nextSibling) { // Inserta después del encabezado si es posible
                 targetElement.parentNode.insertBefore(alertDiv, targetElement.nextSibling);
                 setTimeout(() => { alertDiv.remove(); }, 3000);
                 return;
@@ -947,7 +962,7 @@ function showAlert(section, message, type) {
     if (targetElement) {
         targetElement.insertBefore(alertDiv, targetElement.firstChild);
     } else {
-        console.error('Could not find a suitable element to display the alert.');
+        console.error('No se pudo encontrar un elemento adecuado para mostrar la alerta.');
     }
     
     setTimeout(() => {
