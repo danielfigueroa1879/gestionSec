@@ -850,9 +850,9 @@ function createTable(section, data) {
         headers = ['codigo', 'tipo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'objeto', 'metodologia', 'responsable'];
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
-    } else if (section === 'guardias-propios') {
-        headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'turno', 'responsable', 'estado'];
-    } else if (section === 'eventos-masivos') { // **MODIFICADO**: Columnas para Eventos Masivos
+    } else if (section === 'guardias-propios') { // MODIFICADO: Eliminar columnas para Guardias Propios
+        headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'];
+    } else if (section === 'eventos-masivos') { // **CAMBIADO**: Quitar vigencia y estadoVigencia
         headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'estadoAprobacion', 'cantidadGuardias'];
     } else if (section === 'directivas-generales') {
         headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'alcance', 'responsable', 'estado'];
