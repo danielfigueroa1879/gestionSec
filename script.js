@@ -69,10 +69,13 @@ function generateSampleData() {
             tipo: tiposEstudio[Math.floor(Math.random() * tiposEstudio.length)],
             fechaInicio: startDate,
             fechaFin: fechaFin,
-            objeto: `Evaluación de seguridad en área ${i}`,
-            metodologia: `Metodología basada en estándares internacionales ISO 27001 y análisis cuantitativo de riesgos`,
-            responsable: responsables[i - 1],
-            estadoVigencia: estadoVigencia // Nuevo campo para el estado de vigencia
+            objeto: `Evaluación de seguridad en área ${i}`, // Removed from display
+            metodologia: `Metodología basada en estándares internacionales ISO 27001 y análisis cuantitativo de riesgos`, // Removed from display
+            responsable: responsables[i - 1], // Removed from display
+            estadoVigencia: estadoVigencia, // Nuevo campo para el estado de vigencia
+            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
+            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Added Direccion
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)] // Added Comuna
         });
     }
 
@@ -100,8 +103,8 @@ function generateSampleData() {
             fechaAprobacion: fechaAprobacion, 
             vigencia: vigencia, 
             revision: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Now stores an address for 'Dirección'
-            objetivo: `Establecer procedimientos de seguridad para ${areas[Math.floor(Math.random() * areas.length)]}`,
-            alcance: `Aplicable a todo el personal de ${areas[Math.floor(Math.random() * areas.length)]}`,
+            objetivo: `Establecer procedimientos de seguridad para ${areas[Math.floor(Math.random() * areas.length)]}`, // Removed from display
+            alcance: `Aplicable a todo el personal de ${areas[Math.floor(Math.random() * areas.length)]}`, // Removed from display
             estadoVigencia: estadoVigencia,
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // New field
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}` // Added RUT
@@ -131,17 +134,17 @@ function generateSampleData() {
         database.medidas.push({
             codigo: `MED-${String(i).padStart(3, '0')}`,
             categoria: categorias[Math.floor(Math.random() * categorias.length)], // This will be renamed to 'entidad'
-            prioridad: prioridades[Math.floor(Math.random() * prioridades.length)],
-            estado: estados[Math.floor(Math.random() * estados.length)], // This is the general status, not validity
-            descripcion: `Medida de seguridad ${i}: Control y monitoreo de accesos, implementación de protocolos de seguridad`,
-            responsable: responsablesMedidas[Math.floor(Math.random() * responsablesMedidas.length)],
+            prioridad: prioridades[Math.floor(Math.random() * prioridades.length)], // Removed from display
+            estado: estados[Math.floor(Math.random() * estados.length)], // Removed from display
+            descripcion: `Medida de seguridad ${i}: Control y monitoreo de accesos, implementación de protocolos de seguridad`, // Removed from display
+            responsable: responsablesMedidas[Math.floor(Math.random() * responsablesMedidas.length)], // Removed from display
             fechaAprobacion: fechaAprobacion,
             vigencia: vigencia,
             estadoVigencia: estadoVigencia,
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Added Direccion
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Alcance para Medida ${i} de ${categorias[Math.floor(Math.random() * categorias.length)]}` // Added Alcance
+            alcance: `Alcance para Medida ${i} de ${categorias[Math.floor(Math.random() * categorias.length)]}` // Removed from display
         });
     }
 
@@ -166,21 +169,21 @@ function generateSampleData() {
 
         database.servicentros.push({
             codigo: `SER-${String(i).padStart(3, '0')}`,
-            nombre: `Servicentro ${i}`,
+            nombre: `Servicentro ${i}`, // Removed from display
             tipo: tiposServicentros[Math.floor(Math.random() * tiposServicentros.length)], // This will be renamed to 'entidad'
-            ubicacion: `Zona ${ubicaciones[Math.floor(Math.random() * ubicaciones.length)]}`,
+            ubicacion: `Zona ${ubicaciones[Math.floor(Math.random() * ubicaciones.length)]}`, // Removed from display
             direccion: `Calle ${i}, Sector ${Math.floor(Math.random() * 20) + 1}`,
-            telefono: `+56-9-${Math.floor(Math.random() * 90000000) + 10000000}`,
-            horario: `${Math.floor(Math.random() * 12) + 6}:00 - ${Math.floor(Math.random() * 6) + 18}:00`,
-            capacidad: `${Math.floor(Math.random() * 50) + 10} vehículos`,
-            responsable: responsablesServicentros[Math.floor(Math.random() * responsablesServicentros.length)],
-            estado: Math.random() > 0.2 ? 'Operativo' : 'Mantenimiento', // This is the general status, not validity
+            telefono: `+56-9-${Math.floor(Math.random() * 90000000) + 10000000}`, // Removed from display
+            horario: `${Math.floor(Math.random() * 12) + 6}:00 - ${Math.floor(Math.random() * 6) + 18}:00`, // Removed from display
+            capacidad: `${Math.floor(Math.random() * 50) + 10} vehículos`, // Removed from display
+            responsable: responsablesServicentros[Math.floor(Math.random() * responsablesServicentros.length)], // Removed from display
+            estado: Math.random() > 0.2 ? 'Operativo' : 'Mantenimiento', // Removed from display
             fechaAprobacion: fechaAprobacion,
             vigencia: vigencia,
             estadoVigencia: estadoVigencia,
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Servicios de ${tiposServicentros[Math.floor(Math.random() * tiposServicentros.length)]}` // Added Alcance
+            alcance: `Servicios de ${tiposServicentros[Math.floor(Math.random() * tiposServicentros.length)]}` // Removed from display
         });
     }
 
@@ -204,11 +207,11 @@ function generateSampleData() {
 
         database['sobre-500-uf'].push({
             id: `UF-${String(i).padStart(3, '0')}`,
-            descripcion: `Inversión en ${tiposGasto[Math.floor(Math.random() * tiposGasto.length)]} para el proyecto X${i}.`,
-            monto: (Math.random() * 1000 + 500).toFixed(2), // Monto aleatorio entre 500 y 1500
-            fecha: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-            responsable: responsablesUF[Math.floor(Math.random() * responsablesUF.length)],
-            estado: Math.random() > 0.3 ? 'Aprobado' : 'Pendiente', // This is the general status, not validity
+            descripcion: `Inversión en ${tiposGasto[Math.floor(Math.random() * tiposGasto.length)]} para el proyecto X${i}.`, // Removed from display
+            monto: (Math.random() * 1000 + 500).toFixed(2), // Removed from display
+            fecha: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`, // Used for Fecha de Aprobación in display
+            responsable: responsablesUF[Math.floor(Math.random() * responsablesUF.length)], // Removed from display
+            estado: Math.random() > 0.3 ? 'Aprobado' : 'Pendiente', // Removed from display
             fechaAprobacion: fechaAprobacion,
             vigencia: vigencia,
             estadoVigencia: estadoVigencia,
@@ -216,7 +219,7 @@ function generateSampleData() {
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Added Direccion
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Alcance de Inversión para el Proyecto X${i}` // Added Alcance
+            alcance: `Alcance de Inversión para el Proyecto X${i}` // Removed from display
         });
     }
 
@@ -244,23 +247,23 @@ function generateSampleData() {
 
         database['empresas-rrhh'].push({
             numero: `RRHH-${String(i).padStart(4, '0')}`,
-            empresa: empresaAsignada.nombre,
+            empresa: empresaAsignada.nombre, // Removed from display
             rut: empresaAsignada.rut,
             tipoDirectiva: tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)], // This will be renamed to 'entidad'
-            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
+            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)], // Removed from display
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Now stores an address
             fechaAprobacion: fechaAprobacion,
-            cantidadGuardias: `${Math.floor(Math.random() * 15) + 2} guardias`,
-            area: 'Recursos Humanos',
-            version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`,
-            titulo: `Directiva ${tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)]} - ${empresaAsignada.nombre}`,
-            contenido: `Procedimiento específico de recursos humanos para ${empresaAsignada.nombre}. Establece los lineamientos para la gestión del personal.`,
-            responsable: `Jefe RRHH ${empresaAsignada.nombre}`,
-            estado: Math.random() > 0.1 ? 'Vigente' : 'En revisión', // Estado general (no de vigencia)
+            cantidadGuardias: `${Math.floor(Math.random() * 15) + 2} guardias`, // Removed from display
+            area: 'Recursos Humanos', // Removed from display
+            version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`, // Removed from display
+            titulo: `Directiva ${tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)]} - ${empresaAsignada.nombre}`, // Removed from display
+            contenido: `Procedimiento específico de recursos humanos para ${empresaAsignada.nombre}. Establece los lineamientos para la gestión del personal.`, // Removed from display
+            responsable: `Jefe RRHH ${empresaAsignada.nombre}`, // Removed from display
+            estado: Math.random() > 0.1 ? 'Vigente' : 'En revisión', // Removed from display
             vigencia: vigencia, // Nueva fecha de vigencia
             estadoVigencia: estadoVigencia, // Estado de vigencia (Vigente/Vencido)
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Alcance para Directiva RRHH ${i}` // Added Alcance
+            alcance: `Alcance para Directiva RRHH ${i}` // Removed from display
         });
         
         // Incrementar contador de directivas para esta empresa
@@ -287,24 +290,24 @@ function generateSampleData() {
 
         database['guardias-propios'].push({
             numero: `GUARD-${String(i).padStart(3, '0')}`,
-            empresa: i <= 4 ? condominios[i-1] : `Empresa Seguridad ${String(i).padStart(2, '0')}`,
+            empresa: i <= 4 ? condominios[i-1] : `Empresa Seguridad ${String(i).padStart(2, '0')}`, // Removed from display
             tipoServicio: tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)], // This will be renamed to 'entidad'
-            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
+            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)], // Removed from display
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Now stores an address
             fechaAprobacion: fechaAprobacion,
-            cantidadGuardias: `${Math.floor(Math.random() * 12) + 3} guardias`,
-            area: 'Seguridad Privada',
-            version: `${Math.floor(Math.random() * 3) + 1}.0`,
-            titulo: `Protocolo de Guardias ${tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)]}`,
-            contenido: `Directiva para el manejo de guardias propios en servicios de seguridad privada. Incluye protocolos de actuación.`,
-            turno: Math.random() > 0.5 ? '24/7' : 'Diurno',
-            responsable: `Jefe Seguridad Emp-${String(i).padStart(2, '0')}`,
-            estado: 'Activo', // Estado general (no de vigencia)
+            cantidadGuardias: `${Math.floor(Math.random() * 12) + 3} guardias`, // Removed from display
+            area: 'Seguridad Privada', // Removed from display
+            version: `${Math.floor(Math.random() * 3) + 1}.0`, // Removed from display
+            titulo: `Protocolo de Guardias ${tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)]}`, // Removed from display
+            contenido: `Directiva para el manejo de guardias propios en servicios de seguridad privada. Incluye protocolos de actuación.`, // Removed from display
+            turno: Math.random() > 0.5 ? '24/7' : 'Diurno', // Removed from display
+            responsable: `Jefe Seguridad Emp-${String(i).padStart(2, '0')}`, // Removed from display
+            estado: 'Activo', // Removed from display
             vigencia: vigencia, // Nueva fecha de vigencia
             estadoVigencia: estadoVigencia, // Estado de vigencia (Vigente/Vencido)
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Servicio de Guardias para ${lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)]}` // Added Alcance
+            alcance: `Servicio de Guardias para ${lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)]}` // Removed from display
         });
     }
 
@@ -321,26 +324,26 @@ function generateSampleData() {
         
         database['eventos-masivos'].push({
             numero: `EVENT-${String(i).padStart(3, '0')}`,
-            nombreEmpresa: empresa,
+            nombreEmpresa: empresa, // Removed from display
             rut: ruts[Math.floor(Math.random() * ruts.length)],
             fechaEvento: fechaEvento,
-            nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`,
+            nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`, // Removed from display
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Now stores an address
             // NO se añaden fechaAprobacion, vigencia, ni estadoVigencia para Eventos Masivos
             estadoAprobacion: aprobado ? 'APROBADO' : 'RECHAZADO', // Se mantiene el estado de aprobación
-            cantidadGuardias: `${Math.floor(Math.random() * 50) + 10} guardias`,
+            cantidadGuardias: `${Math.floor(Math.random() * 50) + 10} guardias`, // Removed from display
             tipoEvento: tiposEventos[Math.floor(Math.random() * tiposEventos.length)], // This will be renamed to 'entidad'
-            ubicacion: ubicacionesEventos[Math.floor(Math.random() * ubicacionesEventos.length)],
-            area: 'Eventos y Espectáculos',
-            version: '1.0',
-            titulo: `Protocolo de Seguridad - ${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]}`,
-            contenido: `Directiva de seguridad para eventos masivos. Incluye protocolos de evacuación, control de multitudes y emergencias.`,
-            capacidad: `${Math.floor(Math.random() * 50000) + 5000} personas`,
-            duracion: `${Math.floor(Math.random() * 8) + 2} horas`,
-            responsable: `Coordinador Eventos ${String(i).padStart(2, '0')}`,
-            estado: aprobado ? 'Aprobado' : 'Rechazado', // Estado general (no de vigencia)
+            ubicacion: ubicacionesEventos[Math.floor(Math.random() * ubicacionesEventos.length)], // Removed from display
+            area: 'Eventos y Espectáculos', // Removed from display
+            version: '1.0', // Removed from display
+            titulo: `Protocolo de Seguridad - ${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]}`, // Removed from display
+            contenido: `Directiva de seguridad para eventos masivos. Incluye protocolos de evacuación, control de multitudes y emergencias.`, // Removed from display
+            capacidad: `${Math.floor(Math.random() * 50000) + 5000} personas`, // Removed from display
+            duracion: `${Math.floor(Math.random() * 8) + 2} horas`, // Removed from display
+            responsable: `Coordinador Eventos ${String(i).padStart(2, '0')}`, // Removed from display
+            estado: aprobado ? 'Aprobado' : 'Rechazado', // Removed from display
             comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)], // Added Comuna
-            alcance: `Cobertura de Seguridad para Evento Masivo ${i}` // Added Alcance
+            alcance: `Cobertura de Seguridad para Evento Masivo ${i}` // Removed from display
         });
     }
 
@@ -365,13 +368,13 @@ function generateSampleData() {
         database['directivas-generales'].push({
             numero: `GEN-${String(i).padStart(4, '0')}`,
             area: area, // This will be renamed to 'entidad'
-            version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`,
+            version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`, // Removed from display
             fecha: fechaAprobacion, // Usamos fechaAprobacion para la 'fecha' de emisión
-            titulo: `Directiva General ${i} - ${area}`,
-            contenido: `Directiva general para el área de ${area}. Establece procedimientos estándar de funcionamiento organizacional.`,
-            alcance: 'Toda la organización',
-            responsable: `Jefe de ${area}`,
-            estado: Math.random() > 0.15 ? 'Vigente' : 'En actualización', // Estado general (no de vigencia)
+            titulo: `Directiva General ${i} - ${area}`, // Removed from display
+            contenido: `Directiva general para el área de ${area}. Establece procedimientos estándar de funcionamiento organizacional.`, // Removed from display
+            alcance: 'Toda la organización', // Removed from display
+            responsable: `Jefe de ${area}`, // Removed from display
+            estado: Math.random() > 0.15 ? 'Vigente' : 'En actualización', // Removed from display
             vigencia: vigencia, // Nueva fecha de vigencia
             estadoVigencia: estadoVigencia, // Estado de vigencia (Vigente/Vencido)
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
@@ -586,7 +589,7 @@ function loadCompanySpecificDirectivas(empresaNombre) {
 
     // Encabezados de la tabla para esta vista específica, siguiendo el nuevo orden
     const headers = [
-        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna', 'alcance'
+        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -630,8 +633,7 @@ function searchCompanySpecificDirectivas(searchTerm) {
          directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
          directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
          (directiva.rut && directiva.rut.toLowerCase().includes(searchTerm.toLowerCase())) || // Search by RUT
-         (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase())) || // Search by Comuna
-         (directiva.alcance && directiva.alcance.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Alcance
+         (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Comuna
     );
 
     const resultsContainer = document.getElementById('empresa-specific-details-results');
@@ -648,7 +650,7 @@ function searchCompanySpecificDirectivas(searchTerm) {
 // Helper para crear tabla específica para directivas de instalaciones (reutilizado por search)
 function createTableForCompanySpecificDirectivas(data) {
     const headers = [
-        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna', 'alcance'
+        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -871,26 +873,26 @@ function createTable(section, data) {
     // Determina los encabezados basados en la sección para mostrar las columnas relevantes
     let headers = [];
     if (section === 'estudios') {
-        headers = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'responsable', 'objeto', 'metodologia'];
+        headers = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'planes') {
-        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna', 'alcance'];
+        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna'];
     } else if (section === 'medidas') {
-        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna', 'alcance', 'prioridad', 'estado', 'descripcion', 'responsable'];
+        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna'];
     } else if (section === 'servicentros') {
-        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna', 'alcance', 'nombre', 'ubicacion', 'telefono', 'horario', 'capacidad', 'responsable', 'estado'];
+        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'sobre-500-uf') {
-        headers = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna', 'alcance', 'monto', 'responsable', 'estado', 'descripcion'];
+        headers = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'empresas-rrhh') {
-        headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna', 'alcance', 'empresa', 'lugarInstalacion', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
+        headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
-        headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna', 'alcance', 'empresa', 'lugarInstalacion', 'cantidadGuardias'];
+        headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') { 
         // Eventos Masivos NO tiene vigencia/estadoVigencia
-        headers = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna', 'alcance', 'nombreEmpresa', 'nombreEvento', 'cantidadGuardias'];
+        headers = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
     } else if (section === 'directivas-generales') {
-        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna', 'alcance', 'version', 'titulo', 'responsable', 'estado'];
-    } else if (section === 'directivas') { // Para el array 'directivas' genérico, si se usa
-        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna', 'alcance', 'version', 'titulo', 'contenido', 'responsable', 'estado'];
+        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
+    } else if (section === 'directivas') { // Para el array 'directivas' genérico, si se usa (not used by design)
+        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     }
 
     let tableHTML = '<table class="data-table';
@@ -938,48 +940,48 @@ function formatHeader(header) {
     const headerMap = {
         codigo: 'Código',
         categoria: 'Entidad', // Renombrado de 'categoria' a 'Entidad' para medidas
-        prioridad: 'Prioridad',
-        estado: 'Estado', // Estado general (ej: implementada, pendiente)
-        descripcion: 'Descripción',
-        responsable: 'Responsable',
+        prioridad: 'Prioridad', // Removed from display
+        estado: 'Estado', // Removed from display
+        descripcion: 'Descripción', // Removed from display
+        responsable: 'Responsable', // Removed from display
         tipo: 'Entidad', // Renombrado de 'tipo' a 'Entidad' para planes, estudios, servicentros y sobre-500-uf
         vigencia: 'Fecha de Vigencia',
         revision: 'Dirección', // Renombrado de 'revision' a 'Dirección' para planes
-        objetivo: 'Objetivo',
-        alcance: 'Alcance',
-        numero: 'Código', // Renombrado de 'numero' a 'Código' para directivas
+        objetivo: 'Objetivo', // Removed from display
+        alcance: 'Alcance', // Removed from display
+        numero: 'Código', // Renombrado de 'numero' a 'Código' para directivas y guardias propios
         area: 'Entidad', // Renombrado de 'area' a 'Entidad' para directivas generales
-        version: 'Versión',
+        version: 'Versión', // Removed from display
         fecha: 'Fecha de Aprobación', // Renombrado de 'fecha' a 'Fecha de Aprobación' para directivas generales y sobre-500-uf
-        titulo: 'Título',
-        contenido: 'Contenido',
+        titulo: 'Título', // Removed from display
+        contenido: 'Contenido', // Removed from display
         fechaInicio: 'Fecha de Aprobación', // Renombrado de 'fechaInicio' a 'Fecha de Aprobación' para estudios
-        fechaFin: 'Fecha Fin',
-        objeto: 'Objeto',
-        metodologia: 'Metodología',
-        nombre: 'Nombre',
-        ubicacion: 'Ubicación',
+        fechaFin: 'Fecha Fin', // Removed from display
+        objeto: 'Objeto', // Removed from display
+        metodologia: 'Metodología', // Removed from display
+        nombre: 'Nombre', // Removed from display
+        ubicacion: 'Ubicación', // Removed from display
         direccion: 'Dirección', // Esta es la dirección general o de empresas/directivas
-        telefono: 'Teléfono',
-        horario: 'Horario',
-        capacidad: 'Capacidad',
-        empresa: 'Nombre Empresa', 
+        telefono: 'Teléfono', // Removed from display
+        horario: 'Horario', // Removed from display
+        capacidad: 'Capacidad', // Removed from display
+        empresa: 'Nombre Empresa', // Removed from display (for RRHH and Guardias Propios details)
         tipoDirectiva: 'Entidad', // Renombrado de 'tipoDirectiva' a 'Entidad' para empresas-rrhh
         tipoServicio: 'Entidad', // Renombrado de 'tipoServicio' a 'Entidad' para guardias-propios
-        numeroGuardias: 'Número Guardias',
-        turno: 'Turno',
+        numeroGuardias: 'Número Guardias', // Removed from display
+        turno: 'Turno', // Removed from display
         tipoEvento: 'Entidad', // Renombrado de 'tipoEvento' a 'Entidad' para eventos masivos
-        nombreEvento: 'Nombre del Evento',
-        duracion: 'Duración',
-        lugarInstalacion: 'Lugar de Instalación',
+        nombreEvento: 'Nombre del Evento', // Removed from display
+        duracion: 'Duración', // Removed from display
+        lugarInstalacion: 'Lugar de Instalación', // Removed from display
         fechaAprobacion: 'Fecha de Aprobación', 
-        cantidadGuardias: 'Cantidad de Guardias',
-        nombreEmpresa: 'Nombre Empresa', 
-        rut: 'RUT',
-        fechaEvento: 'Fecha del Evento', // Se mantiene el nombre original del campo para el dato
+        cantidadGuardias: 'Cantidad de Guardias', // Removed from display
+        nombreEmpresa: 'Nombre Empresa', // Removed from display
+        rut: 'R.U.T',
+        fechaEvento: 'Fecha de Aprobación', // Se mantiene el nombre original del campo para el dato
         estadoAprobacion: 'Estado de Aprobación',
         id: 'Código', // Renombrado de 'id' a 'Código' para sobre-500-uf
-        monto: 'Monto (UF)',
+        monto: 'Monto (UF)', // Removed from display
         estadoVigencia: 'Estado de Vigencia', // Estado de vigencia (Vigente/Vencido)
         comuna: 'Comuna' // Nuevo encabezado para 'comuna'
     };
@@ -1021,28 +1023,28 @@ function showDetails(section, index) {
     modalTitle.className = `modal-title ${section}`; 
     
     let detailsHTML = '';
-    // Define el orden de las propiedades en el modal, similar a las tablas
-    let detailKeys = Object.keys(item);
+    // Define el orden de las propiedades en el modal, similar a las tablas, y elimina las que no se desean
+    let detailKeys = [];
     if (section === 'estudios') {
-        detailKeys = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'objeto', 'metodologia', 'responsable'];
+        detailKeys = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'planes') {
-        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna', 'alcance', 'objetivo'];
+        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna'];
     } else if (section === 'medidas') {
-        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna', 'alcance', 'prioridad', 'estado', 'descripcion', 'responsable'];
+        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna'];
     } else if (section === 'servicentros') {
-        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna', 'alcance', 'nombre', 'ubicacion', 'telefono', 'horario', 'capacidad', 'responsable', 'estado'];
+        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'sobre-500-uf') {
-        detailKeys = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna', 'alcance', 'monto', 'fecha', 'responsable', 'estado', 'descripcion'];
+        detailKeys = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'empresas-rrhh') {
-        detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna', 'alcance', 'empresa', 'lugarInstalacion', 'cantidadGuardias', 'area', 'version', 'titulo', 'contenido', 'responsable', 'estado'];
+        detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
-        detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna', 'alcance', 'empresa', 'lugarInstalacion', 'cantidadGuardias'];
+        detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') { 
-        detailKeys = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna', 'alcance', 'nombreEmpresa', 'nombreEvento', 'cantidadGuardias', 'ubicacion', 'area', 'version', 'titulo', 'contenido', 'capacidad', 'duracion', 'responsable', 'estado'];
+        detailKeys = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
     } else if (section === 'directivas-generales') {
-        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna', 'alcance', 'version', 'titulo', 'contenido', 'responsable', 'estado'];
-    } else if (section === 'directivas') { // Para el array 'directivas' genérico
-        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna', 'alcance', 'version', 'titulo', 'contenido', 'responsable', 'estado'];
+        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
+    } else if (section === 'directivas') { // Para el array 'directivas' genérico (not used by design)
+        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     }
 
     detailKeys.forEach(key => {
