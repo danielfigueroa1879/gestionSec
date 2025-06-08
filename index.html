@@ -4,83 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Seguridad</title>
-    <!-- Enlaza el archivo CSS para los estilos de la aplicación -->
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <!-- Sección principal de inicio del sistema -->
-        <div id="home" class="page active">
-            <div class="header">
-                <h1>Sistema de Gestión de Seguridad</h1>
-                <p>Gestiona todas tus medidas, planes, directivas y estudios de seguridad en un solo lugar</p>
-            </div>
+        <!-- Sección de Inicio -->
+        <section id="home" class="section active">
+            <header class="header">
+                <h1>Sistema de Gestión de Seguridad de Seguridad Privada OS10 Coquimbo</h1>
+                <p>Gestiona eficientemente estudios, planes, medidas y directivas de seguridad.</p>
+            </header>
 
             <div class="main-menu">
-                <!-- Tarjeta de menú para "Estudios de Seguridad" -->
                 <div class="menu-card estudios" onclick="showSection('estudios')">
-                    <div class="icon">🔬</div>
+                    <div class="icon"><i class="fas fa-clipboard-list"></i></div>
                     <h3>Estudios de Seguridad</h3>
-                    <p>Revisa y actualiza los estudios realizados</p>
-                    <div class="count" id="estudios-count"></div> <!-- El contador se actualizará con JS -->
+                    <p>Análisis detallado de riesgos y vulnerabilidades.</p>
+                    <span class="count" id="estudios-count">0 registros</span>
                 </div>
 
-                <!-- Tarjeta de menú para "Planes de Seguridad" -->
                 <div class="menu-card planes" onclick="showSection('planes')">
-                    <div class="icon">📋</div>
+                    <div class="icon"><i class="fas fa-file-alt"></i></div>
                     <h3>Planes de Seguridad</h3>
-                    <p>Administra los planes de seguridad establecidos</p>
-                    <div class="count" id="planes-count"></div> <!-- El contador se actualizará con JS -->
+                    <p>Estrategias y procedimientos para la prevención y respuesta.</p>
+                    <span class="count" id="planes-count">0 registros</span>
                 </div>
 
-                <!-- Tarjeta de menú para "Medidas de Seguridad" -->
                 <div class="menu-card medidas" onclick="showSection('medidas')">
-                    <div class="icon">🛡️</div>
+                    <div class="icon"><i class="fas fa-user-shield"></i></div>
                     <h3>Medidas de Seguridad</h3>
-                    <p>Gestiona medidas de seguridad y servicentros implementados</p>
-                    <div class="count" id="medidas-count"></div> <!-- El contador se actualizará con JS -->
+                    <p>Implementación de acciones preventivas y correctivas.</p>
+                    <span class="count" id="medidas-count">0 registros</span>
                 </div>
 
-                <!-- Tarjeta de menú para "Directivas de Funcionamiento" -->
                 <div class="menu-card directivas" onclick="showSection('directivas')">
-                    <div class="icon">📄</div>
+                    <div class="icon"><i class="fas fa-book"></i></div>
                     <h3>Directivas de Funcionamiento</h3>
-                    <p>Gestiona empresas RRHH, guardias propios, eventos masivos y directivas generales</p>
-                    <div class="count" id="directivas-count"></div> <!-- El contador se actualizará con JS -->
+                    <p>Normativas y lineamientos operativos para la seguridad.</p>
+                    <span class="count" id="directivas-count">0 registros</span>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Sección "Estudios de Seguridad" -->
-        <div id="estudios" class="section estudios">
-            <div class="section-header">
+        <!-- Sección de Estudios de Seguridad -->
+        <section id="estudios" class="section">
+            <header class="section-header">
                 <h2 class="section-title estudios">Estudios de Seguridad</h2>
-                <button class="btn estudios" onclick="showHome()">🏠 Volver al Inicio</button>
-            </div>
-
-            <div class="section-nav">
-                <button class="btn tab-btn active estudios" onclick="showTab('estudios', 'consultar')">📋 Consultar</button>
-                <button class="btn tab-btn estudios" onclick="showTab('estudios', 'agregar')">➕ Agregar Nuevo</button>
-            </div>
+                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
+            </header>
+            
+            <nav class="section-nav">
+                <button class="btn tab-btn active estudios" onclick="showTab('estudios', 'consultar')">Consultar Estudios</button>
+                <button class="btn tab-btn estudios" onclick="showTab('estudios', 'agregar')">Agregar Estudio</button>
+            </nav>
 
             <div id="estudios-consultar" class="tab-content active">
-                <div style="text-align: center; padding: 40px;">
-                    <h3 style="color: #e74c3c; margin-bottom: 20px;">📋 Consultar Estudios de Seguridad</h3>
-                    <p style="color: #666; margin-bottom: 30px;">Accede a todos los registros de estudios de seguridad realizados</p>
-                    <button class="btn estudios" onclick="showRecords('estudios')" style="font-size: 18px; padding: 15px 30px;">
-                        📊 Ver Todos los Registros
-                    </button>
-                </div>
-            </div>
-
-            <div id="estudios-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title estudios">📋 Lista de Estudios de Seguridad</h3>
-                    <button class="btn btn-secondary" onclick="backToConsultar('estudios')">⬅️ Volver</button>
-                </div>
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar estudios..." 
-                           onkeyup="searchData('estudios', this.value)">
+                    <input type="text" id="estudios-search" class="search-input" placeholder="Buscar estudio por código, tipo, responsable...">
+                    <button class="btn estudios" onclick="searchData('estudios', document.getElementById('estudios-search').value)">Buscar</button>
+                    <button class="btn btn-secondary" onclick="loadData('estudios')">Mostrar Todos</button>
                 </div>
                 <div id="estudios-results"></div>
             </div>
@@ -89,75 +72,52 @@
                 <form onsubmit="addRecord('estudios', event)">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="estudio-codigo">Código del Estudio</label>
+                            <label for="estudio-codigo">Código:</label>
                             <input type="text" id="estudio-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="estudio-tipo">Tipo de Estudio</label>
-                            <select id="estudio-tipo" required>
-                                <option value="">Seleccionar tipo</option>
-                                <option value="Análisis de Riesgos">Análisis de Riesgos</option>
-                                <option value="Evaluación de Vulnerabilidades">Evaluación de Vulnerabilidades</option>
-                                <option value="Auditoría de Seguridad">Auditoría de Seguridad</option>
-                                <option value="Impacto Ambiental">Impacto Ambiental</option>
-                            </select>
+                            <label for="estudio-tipo">Tipo de Estudio:</label>
+                            <input type="text" id="estudio-tipo" required>
                         </div>
                         <div class="form-group">
-                            <label for="estudio-fecha-inicio">Fecha de Inicio</label>
-                            <input type="date" id="estudio-fecha-inicio" required>
+                            <label for="estudio-fechaInicio">Fecha de Aprobación:</label>
+                            <input type="date" id="estudio-fechaInicio" required>
                         </div>
                         <div class="form-group">
-                            <label for="estudio-fecha-fin">Fecha de Finalización</label>
-                            <input type="date" id="estudio-fecha-fin">
+                            <label for="estudio-rut">R.U.T:</label>
+                            <input type="text" id="estudio-rut">
+                        </div>
+                        <div class="form-group">
+                            <label for="estudio-direccion">Dirección:</label>
+                            <input type="text" id="estudio-direccion">
+                        </div>
+                        <div class="form-group">
+                            <label for="estudio-comuna">Comuna:</label>
+                            <input type="text" id="estudio-comuna">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="estudio-objeto">Objeto de Estudio</label>
-                        <input type="text" id="estudio-objeto" placeholder="¿Qué se está estudiando?" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="estudio-metodologia">Metodología</label>
-                        <textarea id="estudio-metodologia" placeholder="Metodología utilizada..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                            <label for="estudio-responsable">Responsable del Estudio</label>
-                            <input type="text" id="estudio-responsable" placeholder="Nombre del responsable" required>
-                        </div>
-                    <button type="submit" class="btn btn-success">💾 Guardar Estudio</button>
+                    <button type="submit" class="btn estudios">Agregar Estudio</button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Sección "Planes de Seguridad" -->
-        <div id="planes" class="section planes">
-            <div class="section-header">
+        <!-- Sección de Planes de Seguridad -->
+        <section id="planes" class="section">
+            <header class="section-header">
                 <h2 class="section-title planes">Planes de Seguridad</h2>
-                <button class="btn planes" onclick="showHome()">🏠 Volver al Inicio</button>
-            </div>
-
-            <div class="section-nav">
-                <button class="btn tab-btn active planes" onclick="showTab('planes', 'consultar')">📋 Consultar</button>
-                <button class="btn tab-btn planes" onclick="showTab('planes', 'agregar')">➕ Agregar Nuevo</button>
-            </div>
+                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
+            </header>
+            
+            <nav class="section-nav">
+                <button class="btn tab-btn active planes" onclick="showTab('planes', 'consultar')">Consultar Planes</button>
+                <button class="btn tab-btn planes" onclick="showTab('planes', 'agregar')">Agregar Plan</button>
+            </nav>
 
             <div id="planes-consultar" class="tab-content active">
-                <div style="text-align: center; padding: 40px;">
-                    <h3 style="color: #3498db; margin-bottom: 20px;">📋 Consultar Planes de Seguridad</h3>
-                    <p style="color: #666; margin-bottom: 30px;">Accede a todos los planes de seguridad establecidos</p>
-                    <button class="btn planes" onclick="showRecords('planes')" style="font-size: 18px; padding: 15px 30px;">
-                        📊 Ver Todos los Registros
-                    </button>
-                </div>
-            </div>
-
-            <div id="planes-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title planes">📋 Lista de Planes de Seguridad</h3>
-                    <button class="btn btn-secondary" onclick="backToConsultar('planes')">⬅️ Volver</button>
-                </div>
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar planes de seguridad..." 
-                           onkeyup="searchData('planes', this.value)">
+                    <input type="text" id="planes-search" class="search-input" placeholder="Buscar plan por código, tipo, objetivo...">
+                    <button class="btn planes" onclick="searchData('planes', document.getElementById('planes-search').value)">Buscar</button>
+                    <button class="btn btn-secondary" onclick="loadData('planes')">Mostrar Todos</button>
                 </div>
                 <div id="planes-results"></div>
             </div>
@@ -166,177 +126,141 @@
                 <form onsubmit="addRecord('planes', event)">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="plan-codigo">Código del Plan</label>
+                            <label for="plan-codigo">Código:</label>
                             <input type="text" id="plan-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="plan-tipo">Tipo de Plan</label>
-                            <select id="plan-tipo" required>
-                                <option value="">Seleccionar tipo</option>
-                                <option value="Emergencia">Emergencia</option>
-                                <option value="Contingencia">Contingencia</option>
-                                <option value="Evacuación">Evacuación</option>
-                                <option value="Recuperación">Recuperación</option>
-                            </select>
+                            <label for="plan-tipo">Tipo de Plan:</label>
+                            <input type="text" id="plan-tipo" required>
                         </div>
-                        <!-- Nuevo campo para Fecha de Aprobación -->
                         <div class="form-group">
-                            <label for="plan-fechaAprobacion">Fecha de Aprobación</label>
+                            <label for="plan-fechaAprobacion">Fecha de Aprobación:</label>
                             <input type="date" id="plan-fechaAprobacion" required>
                         </div>
                         <div class="form-group">
-                            <label for="plan-revision">Fecha de Revisión</label>
-                            <input type="date" id="plan-revision"> <!-- Make revision optional -->
+                            <label for="plan-rut">R.U.T:</label>
+                            <input type="text" id="plan-rut">
+                        </div>
+                        <div class="form-group">
+                            <label for="plan-revision">Dirección:</label>
+                            <input type="text" id="plan-revision">
+                        </div>
+                        <div class="form-group">
+                            <label for="plan-comuna">Comuna:</label>
+                            <input type="text" id="plan-comuna">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="plan-objetivo">Objetivo</label>
-                        <textarea id="plan-objetivo" placeholder="Objetivo del plan de seguridad..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="plan-alcance">Alcance</label>
-                        <textarea id="plan-alcance" placeholder="Alcance del plan..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success">💾 Guardar Plan</button>
+                    <button type="submit" class="btn planes">Agregar Plan</button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Sección "Medidas de Seguridad" -->
-        <div id="medidas" class="section medidas">
-            <div class="section-header">
+        <!-- Sección de Medidas de Seguridad -->
+        <section id="medidas" class="section">
+            <header class="section-header">
                 <h2 class="section-title medidas">Medidas de Seguridad</h2>
-                <button class="btn medidas" onclick="showHome()">🏠 Volver al Inicio</button>
-            </div>
+                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
+            </header>
+            
+            <nav class="section-nav">
+                <button class="btn tab-btn active medidas" onclick="showTab('medidas', 'consultar')">Consultar Medidas</button>
+                <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
+            </nav>
 
-            <div class="section-nav">
-                <!-- Mantener las pestañas Consultar y Agregar Nueva -->
-                <button class="btn tab-btn active medidas" onclick="showTab('medidas', 'consultar')">📋 Consultar</button>
-                <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">➕ Agregar Nueva</button>
-            </div>
-
-            <!-- Esta será la página de inicio para Medidas, con los dos botones de consulta -->
             <div id="medidas-consultar" class="tab-content active">
-                <div style="text-align: center; padding: 40px;">
-                    <h3 style="color: #27ae60; margin-bottom: 20px;">📋 Opciones de Consulta de Medidas de Seguridad</h3>
-                    <p style="color: #666; margin-bottom: 30px;">Selecciona una categoría para ver los registros</p>
-                    <div class="medidas-menu-buttons">
-                        <!-- El botón "Medidas Generales" ha sido eliminado -->
-                        <button class="btn medidas" onclick="showMedidasSubSection('servicentros')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
-                            🏪 Servicentros (<span id="servicentros-count-sub">0</span> registros)
-                        </button>
-                        <button class="btn medidas" onclick="showMedidasSubSection('sobre-500-uf')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
-                            💰 Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span> registros)
-                        </button>
+                <div class="medidas-menu-buttons">
+                    <button class="btn medidas" onclick="showRecords('medidas')">Medidas Generales</button>
+                    <button class="btn medidas" onclick="showRecords('servicentros')">Servicentros (<span id="servicentros-count-sub">0</span>)</button>
+                    <button class="btn medidas" onclick="showRecords('sobre-500-uf')">Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span>)</button>
+                </div>
+                
+                <!-- Contenedor para la lista de Medidas Generales (oculto por defecto) -->
+                <div id="medidas-records" class="medidas-sub-section-records">
+                    <div class="section-header">
+                        <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
+                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
                     </div>
+                    <div class="search-container">
+                        <input type="text" id="medidas-generales-search" class="search-input" placeholder="Buscar medida general por código, categoría...">
+                        <button class="btn medidas" onclick="searchData('medidas', document.getElementById('medidas-generales-search').value)">Buscar</button>
+                        <button class="btn btn-secondary" onclick="loadData('medidas')">Mostrar Todas</button>
+                    </div>
+                    <div id="medidas-results"></div>
+                </div>
+
+                <!-- Contenedor para la lista de Servicentros (oculto por defecto) -->
+                <div id="servicentros-records" class="medidas-sub-section-records">
+                    <div class="section-header">
+                        <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
+                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="servicentros-search" class="search-input" placeholder="Buscar servicentro por código, tipo, dirección...">
+                        <button class="btn medidas" onclick="searchData('servicentros', document.getElementById('servicentros-search').value)">Buscar</button>
+                        <button class="btn btn-secondary" onclick="loadData('servicentros')">Mostrar Todos</button>
+                    </div>
+                    <div id="servicentros-results"></div>
+                </div>
+
+                <!-- Nuevo contenedor para los registros de "Sobre 500 UF" -->
+                <div id="sobre-500-uf-records" class="medidas-sub-section-records">
+                    <div class="section-header">
+                        <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
+                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="Buscar por código, descripción, responsable...">
+                        <button class="btn medidas" onclick="searchData('sobre-500-uf', document.getElementById('sobre-500-uf-search').value)">Buscar</button>
+                        <button class="btn btn-secondary" onclick="loadData('sobre-500-uf')">Mostrar Todos</button>
+                    </div>
+                    <div id="sobre-500-uf-results"></div>
                 </div>
             </div>
 
-            <!-- Contenedor para los registros de Medidas Generales (aún se necesita para el script) -->
-            <div id="medidas-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
-                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar medidas generales..." 
-                           onkeyup="searchData('medidas', this.value)">
-                </div>
-                <div id="medidas-results"></div>
-            </div>
-
-            <!-- Contenedor para los registros de Servicentros -->
-            <div id="medidas-servicentros-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
-                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar servicentros..." 
-                           onkeyup="searchData('servicentros', this.value)">
-                </div>
-                <div id="servicentros-results"></div>
-            </div>
-
-            <!-- Nuevo contenedor para los registros de "Sobre 500 UF" -->
-            <div id="medidas-sobre-500-uf-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
-                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar registros..." 
-                           onkeyup="searchData('sobre-500-uf', this.value)">
-                </div>
-                <div id="sobre-500-uf-results"></div>
-            </div>
-
-            <!-- La pestaña "Agregar Nueva" para medidas generales permanece igual -->
             <div id="medidas-agregar" class="tab-content">
-                <form onsubmit="addRecord('medidas-generales', event)"> <!-- Renamed to medidas-generales for clarity on what is added -->
+                <form onsubmit="addRecord('medidas', event)">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="medida-codigo">Código de Medida</label>
+                            <label for="medida-codigo">Código:</label>
                             <input type="text" id="medida-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="medida-categoria">Categoría</label>
-                            <select id="medida-categoria" required>
-                                <option value="">Seleccionar categoría</option>
-                                <option value="Preventiva">Preventiva</option>
-                                <option value="Correctiva">Correctiva</option>
-                                <option value="Detectiva">Detectiva</option>
-                                <option value="Compensatoria">Compensatoria</option>
-                            </select>
+                            <label for="medida-categoria">Categoría (Entidad):</label>
+                            <input type="text" id="medida-categoria" required>
                         </div>
                         <div class="form-group">
-                            <label for="medida-prioridad">Prioridad</label>
-                            <select id="medida-prioridad" required>
-                                <option value="">Seleccionar prioridad</option>
-                                <option value="Alta">Alta</option>
-                                <option value="Media">Media</option>
-                                <option value="Baja">Baja</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-estado">Estado</label>
-                            <select id="medida-estado" required>
-                                <option value="">Seleccionar estado</option>
-                                <option value="Implementada">Implementada</option>
-                                <option value="En proceso">En proceso</option>
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Suspendida">Suspendida</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-fechaAprobacion">Fecha de Aprobación</label>
+                            <label for="medida-fechaAprobacion">Fecha de Aprobación:</label>
                             <input type="date" id="medida-fechaAprobacion" required>
                         </div>
+                        <div class="form-group">
+                            <label for="medida-rut">R.U.T:</label>
+                            <input type="text" id="medida-rut">
+                        </div>
+                        <div class="form-group">
+                            <label for="medida-direccion">Dirección:</label>
+                            <input type="text" id="medida-direccion">
+                        </div>
+                        <div class="form-group">
+                            <label for="medida-comuna">Comuna:</label>
+                            <input type="text" id="medida-comuna">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="medida-descripcion">Descripción</label>
-                        <textarea id="medida-descripcion" placeholder="Describe la medida de seguridad..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="medida-responsable">Responsable</label>
-                        <input type="text" id="medida-responsable" placeholder="Nombre del responsable" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">💾 Guardar Medida</button>
+                    <button type="submit" class="btn medidas">Agregar Medida</button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Sección "Directivas de Funcionamiento" -->
-        <div id="directivas" class="section directivas">
-            <div class="section-header">
+        <!-- Sección de Directivas de Funcionamiento -->
+        <section id="directivas" class="section">
+            <header class="section-header">
                 <h2 class="section-title directivas">Directivas de Funcionamiento</h2>
-                <button class="btn directivas" onclick="showHome()">🏠 Volver al Inicio</button>
-            </div>
-
-            <div class="section-nav">
-                <button class="btn tab-btn active directivas" onclick="showTab('directivas', 'consultar')">📋 Consultar</button>
-                <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">➕ Agregar Nueva</button>
-            </div>
+                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
+            </header>
+            
+            <nav class="section-nav">
+                <button class="btn tab-btn active directivas" onclick="showTab('directivas', 'consultar')">Consultar Directivas</button>
+                <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
+            </nav>
 
             <div id="directivas-consultar" class="tab-content active">
                 <div style="padding: 30px;">
