@@ -1,380 +1,569 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Seguridad</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <div class="container">
-        <!-- Sección de Inicio -->
-        <section id="home" class="section active">
-            <header class="header">
-                <h1>Sistema de Gestión de Seguridad de Seguridad Privada OS10 Coquimbo</h1>
-                <p>Gestiona eficientemente estudios, planes, medidas y directivas de seguridad.</p>
-            </header>
+/* Estilos generales para el reinicio y el cuerpo del documento */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-            <div class="main-menu">
-                <div class="menu-card estudios" onclick="showSection('estudios')">
-                    <div class="icon"><i class="fas fa-clipboard-list"></i></div>
-                    <h3>Estudios de Seguridad</h3>
-                    <p>Análisis detallado de riesgos y vulnerabilidades.</p>
-                    <span class="count" id="estudios-count">0 registros</span>
-                </div>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-                <div class="menu-card planes" onclick="showSection('planes')">
-                    <div class="icon"><i class="fas fa-file-alt"></i></div>
-                    <h3>Planes de Seguridad</h3>
-                    <p>Estrategias y procedimientos para la prevención y respuesta.</p>
-                    <span class="count" id="planes-count">0 registros</span>
-                </div>
+body {
+    font-family: 'Poppins', sans-serif; /* Cambiado a Poppins */
+    background-color: #556b2f; /* Verde oliva oscuro para el fondo del cuerpo */
+    min-height: 100vh;
+    color: #333;
+}
 
-                <div class="menu-card medidas" onclick="showSection('medidas')">
-                    <div class="icon"><i class="fas fa-user-shield"></i></div>
-                    <h3>Medidas de Seguridad</h3>
-                    <p>Implementación de acciones preventivas y correctivas.</p>
-                    <span class="count" id="medidas-count">0 registros</span>
-                </div>
+/* Estilos para el contenedor principal de la aplicación */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #e6eadd; /* Verde oliva claro para el fondo del contêiner */
+    min-height: 100vh;
+    border-radius: 15px; /* Manter o border-radius para o contêiner */
+}
 
-                <div class="menu-card directivas" onclick="showSection('directivas')">
-                    <div class="icon"><i class="fas fa-book"></i></div>
-                    <h3>Directivas de Funcionamiento</h3>
-                    <p>Normativas y lineamientos operativos para la seguridad.</p>
-                    <span class="count" id="directivas-count">0 registros</span>
-                </div>
-            </div>
-        </section>
+/* Estilos para el encabezado de la página de inicio */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #333; /* Color de texto ajustado para el nuevo fondo */
+}
 
-        <!-- Sección de Estudios de Seguridad -->
-        <section id="estudios" class="section">
-            <header class="section-header">
-                <h2 class="section-title estudios">Estudios de Seguridad</h2>
-                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
-            </header>
-            
-            <nav class="section-nav">
-                <button class="btn tab-btn active estudios" onclick="showTab('estudios', 'consultar')">Consultar Estudios</button>
-                <button class="btn tab-btn estudios" onclick="showTab('estudios', 'agregar')">Agregar Estudio</button>
-            </nav>
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Sombra más suave */
+}
 
-            <div id="estudios-consultar" class="tab-content active">
-                <div class="search-container">
-                    <input type="text" id="estudios-search" class="search-input" placeholder="Buscar estudio por código, tipo, responsable...">
-                    <button class="btn estudios" onclick="searchData('estudios', document.getElementById('estudios-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadData('estudios')">Mostrar Todos</button>
-                </div>
-                <div id="estudios-results"></div>
-            </div>
+.header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
 
-            <div id="estudios-agregar" class="tab-content">
-                <form onsubmit="addRecord('estudios', event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="estudio-codigo">Código:</label>
-                            <input type="text" id="estudio-codigo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="estudio-tipo">Tipo de Estudio:</label>
-                            <input type="text" id="estudio-tipo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="estudio-fechaInicio">Fecha de Aprobación:</label>
-                            <input type="date" id="estudio-fechaInicio" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="estudio-rut">R.U.T:</label>
-                            <input type="text" id="estudio-rut">
-                        </div>
-                        <div class="form-group">
-                            <label for="estudio-direccion">Dirección:</label>
-                            <input type="text" id="estudio-direccion">
-                        </div>
-                        <div class="form-group">
-                            <label for="estudio-comuna">Comuna:</label>
-                            <input type="text" id="estudio-comuna">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn estudios">Agregar Estudio</button>
-                </form>
-            </div>
-        </section>
+/* Estilos para el menú principal con diseño de cuadrícula responsivo */
+.main-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
 
-        <!-- Sección de Planes de Seguridad -->
-        <section id="planes" class="section">
-            <header class="section-header">
-                <h2 class="section-title planes">Planes de Seguridad</h2>
-                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
-            </header>
-            
-            <nav class="section-nav">
-                <button class="btn tab-btn active planes" onclick="showTab('planes', 'consultar')">Consultar Planes</button>
-                <button class="btn tab-btn planes" onclick="showTab('planes', 'agregar')">Agregar Plan</button>
-            </nav>
+/* Estilos para las tarjetas del menú */
+.menu-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border-top: 5px solid;
+}
 
-            <div id="planes-consultar" class="tab-content active">
-                <div class="search-container">
-                    <input type="text" id="planes-search" class="search-input" placeholder="Buscar plan por código, tipo, objetivo...">
-                    <button class="btn planes" onclick="searchData('planes', document.getElementById('planes-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadData('planes')">Mostrar Todos</button>
-                </div>
-                <div id="planes-results"></div>
-            </div>
+/* Colores de borde superior para cada tipo de tarjeta de menú */
+.menu-card.estudios { border-top-color: #e74c3c; }
+.menu-card.planes { border-top-color: #3498db; }
+.menu-card.medidas { border-top-color: #27ae60; }
+.menu-card.directivas { border-top-color: #f39c12; }
 
-            <div id="planes-agregar" class="tab-content">
-                <form onsubmit="addRecord('planes', event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="plan-codigo">Código:</label>
-                            <input type="text" id="plan-codigo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-tipo">Tipo de Plan:</label>
-                            <input type="text" id="plan-tipo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-fechaAprobacion">Fecha de Aprobación:</label>
-                            <input type="date" id="plan-fechaAprobacion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-rut">R.U.T:</label>
-                            <input type="text" id="plan-rut">
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-revision">Dirección:</label>
-                            <input type="text" id="plan-revision">
-                        </div>
-                        <div class="form-group">
-                            <label for="plan-comuna">Comuna:</label>
-                            <input type="text" id="plan-comuna">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn planes">Agregar Plan</button>
-                </form>
-            </div>
-        </section>
+/* Efecto hover para las tarjetas del menú */
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
 
-        <!-- Sección de Medidas de Seguridad -->
-        <section id="medidas" class="section">
-            <header class="section-header">
-                <h2 class="section-title medidas">Medidas de Seguridad</h2>
-                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
-            </header>
-            
-            <nav class="section-nav">
-                <button class="btn tab-btn active medidas" onclick="showTab('medidas', 'consultar')">Consultar Medidas</button>
-                <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
-            </nav>
+/* Estilos para los iconos dentro de las tarjetas del menú */
+.menu-card .icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
 
-            <div id="medidas-consultar" class="tab-content active">
-                <div class="medidas-menu-buttons">
-                    <button class="btn medidas" onclick="showRecords('medidas')">Medidas Generales</button>
-                    <button class="btn medidas" onclick="showRecords('servicentros')">Servicentros (<span id="servicentros-count-sub">0</span>)</button>
-                    <button class="btn medidas" onclick="showRecords('sobre-500-uf')">Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span>)</button>
-                </div>
-                
-                <!-- Contenedor para la lista de Medidas Generales (oculto por defecto) -->
-                <div id="medidas-records" class="medidas-sub-section-records">
-                    <div class="search-container">
-                        <input type="text" id="medidas-generales-search" class="search-input" placeholder="Buscar medida general por código, categoría...">
-                        <button class="btn medidas" onclick="searchData('medidas', document.getElementById('medidas-generales-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('medidas')">Mostrar Todas</button>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">Volver a Opciones</button>
-                    </div>
-                    <div id="medidas-results"></div>
-                </div>
+/* Colores de icono para cada tipo de tarjeta de menú */
+.menu-card.estudios .icon { color: #e74c3c; }
+.menu-card.planes .icon { color: #3498db; }
+.menu-card.medidas .icon { color: #27ae60; }
+.menu-card.directivas .icon { color: #f39c12; }
 
-                <!-- Contenedor para la lista de Servicentros (oculto por defecto) -->
-                <div id="servicentros-records" class="medidas-sub-section-records">
-                    <div class="search-container">
-                        <input type="text" id="servicentros-search" class="search-input" placeholder="Buscar servicentro por código, tipo, dirección...">
-                        <button class="btn medidas" onclick="searchData('servicentros', document.getElementById('servicentros-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('servicentros')">Mostrar Todos</button>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">Volver a Opciones</button>
-                    </div>
-                    <div id="servicentros-results"></div>
-                </div>
+/* Estilos para los títulos y párrafos dentro de las tarjetas */
+.menu-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #333;
+}
 
-                <!-- Contenedor para la lista de Sobre 500 UF (oculto por defecto) -->
-                <div id="sobre-500-uf-records" class="medidas-sub-section-records">
-                    <div class="search-container">
-                        <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="Buscar por código, descripción, responsable...">
-                        <button class="btn medidas" onclick="searchData('sobre-500-uf', document.getElementById('sobre-500-uf-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('sobre-500-uf')">Mostrar Todos</button>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">Volver a Opciones</button>
-                    </div>
-                    <div id="sobre-500-uf-results"></div>
-                </div>
-            </div>
+.menu-card p {
+    color: #666;
+    margin-bottom: 20px;
+}
 
-            <div id="medidas-agregar" class="tab-content">
-                <form onsubmit="addRecord('medidas', event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="medida-codigo">Código:</label>
-                            <input type="text" id="medida-codigo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-categoria">Categoría (Entidad):</label>
-                            <input type="text" id="medida-categoria" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-fechaAprobacion">Fecha de Aprobación:</label>
-                            <input type="date" id="medida-fechaAprobacion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-rut">R.U.T:</label>
-                            <input type="text" id="medida-rut">
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-direccion">Dirección:</label>
-                            <input type="text" id="medida-direccion">
-                        </div>
-                        <div class="form-group">
-                            <label for="medida-comuna">Comuna:</label>
-                            <input type="text" id="medida-comuna">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn medidas">Agregar Medida</button>
-                </form>
-            </div>
-        </section>
+/* Estilos para el contador de registros en las tarjetas */
+.menu-card .count {
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+}
 
-        <!-- Sección de Directivas de Funcionamiento -->
-        <section id="directivas" class="section">
-            <header class="section-header">
-                <h2 class="section-title directivas">Directivas de Funcionamiento</h2>
-                <button class="btn btn-secondary" onclick="showHome()">Volver al Inicio</button>
-            </header>
-            
-            <nav class="section-nav">
-                <button class="btn tab-btn active directivas" onclick="showTab('directivas', 'consultar')">Consultar Directivas</button>
-                <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
-            </nav>
+/* Colores de fondo para el contador de cada tipo de tarjeta */
+.menu-card.estudios .count { background: #e74c3c; }
+.menu-card.planes .count { background: #3498db; }
+.menu-card.medidas .count { background: #27ae60; }
+.menu-card.directivas .count { background: #f39c12; }
 
-            <div id="directivas-consultar" class="tab-content active">
-                <div class="medidas-menu-buttons">
-                    <button class="btn directivas" onclick="showDirectivasSubSection('empresas-rrhh')">Empresas de RRHH</button>
-                    <button class="btn directivas" onclick="showDirectivasSubSection('guardias-propios')">Guardias Propios</button>
-                    <button class="btn directivas" onclick="showDirectivasSubSection('eventos-masivos')">Eventos Masivos</button>
-                    <button class="btn directivas" onclick="showDirectivasSubSection('directivas-generales')">Directivas Generales</button>
-                </div>
-            </div>
-            
-            <!-- Subsecciones de Directivas -->
-            <div id="directivas-empresas-rrhh-list" class="tab-content">
-                <header class="section-header">
-                    <h3 class="section-title directivas" id="empresas-rrhh-list-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">Volver a Directivas</button>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="empresas-rrhh-search" class="search-input" placeholder="Buscar empresa por nombre o RUT...">
-                    <button class="btn directivas" onclick="searchEmpresasRRHH(document.getElementById('empresas-rrhh-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="renderEmpresasRRHHList()">Mostrar Todas</button>
-                </div>
-                <div id="empresas-rrhh-results"></div>
-            </div>
+/* Estilos para las secciones de contenido (ocultas por defecto) */
+.section {
+    display: none;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-top: 8px solid;
+}
 
-            <div id="directivas-empresa-specific-details" class="tab-content">
-                <header class="section-header">
-                    <h3 class="section-title directivas" id="empresa-specific-details-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToEmpresasList()">Volver a Lista de Empresas</button>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="empresa-details-search" class="search-input" placeholder="Buscar directiva por código, tipo, dirección...">
-                    <button class="btn directivas" onclick="searchCompanySpecificDirectivas(document.getElementById('empresa-details-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadCompanySpecificDirectivas(currentEmpresaSelected)">Mostrar Todas</button>
-                </div>
-                <div id="empresa-specific-details-results"></div>
-            </div>
+/* Colores de borde superior y degradados de fondo para cada sección */
+.section.estudios { border-top-color: #e74c3c; background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%); }
+.section.planes { border-top-color: #3498db; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); }
+.section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
+.section.directivas { border-top-color: #f39c12; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); }
 
-            <div id="directivas-guardias-propios-list" class="tab-content">
-                <header class="section-header">
-                    <h3 class="section-title directivas" id="guardias-propios-list-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">Volver a Directivas</button>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="guardias-propios-search" class="search-input" placeholder="Buscar guardia por número, tipo de servicio...">
-                    <button class="btn directivas" onclick="searchData('guardias-propios', document.getElementById('guardias-propios-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadData('guardias-propios')">Mostrar Todos</button>
-                </div>
-                <div id="guardias-propios-results"></div>
-            </div>
+/* Muestra la sección activa */
+.section.active {
+    display: block;
+}
 
-            <div id="directivas-eventos-masivos-list" class="tab-content">
-                <header class="section-header">
-                    <h3 class="section-title directivas" id="eventos-masivos-list-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">Volver a Directivas</button>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="eventos-masivos-search" class="search-input" placeholder="Buscar evento por nombre, fecha, dirección...">
-                    <button class="btn directivas" onclick="searchData('eventos-masivos', document.getElementById('eventos-masivos-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadData('eventos-masivos')">Mostrar Todos</button>
-                </div>
-                <div id="eventos-masivos-results"></div>
-            </div>
+/* Estilos para el encabezado de cada sección */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
 
-            <div id="directivas-generales-list" class="tab-content">
-                <header class="section-header">
-                    <h3 class="section-title directivas" id="directivas-generales-list-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">Volver a Directivas</button>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="directivas-generales-search" class="search-input" placeholder="Buscar directiva por número, área, título...">
-                    <button class="btn directivas" onclick="searchData('directivas-generales', document.getElementById('directivas-generales-search').value)">Buscar</button>
-                    <button class="btn btn-secondary" onclick="loadData('directivas-generales')">Mostrar Todos</button>
-                </div>
-                <div id="directivas-generales-results"></div>
-            </div>
+/* Estilos para el título de la sección */
+.section-title {
+    font-size: 2rem;
+    color: #333;
+}
 
-            <div id="directivas-agregar" class="tab-content">
-                <form onsubmit="addRecord('directivas', event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="directiva-numero">Código:</label>
-                            <input type="text" id="directiva-numero" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="directiva-area">Área (Entidad):</label>
-                            <input type="text" id="directiva-area" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="directiva-fecha">Fecha de Aprobación:</label>
-                            <input type="date" id="directiva-fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="directiva-rut">R.U.T:</label>
-                            <input type="text" id="directiva-rut">
-                        </div>
-                        <div class="form-group">
-                            <label for="directiva-direccion">Dirección:</label>
-                            <input type="text" id="directiva-direccion">
-                        </div>
-                        <div class="form-group">
-                            <label for="directiva-comuna">Comuna:</label>
-                            <input type="text" id="directiva-comuna">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn directivas">Agregar Directiva</button>
-                </form>
-            </div>
-        </section>
+/* Colores para el título de cada sección */
+.section-title.estudios { color: #e74c3c; }
+.section-title.planes { color: #3498db; }
+.section-title.medidas { color: #27ae60; }
+.section-title.directivas { color: #f39c12; }
 
-        <!-- Modal de Detalles -->
-        <div id="detailModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modalTitle"></h2>
-                    <span class="close" onclick="closeModal()">&times;</span>
-                </div>
-                <div class="detail-grid" id="modalBody">
-                    <!-- Los detalles del registro se insertarán aquí -->
-                </div>
-            </div>
-        </div>
-    </div>
+/* Estilos generales para los botones */
+.btn {
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    color: white;
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+/* Colores de fondo para los botones de cada sección */
+.btn.estudios { background: #e74c3c; }
+.btn.planes { background: #3498db; }
+.btn.medidas { background: #27ae60; }
+.btn.directivas { background: #f39c12; }
+
+/* Efecto hover para los botones */
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Estilos para botones secundarios y de éxito */
+.btn-secondary {
+    background: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+/* Estilos para la navegación de pestañas dentro de las secciones */
+.section-nav {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Estilos para los botones de pestañas */
+.tab-btn {
+    background: #f8f9fa !important;
+    border: 2px solid #dee2e6;
+    color: #495057 !important;
+}
+
+/* Estilos para los botones de pestañas activas con colores de sección */
+.tab-btn.active.estudios {
+    background: #e74c3c !important;
+    border-color: #e74c3c;
+    color: white !important;
+}
+
+.tab-btn.active.planes {
+    background: #3498db !important;
+    border-color: #3498db;
+    color: white !important;
+}
+
+.tab-btn.active.medidas {
+    background: #27ae60 !important;
+    border-color: #27ae60;
+    color: white !important;
+}
+
+.tab-btn.active.directivas {
+    background: #f39c12 !important;
+    border-color: #f39c12;
+    color: white !important;
+}
+
+/* Estilos para grupos de formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para campos de entrada de formulario */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+/* Estilos de enfoque para campos de formulario */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Estilos para áreas de texto (textareas) */
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Estilos para cuadrículas de formularios responsivas */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Estilos para el contenedor de búsqueda */
+.search-container {
+    margin-bottom: 30px;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 25px;
+    font-size: 16px;
+}
+
+/* Estilos para las tablas de datos (default: no truncar) */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow-x: auto; /* Permite desplazamiento horizontal si el contenido es demasiado ancho */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-left: auto; /* Centra la tabla horizontalmente */
+    margin-right: auto; /* Centra la tabla horizontalmente */
+    table-layout: fixed; /* Ayuda a que las columnas no se expandan infinitamente */
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle; 
+    font-size: 0.9em; /* Tamaño de letra ligeramente más grande */
+    white-space: normal; /* Permite que el texto se envuelva por defecto */
+    overflow: visible; /* Asegura que el contenido sea visible, no oculto */
+    text-overflow: clip; /* Elimina los puntos suspensivos por defecto */
+    word-break: break-word; /* Asegura que palabras largas se rompan y envuelvan */
+    word-wrap: break-word; /* Propiedad antigua para compatibilidad */
+}
+
+/* Estilos para la primera columna (códigos/IDs/números) */
+.data-table th:first-child,
+.data-table td:first-child {
+    width: 100px; /* Ancho fijo para la primera columna, ajustado */
+    min-width: 80px; /* Asegura que no sea demasiado pequeña */
+}
+
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Efecto hover para las filas de la tabla */
+.data-table tr {
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* Estilos para la tabla de eventos masivos (con truncado) */
+.data-table.truncate-text th,
+.data-table.truncate-text td {
+    white-space: nowrap; /* Evita que el texto se envuelva */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
+    word-break: normal; /* Desactiva el word-break para el truncado */
+    word-wrap: normal; /* Desactiva el word-wrap para el truncado */
+}
+
+/* Mensaje cuando no hay datos */
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Contenido de pestaña (oculto por defecto) */
+.tab-content {
+    display: none;
+}
+
+/* Muestra el contenido de la pestaña activa */
+.tab-content.active {
+    display: block;
+}
+
+/* Estilos para mensajes de alerta */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* Colores para alertas de éxito y error */
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Estilos para el modal de detalles */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Fondo semitransparente */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto; /* Centrado en la pantalla */
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px; /* Ancho máximo para pantallas grandes */
+    max-height: 80vh; /* Altura máxima para evitar desbordamiento */
+    overflow-y: auto; /* Permite desplazamiento si el contenido es largo */
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.modal-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Cuadrícula para los elementos de detalle dentro del modal */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    font-size: 0.9em; /* Tamaño de letra más pequeño en el modal también */
+}
+
+/* Estilos para cada elemento de detalle en el modal */
+.detail-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid; /* Borde izquierdo para indicar la sección */
+}
+
+/* Colores de borde izquierdo para los detalles según la sección */
+.detail-item.estudios { border-left-color: #e74c3c; }
+.detail-item.planes { border-left-color: #3498db; }
+.detail-item.medidas { border-left-color: #27ae60; }
+.detail-item.servicentros { border-left-color: #27ae60; }
+.detail-item.directivas { border-left-color: #f39c12; }
+.detail-item.empresas-rrhh { border-left-color: #f39c12; }
+.detail-item.guardias-propios { border-left-color: #f39c12; }
+.detail-item.eventos-masivos { border-left-color: #f39c12; }
+.detail-item.directivas-generales { border-left-color: #f39c12; }
+.detail-item.sobre-500-uf { border-left-color: #27ae60; } /* Nuevo estilo para Sobre 500 UF */
+
+
+.detail-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* Nuevos estilos para las tarjetas de menú dentro de Directivas */
+.directivas-menu-card {
+    margin-bottom: 40px;
+    padding: 25px;
+    background: #fff8e1;
+    border-left: 6px solid #f39c12;
+    border-radius: 8px;
+    text-align: center; /* Centra el contenido */
+}
+
+.directivas-menu-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.directivas-menu-card .btn {
+    margin-top: 20px; /* Espacio superior para el botón */
+}
+
+/* Contenedor para los botones dentro de la sección de Medidas */
+.medidas-menu-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+    gap: 20px; /* Espacio entre botones */
+    margin-top: 30px;
+}
+
+/* Estilos para el estado de vigencia y aprobación */
+.status-vigente {
+    background-color: #28a745; /* Verde */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block; /* Para que el padding y background funcionen correctamente */
+}
+
+.status-vencido {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block; /* Para que el padding y background funcionen correctamente */
+}
+
+/* Estilo específico para el texto "Aprobado" y "Rechazado" en la tabla de Eventos Masivos */
+.eventos-masivos-table .status-vigente,
+.eventos-masivos-table .status-vencido {
+    font-size: 0.7em; /* Tamaño de letra más pequeño */
+    padding: 3px 8px; /* Ajustar padding para el tamaño más pequeño */
+}
+
+
+/* Media queries para responsividad en dispositivos móviles */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    }
+    
+    .section-header {
+        flex-direction: column; /* Apila los elementos en pantallas pequeñas */
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .section-nav {
+        flex-direction: column; /* Apila los botones de navegación */
+    }
+
+    .modal-content {
+        margin: 10% auto; /* Ajusta el margen del modal */
+        width: 95%; /* Ocupa más ancho en pantallas pequeñas */
+        padding: 20px;
+    }
+
+    .medidas-menu-buttons {
+        flex-direction: column; /* Apila los botones de Medidas en móvil */
+    }
+}
