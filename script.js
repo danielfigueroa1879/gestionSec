@@ -18,12 +18,20 @@ function generateSampleData() {
 
     // Crear lista de empresas únicas de RRHH primero (300 empresas)
     empresasRRHHList = [];
+    // Define a list of common RUT suffixes for realism (last digit or 'K')
+    const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
+
     for (let i = 1; i <= 300; i++) {
         const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
+        // Generate a realistic-looking RUT
+        const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
+        const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
+
         empresasRRHHList.push({
             id: i,
             nombre: empresaName,
-            directivasCount: 0 // Se calculará después al generar las directivas
+            rut: rut, // Added RUT here
+            directivasCount: 0
         });
     }
 
@@ -107,6 +115,7 @@ function generateSampleData() {
         database['empresas-rrhh'].push({
             numero: `RRHH-${String(i).padStart(4, '0')}`,
             empresa: empresaAsignada.nombre,
+            rut: empresaAsignada.rut, // Agrega el RUT a los registros de directivas de RRHH
             tipoDirectiva: tiposDirectivaRRHH[Math.floor(Math.random() * tiposDirectivaRRHH.length)],
             lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)],
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
@@ -133,7 +142,7 @@ function generateSampleData() {
             numero: `GUARD-${String(i).padStart(3, '0')}`,
             empresa: i <= 4 ? condominios[i-1] : `Empresa Seguridad ${String(i).padStart(2, '0')}`,
             tipoServicio: tiposGuardias[Math.floor(Math.random() * tiposGuardias.length)],
-            lugarInstalacion: i <= 4 ? `${condominios[i-1]} - Torre Principal` : `Instalación ${i}`,
+            lugarInstalacion: lugaresInstalacion[Math.floor(Math.random() * lugaresInstalacion.length)], // Usar lugares de instalación generales
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
             fechaAprobacion: `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
             cantidadGuardias: `${Math.floor(Math.random() * 12) + 3} guardias`,
@@ -161,7 +170,7 @@ function generateSampleData() {
         database['eventos-masivos'].push({
             numero: `EVENT-${String(i).padStart(3, '0')}`,
             nombreEmpresa: empresa,
-            rut: ruts[Math.floor(Math.random() * ruts.length)],
+            rut: ruts[Math.floor(Math.random() * ruts.length)], // Agrega el RUT a los registros de eventos masivos
             fechaEvento: fechaEvento,
             nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`,
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
@@ -263,6 +272,7 @@ function showDirectivasSubSection(subSectionType) {
     document.getElementById('directivas-guardias-propios-list').classList.remove('active');
     document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
     document.getElementById('directivas-generales-list').classList.remove('active');
+    document.getElementById('directivas-empresa-specific-details').classList.remove('active'); // Oculta la vista de detalles específicos de empresa
 
     // Muestra la lista correspondiente
     document.getElementById(`directivas-${subSectionType}-list`).classList.add('active');
@@ -274,41 +284,185 @@ function showDirectivasSubSection(subSectionType) {
         switch (subSectionType) {
             case 'empresas-rrhh':
                 titleText = '👥 Lista de Empresas de Recursos Humanos';
+                renderEmpresasRRHHList(); // Llama a la función específica para RRHH
                 break;
             case 'guardias-propios':
                 titleText = '🛡️ Lista de Guardias Propios';
+                loadData(subSectionType);
                 break;
             case 'eventos-masivos':
                 titleText = '🎉 Lista de Eventos Masivos';
+                loadData(subSectionType);
                 break;
             case 'directivas-generales':
                 titleText = '📄 Lista de Directivas Generales';
+                loadData(subSectionType);
                 break;
         }
         titleElement.textContent = titleText;
     }
-
-    // Carga los datos en la tabla
-    loadData(subSectionType);
 }
 
-// Función para volver a la vista principal de Directivas
-function backToDirectivasMain() {
-    // Oculta todas las listas de subsecciones
-    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
-    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
-    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-    document.getElementById('directivas-generales-list').classList.remove('active');
+// Función específica para renderizar la lista de Empresas RRHH (solo Nombre y RUT)
+function renderEmpresasRRHHList() {
+    const resultsContainer = document.getElementById('empresas-rrhh-results');
     
-    // Muestra la vista principal de consultar directivas
-    document.getElementById('directivas-consultar').classList.add('active');
+    if (empresasRRHHList.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-data">No hay empresas de RRHH disponibles</div>';
+        return;
+    }
+
+    let tableHTML = '<table class="data-table"><thead><tr>';
+    tableHTML += '<th>Nombre Empresa</th><th>RUT</th></tr></thead><tbody>';
+
+    empresasRRHHList.forEach(empresa => {
+        tableHTML += `
+            <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
+                <td>${empresa.nombre}</td>
+                <td>${empresa.rut}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += '</tbody></table>';
+    resultsContainer.innerHTML = tableHTML;
 }
 
-// Función para volver a la vista de consulta desde la vista de registros de Estudios, Planes o Medidas
-function backToConsultar(section) {
-    document.getElementById(`${section}-records`).classList.remove('active');
-    document.getElementById(`${section}-consultar`).classList.add('active');
+
+// Función para mostrar los detalles de directivas de una empresa RRHH específica
+function showEmpresaDirectivasDetails(empresaNombre) {
+    currentEmpresaSelected = empresaNombre;
+    
+    // Oculta la lista de empresas RRHH
+    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    // Muestra la nueva sección de detalles específicos
+    document.getElementById('directivas-empresa-specific-details').classList.add('active');
+    
+    // Actualiza el título de la sección de detalles
+    document.getElementById('empresa-specific-details-title').textContent = `Directivas de Funcionamiento e Instalaciones de ${empresaNombre}`;
+    
+    // Carga los datos de directivas de esta empresa específica
+    loadCompanySpecificDirectivas(empresaNombre);
 }
+
+// Carga y muestra los detalles de directivas para una empresa específica
+function loadCompanySpecificDirectivas(empresaNombre) {
+    const resultsContainer = document.getElementById('empresa-specific-details-results');
+    const directivasEmpresa = database['empresas-rrhh'].filter(directiva => directiva.empresa === empresaNombre);
+
+    if (directivasEmpresa.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-data">No hay directivas de instalaciones para esta empresa.</div>';
+        return;
+    }
+
+    let cardsHTML = '';
+    directivasEmpresa.forEach(directiva => {
+        cardsHTML += `
+            <div class="directiva-detail-card">
+                <div class="detail-label">Número de Directiva:</div>
+                <div class="detail-value">${directiva.numero || 'N/A'}</div>
+
+                <div class="detail-label">Tipo de Directiva:</div>
+                <div class="detail-value">${directiva.tipoDirectiva || 'N/A'}</div>
+
+                <div class="detail-label">Lugar de Instalación:</div>
+                <div class="detail-value">${directiva.lugarInstalacion || 'N/A'}</div>
+
+                <div class="detail-label">Dirección:</div>
+                <div class="detail-value">${directiva.direccion || 'N/A'}</div>
+
+                <div class="detail-label">Fecha de Aprobación:</div>
+                <div class="detail-value">${directiva.fechaAprobacion || 'N/A'}</div>
+
+                <div class="detail-label">Cantidad de Guardias:</div>
+                <div class="detail-value">${directiva.cantidadGuardias || 'N/A'}</div>
+            </div>
+        `;
+    });
+    resultsContainer.innerHTML = cardsHTML;
+}
+
+// Función para buscar en los detalles de directivas de una empresa específica
+function searchCompanySpecificDirectivas(searchTerm) {
+    const filteredDirectivas = database['empresas-rrhh'].filter(directiva => 
+        directiva.empresa === currentEmpresaSelected &&
+        (directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.cantidadGuardias.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+    const resultsContainer = document.getElementById('empresa-specific-details-results');
+    if (filteredDirectivas.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-data">No se encontraron directivas con ese criterio.</div>';
+        return;
+    }
+
+    let cardsHTML = '';
+    filteredDirectivas.forEach(directiva => {
+        cardsHTML += `
+            <div class="directiva-detail-card">
+                <div class="detail-label">Número de Directiva:</div>
+                <div class="detail-value">${directiva.numero || 'N/A'}</div>
+
+                <div class="detail-label">Tipo de Directiva:</div>
+                <div class="detail-value">${directiva.tipoDirectiva || 'N/A'}</div>
+
+                <div class="detail-label">Lugar de Instalación:</div>
+                <div class="detail-value">${directiva.lugarInstalacion || 'N/A'}</div>
+
+                <div class="detail-label">Dirección:</div>
+                <div class="detail-value">${directiva.direccion || 'N/A'}</div>
+
+                <div class="detail-label">Fecha de Aprobación:</div>
+                <div class="detail-value">${directiva.fechaAprobacion || 'N/A'}</div>
+
+                <div class="detail-label">Cantidad de Guardias:</div>
+                <div class="detail-value">${directiva.cantidadGuardias || 'N/A'}</div>
+            </div>
+        `;
+    });
+    resultsContainer.innerHTML = cardsHTML;
+}
+
+
+// Función para volver a la lista de Empresas RRHH desde los detalles específicos
+function backToEmpresasList() {
+    document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+    document.getElementById('directivas-empresas-rrhh-list').classList.add('active');
+    renderEmpresasRRHHList(); // Volver a renderizar la lista original de empresas RRHH
+}
+
+// Función para buscar en la lista de Empresas RRHH (solo Nombre y RUT)
+function searchEmpresasRRHH(searchTerm) {
+    const filteredEmpresas = empresasRRHHList.filter(empresa => 
+        empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        empresa.rut.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    const resultsContainer = document.getElementById('empresas-rrhh-results');
+    
+    let tableHTML = '<table class="data-table"><thead><tr>';
+    tableHTML += '<th>Nombre Empresa</th><th>RUT</th></tr></thead><tbody>';
+
+    if (filteredEmpresas.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-data">No se encontraron empresas con ese criterio.</div>';
+        return;
+    }
+
+    filteredEmpresas.forEach(empresa => {
+        tableHTML += `
+            <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
+                <td>${empresa.nombre}</td>
+                <td>${empresa.rut}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += '</tbody></table>';
+    resultsContainer.innerHTML = tableHTML;
+}
+
 
 // Función genérica para mostrar la vista de registros de cualquier sección (Estudios, Planes, Medidas, y ahora subsecciones de Directivas)
 function showRecords(section) {
@@ -317,9 +471,13 @@ function showRecords(section) {
         document.getElementById(`${section}-consultar`).classList.remove('active');
     }
     // Ocultar cualquier lista de subsecciones de directivas si estamos en ese contexto
-    if (section.startsWith('directivas-') && currentDirectivasSubSectionType) {
-        document.getElementById(`directivas-${currentDirectivasSubSectionType}-list`).classList.remove('active');
-    }
+    // Se asegura de ocultar todas las listas posibles antes de mostrar la correcta
+    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
+    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
+    document.getElementById('directivas-generales-list').classList.remove('active');
+    document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+
 
     // Mostrar la vista de registros (o la lista específica de la subsección)
     document.getElementById(`${section}-records`).classList.add('active');
@@ -383,7 +541,14 @@ function createTable(section, data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((row, index) => {
-        tableHTML += `<tr onclick="showDetails('${section}', ${index})">`; // Cada fila es clicable para mostrar detalles
+        // Para las subsecciones de directivas, el click debe abrir el modal de detalles
+        // La sección 'empresas-rrhh' tiene un manejo especial con showEmpresaDirectivasDetails
+        if (section.startsWith('directivas-') && section !== 'empresas-rrhh') {
+            tableHTML += `<tr onclick="showDetails('${section}', ${index})">`; // Abre el modal de detalles
+        } else {
+            tableHTML += `<tr onclick="showDetails('${section}', ${index})">`; // Comportamiento general
+        }
+
         headers.forEach(header => {
             let value = row[header] || '-';
             if (typeof value === 'string' && value.length > 50) { // Trunca el texto largo para la visualización en tabla
@@ -428,7 +593,7 @@ function formatHeader(header) {
         telefono: 'Teléfono',
         horario: 'Horario',
         capacidad: 'Capacidad',
-        empresa: 'Nombre Empresa', // Changed from 'Empresa' to 'Nombre Empresa'
+        empresa: 'Nombre Empresa', 
         tipoDirectiva: 'Tipo Directiva',
         tipoServicio: 'Tipo Servicio',
         numeroGuardias: 'Número Guardias',
