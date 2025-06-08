@@ -209,47 +209,32 @@
             </div>
 
             <div class="section-nav">
+                <!-- Mantener las pestañas Consultar y Agregar Nueva -->
                 <button class="btn tab-btn active medidas" onclick="showTab('medidas', 'consultar')">📋 Consultar</button>
-                <button class="btn tab-btn medidas" onclick="showTab('medidas', 'servicentros')">🏪 Servicentros</button>
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">➕ Agregar Nueva</button>
             </div>
 
+            <!-- Esta será la página de inicio para Medidas, con los dos nuevos botones -->
             <div id="medidas-consultar" class="tab-content active">
                 <div style="text-align: center; padding: 40px;">
-                    <h3 style="color: #27ae60; margin-bottom: 20px;">📋 Consultar Medidas de Seguridad</h3>
-                    <p style="color: #666; margin-bottom: 30px;">Accede a todas las medidas de seguridad implementadas</p>
-                    <button class="btn medidas" onclick="showRecords('medidas')" style="font-size: 18px; padding: 15px 30px;">
-                        📊 Ver Todos los Registros
-                    </button>
+                    <h3 style="color: #27ae60; margin-bottom: 20px;">📋 Opciones de Consulta de Medidas de Seguridad</h3>
+                    <p style="color: #666; margin-bottom: 30px;">Selecciona una categoría para ver los registros</p>
+                    <div class="medidas-menu-buttons">
+                        <button class="btn medidas" onclick="showMedidasSubSection('servicentros')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
+                            🏪 Servicentros (<span id="servicentros-count-sub">0</span> registros)
+                        </button>
+                        <button class="btn medidas" onclick="showMedidasSubSection('sobre-500-uf')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
+                            💰 Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span> registros)
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div id="medidas-records" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title medidas">📋 Lista de Medidas de Seguridad</h3>
-                    <button class="btn btn-secondary" onclick="backToConsultar('medidas')">⬅️ Volver</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar medidas de seguridad..." 
-                           onkeyup="searchData('medidas', this.value)">
-                </div>
-                <div id="medidas-results"></div>
-            </div>
-
-            <div id="medidas-servicentros" class="tab-content">
-                <div style="text-align: center; padding: 40px;">
-                    <h3 style="color: #27ae60; margin-bottom: 20px;">🏪 Servicentros de Seguridad</h3>
-                    <p style="color: #666; margin-bottom: 30px;">Accede a todos los servicentros de seguridad registrados</p>
-                    <button class="btn medidas" onclick="showRecords('servicentros')" style="font-size: 18px; padding: 15px 30px;">
-                        📊 Ver Todos los Servicentros
-                    </button>
-                </div>
-            </div>
-
-            <div id="servicentros-records" class="tab-content">
+            <!-- Contenedor para los registros de Servicentros -->
+            <div id="medidas-servicentros-records" class="tab-content">
                 <div class="section-header">
                     <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
-                    <button class="btn btn-secondary" onclick="backToConsultar('servicentros')">⬅️ Volver</button>
+                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
                 </div>
                 <div class="search-container">
                     <input type="text" class="search-input" placeholder="🔍 Buscar servicentros..." 
@@ -258,6 +243,20 @@
                 <div id="servicentros-results"></div>
             </div>
 
+            <!-- Nuevo contenedor para los registros de "Sobre 500 UF" -->
+            <div id="medidas-sobre-500-uf-records" class="tab-content">
+                <div class="section-header">
+                    <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
+                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar registros..." 
+                           onkeyup="searchData('sobre-500-uf', this.value)">
+                </div>
+                <div id="sobre-500-uf-results"></div>
+            </div>
+
+            <!-- La pestaña "Agregar Nueva" para medidas generales permanece igual -->
             <div id="medidas-agregar" class="tab-content">
                 <form onsubmit="addRecord('medidas', event)">
                     <div class="form-grid">
@@ -420,8 +419,8 @@
                 <div class="search-container">
                     <input type="text" class="search-input" placeholder="🔍 Buscar directivas de esta empresa..." onkeyup="searchCompanySpecificDirectivas(this.value)">
                 </div>
-                <div id="empresa-specific-details-results" class="details-cards-container">
-                    <!-- Los detalles de las directivas se cargarán aquí -->
+                <div id="empresa-specific-details-results">
+                    <!-- Los detalles de las directivas se cargarán aquí en formato de tabla -->
                 </div>
             </div>
 
