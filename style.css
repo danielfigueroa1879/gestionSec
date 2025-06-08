@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #f0f2f5; /* Un color de fondo más elegante y sobrio */
     min-height: 100vh;
     color: #333;
 }
@@ -24,13 +24,13 @@ body {
 .header {
     text-align: center;
     margin-bottom: 40px;
-    color: white;
+    color: #333; /* Color de texto ajustado para el nuevo fondo */
 }
 
 .header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Sombra más suave */
 }
 
 .header p {
