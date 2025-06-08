@@ -64,7 +64,7 @@ function generateSampleData() {
         const approvalDateObj = new Date(fechaAprobacion);
         const vigenciaDateObj = new Date(approvalDateObj);
         vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formatłaszcza-MM-DD
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
@@ -347,7 +347,7 @@ function showTab(section, tab) {
     }
 }
 
-// Función para mostrar las subsecciones de medidas (Servicentros, Sobre 500 UF)
+// Función para mostrar las subsecciones de medidas (Medidas Generales, Servicentros, Sobre 500 UF)
 function showMedidasSubSection(subSectionType) {
     // Oculta la vista principal de consulta de medidas
     document.getElementById('medidas-consultar').classList.remove('active');
@@ -358,7 +358,12 @@ function showMedidasSubSection(subSectionType) {
 
 
     // Muestra el contenedor de registros de la subsección seleccionada
-    document.getElementById(`medidas-${subSectionType}-records`).classList.add('active');
+    // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
+    if (subSectionType === 'medidas') {
+        document.getElementById('medidas-records').classList.add('active');
+    } else {
+        document.getElementById(`medidas-${subSectionType}-records`).classList.add('active');
+    }
     loadData(subSectionType); // Carga los datos correspondientes
 }
 
@@ -616,8 +621,12 @@ function showRecords(section) {
     document.getElementById('directivas-empresa-specific-details').classList.remove('active');
 
     // Muestra la vista de registros (o la lista específica de la subsección si aplica)
-    // Para las secciones principales como estudios y planes
-    document.getElementById(`${section}-records`).classList.add('active');
+    // Se usa un switch para manejar 'medidas' que es una sección principal pero también una subcategoría de "Medidas de Seguridad"
+    if (section === 'medidas') { // This `if` block is new/modified
+        document.getElementById('medidas-records').classList.add('active');
+    } else {
+        document.getElementById(`${section}-records`).classList.add('active');
+    }
     loadData(section); // Carga los datos correspondientes a la sección
 }
 
@@ -680,7 +689,17 @@ function addRecord(section, event) {
 
 // Carga y muestra los datos de una sección en formato de tabla
 function loadData(section) {
-    const resultsContainer = document.getElementById(`${section}-results`) || document.getElementById(`medidas-${section}-records`).querySelector('.search-container').nextElementSibling; // Ajuste para las nuevas secciones de medidas
+    // Ajuste para seleccionar el contenedor de resultados correcto, ya sea directo o dentro de medidas-subseccion-records
+    let resultsContainerId;
+    if (section === 'medidas') {
+        resultsContainerId = 'medidas-results';
+    } else if (section === 'servicentros' || section === 'sobre-500-uf') {
+        resultsContainerId = `${section}-results`; // Dentro de medidas-servicentros-records o medidas-sobre-500-uf-records
+    } else {
+        resultsContainerId = `${section}-results`; // Para estudios, planes, etc.
+    }
+    const resultsContainer = document.getElementById(resultsContainerId);
+
     const data = database[section];
     
     if (data.length === 0) {
@@ -810,7 +829,17 @@ function searchData(section, searchTerm) {
         );
     });
     
-    const resultsContainer = document.getElementById(`${section}-results`) || document.getElementById(`medidas-${section}-records`).querySelector('.search-container').nextElementSibling;
+    // Ajuste para seleccionar el contenedor de resultados correcto, ya sea directo o dentro de medidas-subseccion-records
+    let resultsContainerId;
+    if (section === 'medidas') {
+        resultsContainerId = 'medidas-results';
+    } else if (section === 'servicentros' || section === 'sobre-500-uf') {
+        resultsContainerId = `${section}-results`; // Dentro de medidas-servicentros-records o medidas-sobre-500-uf-records
+    } else {
+        resultsContainerId = `${section}-results`; // Para estudios, planes, etc.
+    }
+    const resultsContainer = document.getElementById(resultsContainerId);
+
     const table = createTable(section, filteredData);
     resultsContainer.innerHTML = table;
 }
