@@ -395,14 +395,9 @@ let database = generateSampleData();
 // Helper function to format dates for display
 function formatDateForDisplay(dateString) {
     if (!dateString || dateString === '-') return '-';
-    const [year, month, day] = dateString.split('-');
-    const monthNames = [
-        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-    ];
-    // Month is 0-indexed in JavaScript Date, so subtract 1
-    const monthName = monthNames[parseInt(month, 10) - 1];
-    return `${parseInt(day, 10)} ${monthName} ${year}`;
+    const date = new Date(dateString);
+    // Use toLocaleDateString for DD/MM/YYYY format based on locale (Chile uses this format)
+    return date.toLocaleDateString('es-CL');
 }
 
 // Define date headers for formatting
