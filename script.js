@@ -508,7 +508,7 @@ function backToConsultar(section) {
     document.getElementById(`${section}-consultar`).classList.add('active');
 }
 
-// Función específica para renderizar la lista de Empresas RRHH (solo Nombre y RUT)
+// Función específica para renderizar la lista de Empresas RRHH (solo Nombre y RUT y Dirección)
 function renderEmpresasRRHHList() {
     const resultsContainer = document.getElementById('empresas-rrhh-results');
     
@@ -518,7 +518,6 @@ function renderEmpresasRRHHList() {
     }
 
     let tableHTML = '<table class="data-table"><thead><tr>';
-    // Modificado: Incluir 'Dirección' en el encabezado
     tableHTML += '<th>Nombre Empresa</th><th>RUT</th><th>Dirección</th></tr></thead><tbody>';
 
     empresasRRHHList.forEach(empresa => {
@@ -589,10 +588,6 @@ function loadCompanySpecificDirectivas(empresaNombre) {
                     cellClass = 'status-vencido';
                 }
             }
-            // Para esta tabla específica, no se trunca
-            // if (typeof value === 'string' && value.length > 50) {
-            //     value = value.substring(0, 50) + '...';
-            // }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
@@ -650,10 +645,6 @@ function createTableForCompanySpecificDirectivas(data) {
                     cellClass = 'status-vencido';
                 }
             }
-            // Para esta tabla específica, no se trunca
-            // if (typeof value === 'string' && value.length > 50) {
-            //     value = value.substring(0, 50) + '...';
-            // }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
@@ -872,9 +863,10 @@ function createTable(section, data) {
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
     } else if (section === 'guardias-propios') { 
-        // MODIFICADO: Eliminar columnas 'turno', 'responsable', 'estado', 'version', 'titulo', 'contenido', 'area' para Guardias Propios
+        // Se mantienen solo las columnas solicitadas
         headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'];
-    } else if (section === 'eventos-masivos') { // **CAMBIADO**: Quitar vigencia y estadoVigencia
+    } else if (section === 'eventos-masivos') { 
+        // Se mantienen las columnas de eventos masivos
         headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'estadoAprobacion', 'cantidadGuardias'];
     } else if (section === 'directivas-generales') {
         headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'alcance', 'responsable', 'estado'];
@@ -882,7 +874,12 @@ function createTable(section, data) {
         headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'contenido', 'alcance', 'responsable', 'estado'];
     }
 
-    let tableHTML = '<table class="data-table"><thead><tr>';
+    let tableHTML = '<table class="data-table';
+    // Agrega la clase 'truncate-text' y 'eventos-masivos-table' solo para la sección de eventos masivos
+    if (section === 'eventos-masivos') {
+        tableHTML += ' truncate-text eventos-masivos-table'; 
+    }
+    tableHTML += '"><thead><tr>';
     
     headers.forEach(header => {
         tableHTML += `<th>${formatHeader(header)}</th>`; // Formatea el encabezado para una mejor lectura
@@ -907,15 +904,9 @@ function createTable(section, data) {
                 }
             }
             
-            // Truncamiento de texto condicional
-            const sectionsToTruncate = ['eventos-masivos']; 
-            if (sectionsToTruncate.includes(section)) {
-                // Aplica truncamiento solo a las secciones especificadas
-                if (typeof value === 'string' && value.length > 50 && header !== 'rut') { 
-                    value = value.substring(0, 50) + '...';
-                }
-            }
-            // Para el resto de secciones, el texto no se truncará, excepto el RUT que es corto por naturaleza.
+            // La lógica de truncado de texto ahora se manejará principalmente por CSS
+            // El JS de truncado se ha eliminado para que la CSS controle el comportamiento global,
+            // y la clase 'truncate-text' en la tabla lo aplica solo a Eventos Masivos.
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
