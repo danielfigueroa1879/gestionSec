@@ -526,7 +526,7 @@ function renderEmpresasRRHHList() {
             <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
                 <td>${empresa.nombre}</td>
                 <td>${empresa.rut}</td>
-                <td>${empresa.direccion}</td> // Modificado: Mostrar la dirección
+                <td>${empresa.direccion}</td>
             </tr>
         `;
     });
@@ -694,7 +694,7 @@ function searchEmpresasRRHH(searchTerm) {
             <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
                 <td>${empresa.nombre}</td>
                 <td>${empresa.rut}</td>
-                <td>${empresa.direccion}</td> // Modificado: Mostrar la dirección
+                <td>${empresa.direccion}</td>
             </tr>
         `;
     });
@@ -915,7 +915,7 @@ function createTable(section, data) {
                     value = value.substring(0, 50) + '...';
                 }
             }
-            // Para el resto de secciones, el texto no se truncará.
+            // Para el resto de secciones, el texto no se truncará, excepto el RUT que es corto por naturaleza.
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
