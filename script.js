@@ -392,6 +392,23 @@ function generateSampleData() {
 // Base de datos con la cantidad exacta de registros, inicializada al cargar el script
 let database = generateSampleData();
 
+// Helper function to format dates for display
+function formatDateForDisplay(dateString) {
+    if (!dateString || dateString === '-') return '-';
+    const [year, month, day] = dateString.split('-');
+    const monthNames = [
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    // Month is 0-indexed in JavaScript Date, so subtract 1
+    const monthName = monthNames[parseInt(month, 10) - 1];
+    return `${parseInt(day, 10)} ${monthName} ${year}`;
+}
+
+// Define date headers for formatting
+const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', 'fecha', 'fechaEvento'];
+
+
 // Funciones de navegación principal
 function showHome() {
     document.querySelectorAll('.section').forEach(section => {
@@ -605,6 +622,9 @@ function loadCompanySpecificDirectivas(empresaNombre) {
         tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
+            if (dateHeaders.includes(header)) { // Format date if it's a date header
+                value = formatDateForDisplay(value);
+            }
             let cellClass = '';
             // Aplica el estilo de color para el estado de vigencia
             if (header === 'estadoVigencia') {
@@ -663,6 +683,9 @@ function createTableForCompanySpecificDirectivas(data) {
         tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
+            if (dateHeaders.includes(header)) { // Format date if it's a date header
+                value = formatDateForDisplay(value);
+            }
             let cellClass = '';
             // Aplica el estilo de color para el estado de vigencia
             if (header === 'estadoVigencia') {
@@ -915,6 +938,11 @@ function createTable(section, data) {
 
         headers.forEach(header => {
             let value = row[header] || '-';
+            // Apply date formatting if the header is a date field
+            if (dateHeaders.includes(header)) {
+                value = formatDateForDisplay(value);
+            }
+
             let cellClass = '';
             // Aplica el estilo de color para el estado de vigencia o aprobación
             if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
@@ -1049,6 +1077,11 @@ function showDetails(section, index) {
 
     detailKeys.forEach(key => {
         let value = item[key] || 'No especificado';
+        // Apply date formatting if the key is a date field
+        if (dateHeaders.includes(key)) {
+            value = formatDateForDisplay(value);
+        }
+
         let detailClass = '';
         // Aplica la clase de estado en el modal también
         if (key === 'estadoVigencia' || key === 'estadoAprobacion') { 
