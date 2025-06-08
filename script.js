@@ -74,7 +74,7 @@ function generateSampleData() {
         const approvalDateObj = new Date(fechaAprobacion);
         const vigenciaDateObj = new Date(approvalDateObj);
         vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Formatoولندا-MM-DD
 
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
@@ -275,7 +275,7 @@ function generateSampleData() {
         });
     }
 
-    // 3. Generar 50 registros de Eventos Masivos (Vigencia de 3 años)
+    // 3. Generar 50 registros de Eventos Masivos (SIN VIGENCIA)
     const tiposEventos = ['Conciertos', 'Eventos Deportivos', 'Ferias', 'Festivales', 'Conferencias'];
     const ubicacionesEventos = ['Estadio Nacional', 'Arena Movistar', 'Centro de Eventos', 'Parque OHiggins', 'Teatro Municipal'];
     const empresasEventos = ['Productora Musical SPA', 'Eventos & Shows Ltda', 'Mega Eventos SA', 'Show Business SPA', 'Entertainment Group Ltda'];
@@ -286,19 +286,6 @@ function generateSampleData() {
         const fechaEvento = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const aprobado = Math.random() > 0.2;
         
-        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
-        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
-        const fechaAprobacion = `2025-${String(Math.floor(Math.random() * 6) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
-        
-        const approvalDateObj = new Date(fechaAprobacion);
-        const vigenciaDateObj = new Date(approvalDateObj);
-        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
-
-        const today = new Date();
-        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
-
         database['eventos-masivos'].push({
             numero: `EVENT-${String(i).padStart(3, '0')}`,
             nombreEmpresa: empresa,
@@ -306,8 +293,8 @@ function generateSampleData() {
             fechaEvento: fechaEvento,
             nombreEvento: `${tiposEventos[Math.floor(Math.random() * tiposEventos.length)]} ${i}`,
             direccion: direcciones[Math.floor(Math.random() * direcciones.length)],
-            fechaAprobacion: fechaAprobacion,
-            estadoAprobacion: aprobado ? 'APROBADO' : 'RECHAZADO',
+            // NO se añaden fechaAprobacion, vigencia, ni estadoVigencia para Eventos Masivos
+            estadoAprobacion: aprobado ? 'APROBADO' : 'RECHAZADO', // Se mantiene el estado de aprobación
             cantidadGuardias: `${Math.floor(Math.random() * 50) + 10} guardias`,
             tipoEvento: tiposEventos[Math.floor(Math.random() * tiposEventos.length)],
             ubicacion: ubicacionesEventos[Math.floor(Math.random() * ubicacionesEventos.length)],
@@ -318,9 +305,7 @@ function generateSampleData() {
             capacidad: `${Math.floor(Math.random() * 50000) + 5000} personas`,
             duracion: `${Math.floor(Math.random() * 8) + 2} horas`,
             responsable: `Coordinador Eventos ${String(i).padStart(2, '0')}`,
-            estado: aprobado ? 'Aprobado' : 'Rechazado', // Estado general (no de vigencia)
-            vigencia: vigencia, // Nueva fecha de vigencia
-            estadoVigencia: estadoVigencia // Estado de vigencia (Vigente/Vencido)
+            estado: aprobado ? 'Aprobado' : 'Rechazado' // Estado general (no de vigencia)
         });
     }
 
@@ -867,8 +852,8 @@ function createTable(section, data) {
         headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
     } else if (section === 'guardias-propios') {
         headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'turno', 'responsable', 'estado'];
-    } else if (section === 'eventos-masivos') {
-        headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estadoAprobacion', 'cantidadGuardias', 'tipoEvento', 'ubicacion', 'capacidad', 'duracion', 'responsable', 'estado'];
+    } else if (section === 'eventos-masivos') { // **CAMBIADO**: Quitar vigencia y estadoVigencia
+        headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'estadoAprobacion', 'cantidadGuardias', 'tipoEvento', 'ubicacion', 'capacidad', 'duracion', 'responsable', 'estado'];
     } else if (section === 'directivas-generales') {
         headers = ['numero', 'area', 'version', 'fecha', 'vigencia', 'estadoVigencia', 'titulo', 'alcance', 'responsable', 'estado'];
     } else if (section === 'directivas') { // Para el array 'directivas' genérico, si se usa
