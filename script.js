@@ -21,16 +21,30 @@ function generateSampleData() {
     // Crear lista de empresas únicas de RRHH (300 empresas)
     empresasRRHHList = [];
     const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
+    const sampleAddresses = [
+        'Av. Providencia 1234, Santiago',
+        'Calle Moneda 567, Santiago',
+        'Av. Las Condes 890, Las Condes',
+        'Calle Huérfanos 432, Santiago',
+        'Av. Libertador 678, Santiago',
+        'El Bosque Norte 010, Las Condes',
+        'Rosario Norte 555, Las Condes',
+        'San Antonio 220, Santiago',
+        'Merced 840, Santiago',
+        'Apoquindo 3000, Las Condes'
+    ];
 
     for (let i = 1; i <= 300; i++) {
         const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
         const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
         const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
+        const direccion = sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)]; // Asignar una dirección aleatoria
 
         empresasRRHHList.push({
             id: i,
             nombre: empresaName,
             rut: rut,
+            direccion: direccion, // Añadida la dirección a la empresa
             directivasCount: 0
         });
     }
@@ -504,13 +518,15 @@ function renderEmpresasRRHHList() {
     }
 
     let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>Nombre Empresa</th><th>RUT</th></tr></thead><tbody>';
+    // Modificado: Incluir 'Dirección' en el encabezado
+    tableHTML += '<th>Nombre Empresa</th><th>RUT</th><th>Dirección</th></tr></thead><tbody>';
 
     empresasRRHHList.forEach(empresa => {
         tableHTML += `
             <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
                 <td>${empresa.nombre}</td>
                 <td>${empresa.rut}</td>
+                <td>${empresa.direccion}</td> // Modificado: Mostrar la dirección
             </tr>
         `;
     });
@@ -652,17 +668,19 @@ function backToEmpresasList() {
     renderEmpresasRRHHList(); // Volver a renderizar la lista original de empresas RRHH
 }
 
-// Función para buscar en la lista de Empresas RRHH (solo Nombre y RUT)
+// Función para buscar en la lista de Empresas RRHH (solo Nombre y RUT y Dirección)
 function searchEmpresasRRHH(searchTerm) {
     const filteredEmpresas = empresasRRHHList.filter(empresa => 
         empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        empresa.rut.toLowerCase().includes(searchTerm.toLowerCase())
+        empresa.rut.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        empresa.direccion.toLowerCase().includes(searchTerm.toLowerCase()) // Añadido para buscar por dirección
     );
     
     const resultsContainer = document.getElementById('empresas-rrhh-results');
     
     let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>Nombre Empresa</th><th>RUT</th></tr></thead><tbody>';
+    // Modificado: Incluir 'Dirección' en el encabezado de búsqueda también
+    tableHTML += '<th>Nombre Empresa</th><th>RUT</th><th>Dirección</th></tr></thead><tbody>';
 
     if (filteredEmpresas.length === 0) {
         resultsContainer.innerHTML = '<div class="no-data">No se encontraron empresas con ese criterio.</div>';
@@ -674,6 +692,7 @@ function searchEmpresasRRHH(searchTerm) {
             <tr onclick="showEmpresaDirectivasDetails('${empresa.nombre}')">
                 <td>${empresa.nombre}</td>
                 <td>${empresa.rut}</td>
+                <td>${empresa.direccion}</td> // Modificado: Mostrar la dirección
             </tr>
         `;
     });
@@ -850,7 +869,7 @@ function createTable(section, data) {
         headers = ['codigo', 'tipo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'objeto', 'metodologia', 'responsable'];
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
-    } else if (section === 'guardias-propios') { // MODIFICADO: Eliminar columnas para Guardias Propios
+    } else if (section === 'guardias-propios') { // MODIFICADO: Eliminar columnas 'turno', 'responsable', 'estado'
         headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'];
     } else if (section === 'eventos-masivos') { // **CAMBIADO**: Quitar vigencia y estadoVigencia
         headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'estadoAprobacion', 'cantidadGuardias'];
@@ -885,8 +904,8 @@ function createTable(section, data) {
                 }
             }
             
-            // Trunca texto largo si es necesario, excepto para RUTs
-            if (typeof value === 'string' && value.length > 50 && header !== 'rut') { 
+            // Trunca texto largo si es necesario, excepto para RUTs y nombres de empresa/dirección en la lista de empresas RRHH
+            if (typeof value === 'string' && value.length > 50 && header !== 'rut' && header !== 'nombre' && header !== 'direccion') { 
                 value = value.substring(0, 50) + '...';
             }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
