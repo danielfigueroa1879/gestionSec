@@ -215,12 +215,15 @@
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">➕ Agregar Nueva</button>
             </div>
 
-            <!-- Esta será la página de inicio para Medidas, con los dos nuevos botones -->
+            <!-- Esta será la página de inicio para Medidas, con los tres botones de consulta -->
             <div id="medidas-consultar" class="tab-content active">
                 <div style="text-align: center; padding: 40px;">
                     <h3 style="color: #27ae60; margin-bottom: 20px;">📋 Opciones de Consulta de Medidas de Seguridad</h3>
                     <p style="color: #666; margin-bottom: 30px;">Selecciona una categoría para ver los registros</p>
                     <div class="medidas-menu-buttons">
+                        <button class="btn medidas" onclick="showRecords('medidas')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
+                            🛡️ Medidas Generales (<span id="medidas-count-sub">0</span> registros)
+                        </button>
                         <button class="btn medidas" onclick="showMedidasSubSection('servicentros')" style="font-size: 18px; padding: 15px 30px; margin: 10px;">
                             🏪 Servicentros (<span id="servicentros-count-sub">0</span> registros)
                         </button>
@@ -229,6 +232,19 @@
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Contenedor para los registros de Medidas Generales -->
+            <div id="medidas-records" class="tab-content">
+                <div class="section-header">
+                    <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
+                    <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar medidas generales..." 
+                           onkeyup="searchData('medidas', this.value)">
+                </div>
+                <div id="medidas-results"></div>
             </div>
 
             <!-- Contenedor para los registros de Servicentros -->
