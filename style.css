@@ -315,6 +315,8 @@ body {
     white-space: normal; /* Permite que el texto se envuelva por defecto */
     overflow: visible; /* Asegura que el contenido sea visible, no oculto */
     text-overflow: clip; /* Elimina los puntos suspensivos por defecto */
+    word-break: break-word; /* Asegura que palabras largas se rompan y envuelvan */
+    word-wrap: break-word; /* Propiedad antigua para compatibilidad */
 }
 
 /* Estilos para la primera columna (códigos/IDs/números) */
@@ -347,6 +349,8 @@ body {
     white-space: nowrap; /* Evita que el texto se envuelva */
     overflow: hidden; /* Oculta el texto que se desborda */
     text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
+    word-break: normal; /* Desactiva el word-break para el truncado */
+    word-wrap: normal; /* Desactiva el word-wrap para el truncado */
 }
 
 /* Mensaje cuando no hay datos */
