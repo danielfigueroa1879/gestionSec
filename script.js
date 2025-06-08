@@ -704,7 +704,7 @@ function createTable(section, data) {
         headers = ['codigo', 'tipo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'revision', 'objetivo', 'alcance'];
     } else if (section === 'servicentros') {
         // Adjusted headers for servicentros to show validity
-        headers = ['codigo', 'nombre', 'tipo', 'ubicacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado'];
+        headers = ['codigo', 'nombre', 'tipo', 'ubicacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado', 'responsable'];
     } else if (section === 'sobre-500-uf') {
         // Adjusted headers for sobre-500-uf to show validity
         headers = ['id', 'descripcion', 'monto', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'responsable', 'estado'];
