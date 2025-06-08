@@ -340,6 +340,15 @@ body {
     background: #f8f9fa;
 }
 
+/* Estilos específicos para la tabla de Empresas RRHH para que el texto se vea completo */
+#empresas-rrhh-results .data-table th,
+#empresas-rrhh-results .data-table td {
+    white-space: normal; /* Permite que el texto se envuelva */
+    overflow: visible; /* Asegura que el contenido sea visible, no oculto */
+    text-overflow: clip; /* Elimina los puntos suspensivos */
+}
+
+
 /* Mensaje cuando no hay datos */
 .no-data {
     text-align: center;
