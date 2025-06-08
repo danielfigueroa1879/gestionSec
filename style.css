@@ -481,6 +481,17 @@ body {
     margin-top: 30px;
 }
 
+/* Estilos para el estado de vigencia de los planes */
+.status-vigente {
+    color: #28a745; /* Verde */
+    font-weight: bold;
+}
+
+.status-vencido {
+    color: #dc3545; /* Rojo */
+    font-weight: bold;
+}
+
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
     .form-grid {
