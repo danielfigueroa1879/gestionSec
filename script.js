@@ -56,13 +56,28 @@ function generateSampleData() {
     const areas = ['Edificio Principal', 'Planta de Producción', 'Laboratorio', 'Almacén', 'Oficinas Administrativas'];
     
     for (let i = 1; i <= 61; i++) {
+        const approvalYear = 2023 + Math.floor(Math.random() * 3); // 2023, 2024, 2025 for diverse validity
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 2);
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
         database.planes.push({
             codigo: `PLN-${String(i).padStart(3, '0')}`,
             tipo: tiposPlanes[Math.floor(Math.random() * tiposPlanes.length)],
-            vigencia: `2025-12-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            fechaAprobacion: fechaAprobacion, // New field
+            vigencia: vigencia, // Now calculated
             revision: `2025-${String(Math.floor(Math.random() * 6) + 6).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
             objetivo: `Establecer procedimientos de seguridad para ${areas[Math.floor(Math.random() * areas.length)]}`,
-            alcance: `Aplicable a todo el personal de ${areas[Math.floor(Math.random() * areas.length)]}`
+            alcance: `Aplicable a todo el personal de ${areas[Math.floor(Math.random() * areas.length)]}`,
+            estadoVigencia: estadoVigencia // New field
         });
     }
 
@@ -565,12 +580,25 @@ function addRecord(section, event) {
     const inputs = form.querySelectorAll('input, textarea, select');
     
     inputs.forEach(input => {
-        // Normaliza el nombre de la clave para que coincida con la estructura de datos
         let key = input.id.replace(`${section.slice(0, -1)}-`, '').replace('-', '');
-        if (key === 'fechainicio') key = 'fechaInicio'; // Corrección de nombre de campo
-        if (key === 'fechafin') key = 'fechaFin'; // Corrección de nombre de campo
         formData[key] = input.value;
     });
+
+    if (section === 'planes') {
+        const fechaAprobacion = formData.fechaAprobacion;
+        if (fechaAprobacion) {
+            const approvalDateObj = new Date(fechaAprobacion);
+            const vigenciaDateObj = new Date(approvalDateObj);
+            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 2);
+            formData.vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+            const today = new Date();
+            formData.estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+        } else {
+            showAlert(section, 'La fecha de aprobación es requerida para planes de seguridad.', 'error');
+            return; // Detiene la adición si falta la fecha de aprobación
+        }
+    }
 
     database[section].push(formData); // Añade el nuevo registro a la base de datos
     
@@ -603,7 +631,18 @@ function createTable(section, data) {
         return '<div class="no-data">No se encontraron resultados</div>';
     }
 
-    const headers = Object.keys(data[0]); // Obtiene los encabezados de la tabla a partir de las claves del primer objeto
+    // Determine headers based on section to show relevant columns for specific sections
+    let headers = Object.keys(data[0]);
+    if (section === 'planes') {
+        // Specific headers for 'planes' to ensure relevant columns are first and status is shown
+        headers = ['codigo', 'tipo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'revision', 'objetivo', 'alcance'];
+    } else if (section === 'servicentros') {
+        headers = ['codigo', 'nombre', 'tipo', 'ubicacion', 'estado'];
+    } else if (section === 'sobre-500-uf') {
+        headers = ['id', 'descripcion', 'monto', 'fecha', 'responsable', 'estado'];
+    }
+    // For other sections, use Object.keys(data[0]) as default
+
     let tableHTML = '<table class="data-table"><thead><tr>';
     
     headers.forEach(header => {
@@ -612,18 +651,25 @@ function createTable(section, data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((row, index) => {
-        // En este contexto, 'index' se refiere al índice dentro de 'data' (filtrada).
-        // Para 'showDetails', necesitamos el índice original de la directiva en 'database[section]'.
-        // Se encuentra el índice original del objeto 'row' dentro del array completo 'database[section]'.
-        const originalIndex = database[section].indexOf(row);
+        const originalIndex = database[section].indexOf(row); // Get original index
         tableHTML += `<tr onclick="showDetails('${section}', ${originalIndex !== -1 ? originalIndex : index})">`;
 
         headers.forEach(header => {
             let value = row[header] || '-';
-            if (typeof value === 'string' && value.length > 50) { // Trunca el texto largo para la visualización en tabla
+            let cellClass = '';
+            // Apply color coding for plan status
+            if (section === 'planes' && header === 'estadoVigencia') {
+                if (value === 'Vigente') {
+                    cellClass = 'status-vigente';
+                } else if (value === 'Vencido') {
+                    cellClass = 'status-vencido';
+                }
+            }
+            
+            if (typeof value === 'string' && value.length > 50 && header !== 'rut') { // Truncate long text, but not RUT
                 value = value.substring(0, 50) + '...';
             }
-            tableHTML += `<td>${value}</td>`;
+            tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
     });
@@ -642,8 +688,8 @@ function formatHeader(header) {
         descripcion: 'Descripción',
         responsable: 'Responsable',
         tipo: 'Tipo',
-        vigencia: 'Vigencia',
-        revision: 'Revisión',
+        vigencia: 'Fecha de Vigencia',
+        revision: 'Fecha de Revisión',
         objetivo: 'Objetivo',
         alcance: 'Alcance',
         numero: 'Número de Directiva',
@@ -671,14 +717,15 @@ function formatHeader(header) {
         nombreEvento: 'Nombre del Evento',
         duracion: 'Duración',
         lugarInstalacion: 'Lugar de Instalación',
-        fechaAprobacion: 'Fecha de Aprobación',
+        fechaAprobacion: 'Fecha de Aprobación', // New header
         cantidadGuardias: 'Cantidad de Guardias',
         nombreEmpresa: 'Nombre Empresa', 
         rut: 'RUT',
         fechaEvento: 'Fecha del Evento',
         estadoAprobacion: 'Estado de Aprobación',
         id: 'ID',
-        monto: 'Monto (UF)' // Nuevo encabezado para "Sobre 500 UF"
+        monto: 'Monto (UF)',
+        estadoVigencia: 'Estado de Vigencia' // New header
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
@@ -709,10 +756,20 @@ function showDetails(section, index) {
     
     let detailsHTML = '';
     Object.keys(item).forEach(key => {
+        let value = item[key] || 'No especificado';
+        let detailClass = '';
+        if (section === 'planes' && key === 'estadoVigencia') {
+            if (value === 'Vigente') {
+                detailClass = 'status-vigente';
+            } else if (value === 'Vencido') {
+                detailClass = 'status-vencido';
+            }
+        }
+
         detailsHTML += `
             <div class="detail-item ${section}">
                 <div class="detail-label">${formatHeader(key)}</div>
-                <div class="detail-value">${item[key] || 'No especificado'}</div>
+                <div class="detail-value ${detailClass}">${value}</div>
             </div>
         `;
     });
