@@ -311,7 +311,7 @@ body {
     text-align: left;
     border-bottom: 1px solid #eee;
     vertical-align: middle; 
-    font-size: 0.8em; /* Tamaño de letra más pequeño */
+    font-size: 0.9em; /* Tamaño de letra ligeramente más grande */
     white-space: nowrap; /* Evita que el texto se envuelva */
     overflow: hidden; /* Oculta el texto que se desborda */
     text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
