@@ -169,36 +169,28 @@
 
             <div id="medidas-consultar" class="tab-content active">
                 <div class="medidas-menu-buttons">
-                    <button class="btn medidas" onclick="showRecords('medidas')">Medidas Generales</button>
+                    <!-- Eliminado el botón "Medidas Generales" -->
                     <button class="btn medidas" onclick="showRecords('servicentros')">Servicentros (<span id="servicentros-count-sub">0</span>)</button>
                     <button class="btn medidas" onclick="showRecords('sobre-500-uf')">Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span>)</button>
                 </div>
                 
-                <!-- Contenedor para la lista de Medidas Generales (oculto por defecto) -->
+                <!-- Contenedor para la lista de Medidas Generales (aún se necesita para el script, pero sin buscador ni botón de consulta directa) -->
                 <div id="medidas-records" class="medidas-sub-section-records">
                     <div class="section-header">
                         <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
                         <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
                     </div>
-                    <div class="search-container">
-                        <input type="text" id="medidas-generales-search" class="search-input" placeholder="Buscar medida general por código, categoría...">
-                        <button class="btn medidas" onclick="searchData('medidas', document.getElementById('medidas-generales-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('medidas')">Mostrar Todas</button>
-                    </div>
+                    <!-- Eliminado el buscador -->
                     <div id="medidas-results"></div>
                 </div>
 
-                <!-- Contenedor para la lista de Servicentros (oculto por defecto) -->
+                <!-- Contenedor para la lista de Servicentros -->
                 <div id="servicentros-records" class="medidas-sub-section-records">
                     <div class="section-header">
                         <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
                         <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
                     </div>
-                    <div class="search-container">
-                        <input type="text" id="servicentros-search" class="search-input" placeholder="Buscar servicentro por código, tipo, dirección...">
-                        <button class="btn medidas" onclick="searchData('servicentros', document.getElementById('servicentros-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('servicentros')">Mostrar Todos</button>
-                    </div>
+                    <!-- Eliminado el buscador -->
                     <div id="servicentros-results"></div>
                 </div>
 
@@ -208,11 +200,7 @@
                         <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
                         <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
                     </div>
-                    <div class="search-container">
-                        <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="Buscar por código, descripción, responsable...">
-                        <button class="btn medidas" onclick="searchData('sobre-500-uf', document.getElementById('sobre-500-uf-search').value)">Buscar</button>
-                        <button class="btn btn-secondary" onclick="loadData('sobre-500-uf')">Mostrar Todos</button>
-                    </div>
+                    <!-- Eliminado el buscador -->
                     <div id="sobre-500-uf-results"></div>
                 </div>
             </div>
