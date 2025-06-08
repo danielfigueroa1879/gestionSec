@@ -169,40 +169,33 @@
 
             <div id="medidas-consultar" class="tab-content active">
                 <div class="medidas-menu-buttons">
-                    <!-- Eliminado el botón "Medidas Generales" -->
-                    <button class="btn medidas" onclick="showRecords('servicentros')">Servicentros (<span id="servicentros-count-sub">0</span>)</button>
-                    <button class="btn medidas" onclick="showRecords('sobre-500-uf')">Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span>)</button>
+                    <button class="btn medidas" onclick="showSubMedidaPage('servicentros')">Servicentros (<span id="servicentros-count-sub">0</span>)</button>
+                    <button class="btn medidas" onclick="showSubMedidaPage('sobre-500-uf')">Sobre 500 UF (<span id="sobre-500-uf-count-sub">0</span>)</button>
                 </div>
-                
-                <!-- Contenedor para la lista de Medidas Generales (aún se necesita para el script, pero sin buscador ni botón de consulta directa) -->
-                <div id="medidas-records" class="medidas-sub-section-records">
-                    <div class="section-header">
-                        <h3 class="section-title medidas">🛡️ Lista de Medidas de Seguridad Generales</h3>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                    </div>
-                    <!-- Eliminado el buscador -->
-                    <div id="medidas-results"></div>
+            </div>
+            
+            <!-- Nueva página para Servicentros -->
+            <div id="servicentros-page" class="tab-content">
+                <div class="section-header">
+                    <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
+                    <button class="btn btn-secondary" onclick="showTab('medidas', 'consultar')">⬅️ Volver</button>
                 </div>
+                <div class="search-container">
+                    <input type="text" id="servicentros-search" class="search-input" placeholder="🔍 Buscar servicentro por código, tipo, dirección..." onkeyup="searchData('servicentros', this.value)">
+                </div>
+                <div id="servicentros-results"></div>
+            </div>
 
-                <!-- Contenedor para la lista de Servicentros -->
-                <div id="servicentros-records" class="medidas-sub-section-records">
-                    <div class="section-header">
-                        <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                    </div>
-                    <!-- Eliminado el buscador -->
-                    <div id="servicentros-results"></div>
+            <!-- Nueva página para Sobre 500 UF -->
+            <div id="sobre-500-uf-page" class="tab-content">
+                <div class="section-header">
+                    <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
+                    <button class="btn btn-secondary" onclick="showTab('medidas', 'consultar')">⬅️ Volver</button>
                 </div>
-
-                <!-- Nuevo contenedor para los registros de "Sobre 500 UF" -->
-                <div id="sobre-500-uf-records" class="medidas-sub-section-records">
-                    <div class="section-header">
-                        <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
-                        <button class="btn btn-secondary" onclick="backToMedidasConsultar()">⬅️ Volver</button>
-                    </div>
-                    <!-- Eliminado el buscador -->
-                    <div id="sobre-500-uf-results"></div>
+                <div class="search-container">
+                    <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="🔍 Buscar por código, descripción, responsable..." onkeyup="searchData('sobre-500-uf', this.value)">
                 </div>
+                <div id="sobre-500-uf-results"></div>
             </div>
 
             <div id="medidas-agregar" class="tab-content">
