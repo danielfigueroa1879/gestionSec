@@ -305,6 +305,13 @@ body {
     table-layout: fixed; /* Ayuda a que las columnas no se expandan infinitamente */
 }
 
+/* Estilos para la primera columna (códigos/IDs/números) */
+.data-table th:first-child,
+.data-table td:first-child {
+    width: 100px; /* Ancho fijo para la primera columna, ajustado */
+    min-width: 80px; /* Asegura que no sea demasiado pequeña */
+}
+
 .data-table th,
 .data-table td {
     padding: 15px;
