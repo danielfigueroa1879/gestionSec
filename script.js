@@ -589,9 +589,10 @@ function loadCompanySpecificDirectivas(empresaNombre) {
                     cellClass = 'status-vencido';
                 }
             }
-            if (typeof value === 'string' && value.length > 50) {
-                value = value.substring(0, 50) + '...';
-            }
+            // Para esta tabla específica, no se trunca
+            // if (typeof value === 'string' && value.length > 50) {
+            //     value = value.substring(0, 50) + '...';
+            // }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
@@ -649,9 +650,10 @@ function createTableForCompanySpecificDirectivas(data) {
                     cellClass = 'status-vencido';
                 }
             }
-            if (typeof value === 'string' && value.length > 50) {
-                value = value.substring(0, 50) + '...';
-            }
+            // Para esta tabla específica, no se trunca
+            // if (typeof value === 'string' && value.length > 50) {
+            //     value = value.substring(0, 50) + '...';
+            // }
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
@@ -869,7 +871,8 @@ function createTable(section, data) {
         headers = ['codigo', 'tipo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'objeto', 'metodologia', 'responsable'];
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias', 'area', 'version', 'titulo', 'responsable', 'estado'];
-    } else if (section === 'guardias-propios') { // MODIFICADO: Eliminar columnas 'turno', 'responsable', 'estado'
+    } else if (section === 'guardias-propios') { 
+        // MODIFICADO: Eliminar columnas 'turno', 'responsable', 'estado', 'version', 'titulo', 'contenido', 'area' para Guardias Propios
         headers = ['numero', 'empresa', 'tipoServicio', 'lugarInstalacion', 'direccion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'cantidadGuardias'];
     } else if (section === 'eventos-masivos') { // **CAMBIADO**: Quitar vigencia y estadoVigencia
         headers = ['numero', 'nombreEmpresa', 'rut', 'fechaEvento', 'nombreEvento', 'direccion', 'estadoAprobacion', 'cantidadGuardias'];
@@ -904,10 +907,15 @@ function createTable(section, data) {
                 }
             }
             
-            // Trunca texto largo si es necesario, excepto para RUTs y nombres de empresa/dirección en la lista de empresas RRHH
-            if (typeof value === 'string' && value.length > 50 && header !== 'rut' && header !== 'nombre' && header !== 'direccion') { 
-                value = value.substring(0, 50) + '...';
+            // Truncamiento de texto condicional
+            const sectionsToTruncate = ['eventos-masivos']; 
+            if (sectionsToTruncate.includes(section)) {
+                // Aplica truncamiento solo a las secciones especificadas
+                if (typeof value === 'string' && value.length > 50 && header !== 'rut') { 
+                    value = value.substring(0, 50) + '...';
+                }
             }
+            // Para el resto de secciones, el texto no se truncará.
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
