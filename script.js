@@ -428,7 +428,7 @@ function formatHeader(header) {
         telefono: 'Teléfono',
         horario: 'Horario',
         capacidad: 'Capacidad',
-        empresa: 'Empresa',
+        empresa: 'Nombre Empresa', // Changed from 'Empresa' to 'Nombre Empresa'
         tipoDirectiva: 'Tipo Directiva',
         tipoServicio: 'Tipo Servicio',
         numeroGuardias: 'Número Guardias',
