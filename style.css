@@ -302,7 +302,8 @@ body {
     margin-top: 20px;
     background: white;
     border-radius: 8px;
-    overflow-x: auto; /* Permite desplazamiento horizontal si el contenido es demasiado ancho */
+    /* La propiedad clave para la responsividad en móviles es overflow-x: auto; */
+    overflow-x: auto; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto; /* Centra la tabla horizontalmente */
     margin-right: auto; /* Centra la tabla horizontalmente */
@@ -567,3 +568,4 @@ body {
         flex-direction: column; /* Apila los botones de Medidas en móvil */
     }
 }
+
