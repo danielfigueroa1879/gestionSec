@@ -535,6 +535,12 @@ body {
 
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
+    /* Asegurarse de que el body no tenga padding o margin extra */
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
     /* Ajustes para el contenedor principal de la aplicación en móvil */
     .container {
         padding: 0px; /* Elimina el padding para que el contenido ocupe todo el ancho */
@@ -684,10 +690,11 @@ body {
     /* Ajustes para el contenedor blanco principal de las tarjetas de directivas (requiere la clase en HTML) */
     .directivas-main-content-wrapper {
         max-width: 100% !important; /* Elimina la limitación de ancho */
-        width: 100% !important; /* Ocupa todo el ancho disponible */
-        margin: 0 auto !important; /* Centra el contenedor */
+        width: 100vw !important; /* Ocupa el 100% del ancho del viewport */
+        margin: 0 !important; /* Elimina márgenes */
         padding: 10px !important; /* Ajusta el padding interno, un poco más pequeño */
         border-radius: 0 !important; /* Remueve el radio de borde para un aspecto de borde a borde */
+        box-sizing: border-box !important; /* Asegura que el padding se incluya en el width */
     }
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
@@ -712,10 +719,11 @@ body {
 
     /* Asegurar que la sección directivas (el contenedor blanco general de la sección) ocupe todo el ancho */
     .section.directivas {
-        padding-left: 0px; /* Elimina el padding horizontal de la sección */
-        padding-right: 0px; /* Elimina el padding horizontal de la sección */
+        padding: 0px !important; /* Elimina el padding de la sección */
         border-radius: 0; /* Opcional: remover border-radius para una apariencia de borde a borde */
-        width: 100%; /* Asegura que el contenedor blanco ocupe todo el ancho */
+        width: 100vw !important; /* Asegura que el contenedor blanco ocupe todo el ancho del viewport */
+        margin: 0 !important; /* Elimina márgenes */
+        box-sizing: border-box !important; /* Asegura que el padding se incluya en el width */
     }
 
     /* Asegurar que el contenedor del menú de directivas también ocupe todo el ancho */
