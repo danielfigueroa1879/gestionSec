@@ -733,4 +733,64 @@ body {
         gap: 15px; /* Aumenta el espacio entre las tarjetas */
         width: 100%; /* Asegura que este contenedor también ocupe todo el ancho */
     }
+
+    /* SOLUCIÓN SIMPLE: Agregar estas reglas al final de la sección @media (max-width: 768px) en tu style.css */
+
+@media (max-width: 768px) {
+    /* ... tus reglas existentes ... */
+    
+    /* Ocultar el título "DIRECTIVAS DE FUNCIONAMIENTO" específicamente */
+    #directivas-consultar div[style*="text-align: center"] h2[style*="color: #f39c12"] {
+        display: none !important;
+    }
+    
+    /* También como respaldo, ocultar cualquier h2 con ese color y tamaño en directivas */
+    #directivas-consultar h2[style*="font-size: 2.2rem"][style*="color: #f39c12"] {
+        display: none !important;
+    }
+    
+    /* Hacer que el contenedor blanco ocupe todo el ancho */
+    #directivas-consultar div[style*="max-width: 1000px"] {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 15px !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        width: 100vw !important;
+        left: 50% !important;
+        right: 50% !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ajustar el contenedor padre para permitir el ancho completo */
+    #directivas-consultar div[style*="padding: 30px"] {
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Asegurar que las tarjetas amarillas ocupen todo el ancho disponible */
+    #directivas-consultar .directivas-menu-card {
+        width: 100% !important;
+        margin: 0 0 15px 0 !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ajustar títulos en las tarjetas amarillas */
+    #directivas-consultar .directivas-menu-card h3 {
+        font-size: 1rem !important;
+        margin-bottom: 10px !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Ajustar botones en las tarjetas */
+    #directivas-consultar .directivas-menu-card .btn {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+        margin-top: 10px !important;
+    }
+  }
 }
