@@ -539,6 +539,7 @@ body {
     body {
         padding: 0 !important;
         margin: 0 !important;
+        overflow-x: hidden; /* Evita el scroll horizontal en el body */
     }
 
     /* Ajustes para el contenedor principal de la aplicación en móvil */
@@ -690,31 +691,31 @@ body {
     /* Ajustes para el contenedor blanco principal de las tarjetas de directivas (requiere la clase en HTML) */
     .directivas-main-content-wrapper {
         max-width: 100% !important; /* Elimina la limitación de ancho */
-        width: 100vw !important; /* Ocupa el 100% del ancho del viewport */
-        margin: 0 !important; /* Elimina márgenes */
-        padding: 10px !important; /* Ajusta el padding interno, un poco más pequeño */
-        border-radius: 0 !important; /* Remueve el radio de borde para un aspecto de borde a borde */
+        width: 96vw !important; /* Ocupa el 96% del ancho del viewport */
+        margin: 10px auto !important; /* Centra el contenedor con un margen vertical */
+        padding: 15px !important; /* Ajusta el padding interno */
+        border-radius: 10px !important; /* Mantiene un radio de borde */
         box-sizing: border-box !important; /* Asegura que el padding se incluya en el width */
     }
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
         width: 100%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
-        padding: 10px; /* Reduce el padding para un mejor ajuste */
-        margin-bottom: 10px; /* Ajusta el margen inferior */
+        padding: 15px; /* Aumenta el padding para un mejor ajuste */
+        margin-bottom: 15px; /* Aumenta el margen inferior para una clara separación */
     }
 
     /* Ajustes para los títulos dentro de las tarjetas de directivas */
     .directivas-menu-card h3 {
-        font-size: 0.95rem; /* Reduce el tamaño del título ligeramente */
-        margin-bottom: 8px; /* Reduce el margen inferior del título */
+        font-size: 1rem; /* Reduce el tamaño del título */
+        margin-bottom: 10px; /* Reduce el margen inferior del título */
     }
 
     /* Ajustes para los botones dentro de las tarjetas de directivas (Ver Registro) */
     .directivas-menu-card .btn {
-        padding: 5px 10px; /* Reduce el padding de los botones */
-        font-size: 0.75rem; /* Reduce el tamaño de fuente de los botones */
-        margin-top: 8px; /* Ajusta el margen superior */
+        padding: 6px 12px; /* Reduce el padding de los botones */
+        font-size: 0.8rem; /* Reduce el tamaño de fuente de los botones */
+        margin-top: 10px; /* Ajusta el margen superior */
     }
 
     /* Asegurar que la sección directivas (el contenedor blanco general de la sección) ocupe todo el ancho */
@@ -729,7 +730,7 @@ body {
     /* Asegurar que el contenedor del menú de directivas también ocupe todo el ancho */
     #directivas-menu { /* Asumiendo que el contenedor de los cuadros amarillos tiene este ID */
         grid-template-columns: 1fr; /* Asegura una sola columna en móvil */
-        gap: 10px; /* Ajusta el espacio entre las tarjetas */
+        gap: 15px; /* Aumenta el espacio entre las tarjetas */
         width: 100%; /* Asegura que este contenedor también ocupe todo el ancho */
     }
 }
