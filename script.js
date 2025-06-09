@@ -1141,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Eventos Masivos': database['eventos-masivos'].length,
         'Directivas Generales': database['directivas-generales'].length
     });
-});
+
 // SOLUCIÓN RÁPIDA: Agregar estas líneas al FINAL de tu script.js
 
 // Forzar regeneración de datos al cargar la página
@@ -1212,3 +1212,21 @@ function forceLoadData(section) {
         loadData(section);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+});
