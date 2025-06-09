@@ -1142,3 +1142,73 @@ document.addEventListener('DOMContentLoaded', function() {
         'Directivas Generales': database['directivas-generales'].length
     });
 });
+// SOLUCIÓN RÁPIDA: Agregar estas líneas al FINAL de tu script.js
+
+// Forzar regeneración de datos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Regenerar la base de datos
+    database = generateSampleData();
+    
+    // Asegurar que empresasRRHHList esté poblada
+    if (!empresasRRHHList || empresasRRHHList.length === 0) {
+        console.log("Regenerando empresasRRHHList...");
+        // Esta parte debería estar en generateSampleData(), pero por si acaso:
+        empresasRRHHList = [];
+        const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
+        const sampleAddresses = [
+            'Av. Providencia 1234, Santiago',
+            'Calle Moneda 567, Santiago',
+            'Av. Las Condes 890, Las Condes'
+        ];
+        
+        for (let i = 1; i <= 300; i++) {
+            const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
+            const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
+            const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
+            const direccion = sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)];
+
+            empresasRRHHList.push({
+                id: i,
+                nombre: empresaName,
+                rut: rut,
+                direccion: direccion,
+                directivasCount: 0
+            });
+        }
+    }
+    
+    updateCounts();
+    
+    console.log('=== VERIFICACIÓN DE DATOS ===');
+    console.log('Empresas RRHH DB:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'NO EXISTE');
+    console.log('Guardias Propios DB:', database['guardias-propios'] ? database['guardias-propios'].length : 'NO EXISTE');
+    console.log('Eventos Masivos DB:', database['eventos-masivos'] ? database['eventos-masivos'].length : 'NO EXISTE');
+    console.log('EmpresasRRHHList:', empresasRRHHList ? empresasRRHHList.length : 'NO EXISTE');
+});
+
+// Función de debug simplificada
+function debugData() {
+    console.log('=== DEBUG COMPLETO ===');
+    console.log('Database keys:', Object.keys(database));
+    console.log('Empresas RRHH:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'NO EXISTE');
+    console.log('Guardias Propios:', database['guardias-propios'] ? database['guardias-propios'].length : 'NO EXISTE');
+    console.log('Eventos Masivos:', database['eventos-masivos'] ? database['eventos-masivos'].length : 'NO EXISTE');
+    console.log('EmpresasRRHHList:', empresasRRHHList ? empresasRRHHList.length : 'NO EXISTE');
+    
+    // Verificar elementos HTML
+    console.log('=== ELEMENTOS HTML ===');
+    console.log('empresas-rrhh-results existe:', !!document.getElementById('empresas-rrhh-results'));
+    console.log('guardias-propios-results existe:', !!document.getElementById('guardias-propios-results'));
+    console.log('eventos-masivos-results existe:', !!document.getElementById('eventos-masivos-results'));
+}
+
+// Función para forzar carga manual (usar desde consola si es necesario)
+function forceLoadData(section) {
+    console.log(`Forzando carga de datos para: ${section}`);
+    
+    if (section === 'empresas-rrhh') {
+        renderEmpresasRRHHList();
+    } else {
+        loadData(section);
+    }
+}
