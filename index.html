@@ -6,6 +6,8 @@
     <title>Sistema de Gestión de Seguridad</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Agregar SheetJS para leer archivos Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -14,6 +16,14 @@
             <header class="header">
                 <h1>Sistema de Gestión de Seguridad de Seguridad Privada OS10 Coquimbo</h1>
                 <p>Gestiona eficientemente estudios, planes, medidas y directivas de seguridad.</p>
+                <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e8; border-radius: 8px; border-left: 4px solid #27ae60;">
+                    <p style="margin: 0; color: #2c5530; font-weight: bold;">
+                        📊 Sistema cargado con datos reales desde Excel
+                    </p>
+                    <p style="margin: 5px 0 0 0; color: #2c5530; font-size: 0.9em;">
+                        Los datos se cargan automáticamente desde el archivo Excel al iniciar la aplicación.
+                    </p>
+                </div>
             </header>
 
             <div class="main-menu">
@@ -61,7 +71,7 @@
 
             <div id="estudios-consultar" class="tab-content active">
                 <div class="search-container">
-                    <input type="text" id="estudios-search" class="search-input" placeholder="Buscar estudio por código, tipo, responsable...">
+                    <input type="text" id="estudios-search" class="search-input" placeholder="Buscar estudio por código, entidad, RUT...">
                     <button class="btn estudios" onclick="searchData('estudios', document.getElementById('estudios-search').value)">Buscar</button>
                     <button class="btn btn-secondary" onclick="loadData('estudios')">Mostrar Todos</button>
                 </div>
@@ -76,7 +86,7 @@
                             <input type="text" id="estudio-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="estudio-tipo">Tipo de Estudio:</label>
+                            <label for="estudio-tipo">Entidad:</label>
                             <input type="text" id="estudio-tipo" required>
                         </div>
                         <div class="form-group">
@@ -85,7 +95,7 @@
                         </div>
                         <div class="form-group">
                             <label for="estudio-rut">R.U.T:</label>
-                            <input type="text" id="estudio-rut">
+                            <input type="text" id="estudio-rut" placeholder="99.999.999-9">
                         </div>
                         <div class="form-group">
                             <label for="estudio-direccion">Dirección:</label>
@@ -115,7 +125,7 @@
 
             <div id="planes-consultar" class="tab-content active">
                 <div class="search-container">
-                    <input type="text" id="planes-search" class="search-input" placeholder="Buscar plan por código, tipo, objetivo...">
+                    <input type="text" id="planes-search" class="search-input" placeholder="Buscar plan por código, entidad, dirección...">
                     <button class="btn planes" onclick="searchData('planes', document.getElementById('planes-search').value)">Buscar</button>
                     <button class="btn btn-secondary" onclick="loadData('planes')">Mostrar Todos</button>
                 </div>
@@ -130,7 +140,7 @@
                             <input type="text" id="plan-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="plan-tipo">Tipo de Plan:</label>
+                            <label for="plan-tipo">Entidad:</label>
                             <input type="text" id="plan-tipo" required>
                         </div>
                         <div class="form-group">
@@ -139,7 +149,7 @@
                         </div>
                         <div class="form-group">
                             <label for="plan-rut">R.U.T:</label>
-                            <input type="text" id="plan-rut">
+                            <input type="text" id="plan-rut" placeholder="99.999.999-9">
                         </div>
                         <div class="form-group">
                             <label for="plan-revision">Dirección:</label>
@@ -155,7 +165,7 @@
             </div>
         </section>
 
-        <!-- Sección de Medidas de Seguridad - CON 2 CUADROS NUEVOS -->
+        <!-- Sección de Medidas de Seguridad -->
         <section id="medidas" class="section">
             <header class="section-header">
                 <h2 class="section-title medidas">Medidas de Seguridad</h2>
@@ -167,55 +177,40 @@
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON LOS 2 CUADROS DE MEDIDAS -->
+            <!-- SECCIÓN PRINCIPAL CON DATOS DESDE EXCEL -->
             <div id="medidas-consultar" class="tab-content active">
-                <div class="medidas-container">
-                    
-                    <!-- Cuadro 1: SERVICENTROS -->
-                    <div class="medida-box servicentros-box">
-                        <h3 class="medida-box-title">🏪 SERVICENTROS</h3>
-                        <p class="medida-box-count">(90 registros)</p>
-                        <div class="medida-box-content">
-                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('servicentros')">
-                                📋 Ver Lista de Servicentros
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Cuadro 2: SOBRE 500 UF -->
-                    <div class="medida-box sobre-500-uf-box">
-                        <h3 class="medida-box-title">💰 SOBRE 500 UF</h3>
-                        <p class="medida-box-count">(95 registros)</p>
-                        <div class="medida-box-content">
-                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('sobre-500-uf')">
-                                📋 Ver Registros Sobre 500 UF
-                            </button>
-                        </div>
-                    </div>
-
+                <div style="margin-bottom: 30px; padding: 20px; background-color: #f0f8f0; border-radius: 10px; border-left: 4px solid #27ae60;">
+                    <h3 style="color: #27ae60; margin-bottom: 10px;">📋 Medidas de Seguridad Ley 19.303</h3>
+                    <p style="margin: 0; color: #2c5530;">
+                        Datos cargados desde el Excel: <strong>MEDIDAS DE SEGURIDAD LEY 19.303</strong>
+                    </p>
                 </div>
+                
+                <div class="search-container">
+                    <input type="text" id="medidas-search" class="search-input" placeholder="🔍 Buscar medida por código, entidad, instalación..." onkeyup="searchData('medidas', this.value)">
+                </div>
+                <div id="medidas-results"></div>
             </div>
             
-            <!-- Nueva página para Servicentros -->
-            <div id="servicentros-page" class="tab-content">
+            <!-- ANTIGUAS SUBSECCIONES - Ahora ocultas por defecto -->
+            <div id="servicentros-page" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
                     <button class="btn btn-secondary" onclick="showTab('medidas', 'consultar')">⬅️ Volver</button>
                 </div>
                 <div class="search-container">
-                    <input type="text" id="servicentros-search" class="search-input" placeholder="🔍 Buscar servicentro por código, tipo, dirección..." onkeyup="searchData('servicentros', this.value)">
+                    <input type="text" id="servicentros-search" class="search-input" placeholder="🔍 Buscar servicentro..." onkeyup="searchData('servicentros', this.value)">
                 </div>
                 <div id="servicentros-results"></div>
             </div>
 
-            <!-- Nueva página para Sobre 500 UF -->
-            <div id="sobre-500-uf-page" class="tab-content">
+            <div id="sobre-500-uf-page" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
                     <button class="btn btn-secondary" onclick="showTab('medidas', 'consultar')">⬅️ Volver</button>
                 </div>
                 <div class="search-container">
-                    <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="🔍 Buscar por código, descripción, responsable..." onkeyup="searchData('sobre-500-uf', this.value)">
+                    <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="🔍 Buscar registro..." onkeyup="searchData('sobre-500-uf', this.value)">
                 </div>
                 <div id="sobre-500-uf-results"></div>
             </div>
@@ -228,7 +223,7 @@
                             <input type="text" id="medida-codigo" required>
                         </div>
                         <div class="form-group">
-                            <label for="medida-categoria">Categoría (Entidad):</label>
+                            <label for="medida-categoria">Entidad:</label>
                             <input type="text" id="medida-categoria" required>
                         </div>
                         <div class="form-group">
@@ -237,7 +232,7 @@
                         </div>
                         <div class="form-group">
                             <label for="medida-rut">R.U.T:</label>
-                            <input type="text" id="medida-rut">
+                            <input type="text" id="medida-rut" placeholder="99.999.999-9">
                         </div>
                         <div class="form-group">
                             <label for="medida-direccion">Dirección:</label>
@@ -253,7 +248,7 @@
             </div>
         </section>
 
-        <!-- Sección de Directivas de Funcionamiento - CON 3 CUADROS NUEVOS -->
+        <!-- Sección de Directivas de Funcionamiento -->
         <section id="directivas" class="section">
             <header class="section-header">
                 <h2 class="section-title directivas">Directivas de Funcionamiento</h2>
@@ -265,25 +260,25 @@
                 <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON LOS 3 CUADROS DE DIRECTIVAS -->
+            <!-- SECCIÓN PRINCIPAL CON DATOS DESDE EXCEL -->
             <div id="directivas-consultar" class="tab-content active">
                 <div class="directivas-container">
                     
-                    <!-- Cuadro 1: EMPRESAS DE RECURSOS HUMANOS -->
+                    <!-- Cuadro único: DIRECTIVAS DE FUNCIONAMIENTOS desde Excel -->
                     <div class="directiva-box empresas-rrhh-box">
-                        <h3 class="directiva-box-title">👥 EMPRESAS DE RECURSOS HUMANOS</h3>
-                        <p class="directiva-box-count">(300 empresas)</p>
+                        <h3 class="directiva-box-title">📋 DIRECTIVAS DE FUNCIONAMIENTOS</h3>
+                        <p class="directiva-box-count">(Datos desde Excel)</p>
                         <div class="directiva-box-content">
                             <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('empresas-rrhh')">
-                                📋 Ver Lista de Empresas
+                                📋 Ver Empresas de RRHH
                             </button>
                         </div>
                     </div>
 
-                    <!-- Cuadro 2: GUARDIAS PROPIOS -->
-                    <div class="directiva-box guardias-propios-box">
+                    <!-- Cuadros adicionales disponibles pero ocultos por defecto -->
+                    <div class="directiva-box guardias-propios-box" style="display: none;">
                         <h3 class="directiva-box-title">🛡️ GUARDIAS PROPIOS</h3>
-                        <p class="directiva-box-count">(50 registros)</p>
+                        <p class="directiva-box-count">(0 registros)</p>
                         <div class="directiva-box-content">
                             <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('guardias-propios')">
                                 📋 Ver Todos los Registros
@@ -291,10 +286,9 @@
                         </div>
                     </div>
 
-                    <!-- Cuadro 3: EVENTOS MASIVOS -->
-                    <div class="directiva-box eventos-masivos-box">
+                    <div class="directiva-box eventos-masivos-box" style="display: none;">
                         <h3 class="directiva-box-title">🎉 EVENTOS MASIVOS</h3>
-                        <p class="directiva-box-count">(50 registros)</p>
+                        <p class="directiva-box-count">(0 registros)</p>
                         <div class="directiva-box-content">
                             <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('eventos-masivos')">
                                 📋 Ver Todos los Registros
@@ -351,7 +345,7 @@
                     <input type="text" class="search-input" placeholder="🔍 Buscar directivas de esta empresa..." onkeyup="searchCompanySpecificDirectivas(this.value)">
                 </div>
                 <div id="empresa-specific-details-results">
-                    <!-- Los detalles de las directivas se cargarán aquí en formato de tabla -->
+                    <!-- Los detalles de las directivas se cargarán aquí -->
                 </div>
             </div>
 
@@ -410,7 +404,7 @@
         </div>
     </div>
 
-    <!-- Enlaza el archivo JavaScript para la funcionalidad de la aplicación -->
+    <!-- Enlaza el archivo JavaScript adaptado -->
     <script src="script.js"></script>
 </body>
 </html>
