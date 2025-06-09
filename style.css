@@ -12,6 +12,7 @@ body {
     background-color: #556b2f; /* Verde oliva oscuro para el fondo del cuerpo */
     min-height: 100vh;
     color: #333;
+    writing-mode: horizontal-tb; /* Asegura que el texto se vea horizontal en todos los navegadores */
 }
 
 /* Estilos para el contenedor principal de la aplicación */
@@ -322,6 +323,7 @@ body {
     text-overflow: clip; /* Elimina los puntos suspensivos por defecto */
     word-break: break-word; /* Asegura que palabras largas se rompan y envuelvan */
     word-wrap: break-word; /* Propiedad antigua para compatibilidad */
+    writing-mode: horizontal-tb; /* Asegura que el texto en las celdas se vea horizontal */
 }
 
 /* Estilos para la primera columna (códigos/IDs/números) */
