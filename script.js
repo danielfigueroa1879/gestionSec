@@ -4,7 +4,7 @@ let currentDirectivasSubSectionType = '';
 let currentEmpresaSelected = ''; 
 let database = {}; // Se llenará con datos del Excel o ejemplos
 
-// Función para cargar datos desde el Excel (versión para navegadores normales)
+// Función para cargar datos desde el Excel (versión corregida para navegadores normales)
 async function loadDataFromExcel(file = null) {
     try {
         let arrayBuffer;
@@ -13,12 +13,19 @@ async function loadDataFromExcel(file = null) {
             // Si se proporciona un archivo, leerlo
             arrayBuffer = await file.arrayBuffer();
         } else {
-            // Intentar cargar archivo automáticamente (solo funciona en entornos especiales)
-            if (typeof window.fs !== 'undefined') {
-                const response = await window.fs.readFile('BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx');
-                arrayBuffer = response.buffer;
+            // Intentar cargar archivo automáticamente solo si window.fs está disponible
+            if (typeof window.fs !== 'undefined' && typeof window.fs.readFile === 'function') {
+                try {
+                    const response = await window.fs.readFile('BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx');
+                    arrayBuffer = response.buffer;
+                } catch (fsError) {
+                    console.log('📁 No se pudo cargar automáticamente desde window.fs:', fsError.message);
+                    throw new Error('Archivo no encontrado automáticamente');
+                }
             } else {
-                throw new Error('window.fs no disponible y no se proporcionó archivo');
+                // Si window.fs no está disponible, usar datos de ejemplo directamente
+                console.log('📁 window.fs no disponible, usando datos de ejemplo');
+                throw new Error('window.fs no disponible - usando datos de ejemplo');
             }
         }
 
@@ -70,7 +77,7 @@ async function loadDataFromExcel(file = null) {
         showExcelLoadSuccess();
 
     } catch (error) {
-        console.error('❌ Error cargando datos del Excel:', error);
+        console.log('📝 Cargando datos de ejemplo debido a:', error.message);
         // Si hay error, generar datos de ejemplo como fallback
         generateSampleData();
         showExcelLoadError();
@@ -79,35 +86,42 @@ async function loadDataFromExcel(file = null) {
 
 // Función para mostrar mensaje de éxito
 function showExcelLoadSuccess() {
-    const statusDiv = document.getElementById('excel-status');
-    if (statusDiv) {
-        statusDiv.innerHTML = `
-            <div style="padding: 15px; background-color: #e8f5e8; border-radius: 8px; border-left: 4px solid #27ae60; margin: 10px 0;">
+    // Buscar y actualizar el mensaje de estado en el home
+    const homeSection = document.getElementById('home');
+    if (homeSection) {
+        const statusDiv = homeSection.querySelector('.header > div');
+        if (statusDiv) {
+            statusDiv.innerHTML = `
                 <p style="margin: 0; color: #2c5530; font-weight: bold;">
                     ✅ Datos cargados exitosamente desde Excel
                 </p>
                 <p style="margin: 5px 0 0 0; color: #2c5530; font-size: 0.9em;">
                     ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.medidas.length} medidas, ${database['empresas-rrhh'].length} directivas
                 </p>
-            </div>
-        `;
+            `;
+        }
     }
 }
 
-// Función para mostrar mensaje de error
+// Función para mostrar mensaje de error y opciones
 function showExcelLoadError() {
-    const statusDiv = document.getElementById('excel-status');
-    if (statusDiv) {
-        statusDiv.innerHTML = `
-            <div style="padding: 15px; background-color: #ffeaa7; border-radius: 8px; border-left: 4px solid #fdcb6e; margin: 10px 0;">
+    // Buscar y actualizar el mensaje de estado en el home
+    const homeSection = document.getElementById('home');
+    if (homeSection) {
+        const statusDiv = homeSection.querySelector('.header > div');
+        if (statusDiv) {
+            statusDiv.innerHTML = `
                 <p style="margin: 0; color: #8b4513; font-weight: bold;">
-                    ⚠️ No se pudo cargar el Excel automáticamente
+                    📝 Usando datos de ejemplo
                 </p>
                 <p style="margin: 5px 0 0 0; color: #8b4513; font-size: 0.9em;">
-                    Usando datos de ejemplo. <button onclick="showFileSelector()" style="background: #fdcb6e; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Cargar Excel manualmente</button>
+                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.medidas.length} medidas de ejemplo.
+                    <br><button onclick="showFileSelector()" style="background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px;">📁 Cargar Excel Real</button>
                 </p>
-            </div>
-        `;
+            `;
+            statusDiv.style.backgroundColor = '#fff3cd';
+            statusDiv.style.borderColor = '#ffc107';
+        }
     }
 }
 
@@ -120,16 +134,40 @@ function showFileSelector() {
         const file = e.target.files[0];
         if (file) {
             console.log('📁 Archivo seleccionado:', file.name);
-            await loadDataFromExcel(file);
-            updateCounts();
-            
-            // Recargar datos en la vista actual si es necesario
-            const activeSection = document.querySelector('.section.active');
-            if (activeSection && activeSection.id !== 'home') {
-                const activeTab = activeSection.querySelector('.tab-content.active');
-                if (activeTab && activeTab.id.includes('consultar')) {
-                    loadData(activeSection.id);
+            // Mostrar mensaje de carga
+            const homeSection = document.getElementById('home');
+            if (homeSection) {
+                const statusDiv = homeSection.querySelector('.header > div');
+                if (statusDiv) {
+                    statusDiv.innerHTML = `
+                        <p style="margin: 0; color: #0066cc; font-weight: bold;">
+                            ⏳ Cargando archivo Excel...
+                        </p>
+                        <p style="margin: 5px 0 0 0; color: #0066cc; font-size: 0.9em;">
+                            Procesando: ${file.name}
+                        </p>
+                    `;
+                    statusDiv.style.backgroundColor = '#cce7ff';
+                    statusDiv.style.borderColor = '#0066cc';
                 }
+            }
+            
+            try {
+                await loadDataFromExcel(file);
+                updateCounts();
+                
+                // Recargar datos en la vista actual si es necesario
+                const activeSection = document.querySelector('.section.active');
+                if (activeSection && activeSection.id !== 'home') {
+                    const activeTab = activeSection.querySelector('.tab-content.active');
+                    if (activeTab && activeTab.id.includes('consultar')) {
+                        loadData(activeSection.id);
+                    }
+                }
+            } catch (loadError) {
+                console.error('Error cargando archivo:', loadError);
+                alert('Error al cargar el archivo Excel. Verifique que sea el archivo correcto.');
+                showExcelLoadError();
             }
         }
     };
