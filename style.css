@@ -287,7 +287,7 @@ body {
 }
 
 .search-input {
-    width: 100%;
+    width: 100%; /* Asegura que el input ocupe todo el ancho disponible */
     max-width: 500px;
     padding: 12px 20px;
     border: 2px solid #dee2e6;
@@ -303,7 +303,7 @@ body {
     background: white;
     border-radius: 8px;
     /* La propiedad clave para la responsividad en móviles es overflow-x: auto; */
-    overflow-x: auto; 
+    overflow-x: auto;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto; /* Centra la tabla horizontalmente */
     margin-right: auto; /* Centra la tabla horizontalmente */
@@ -315,7 +315,7 @@ body {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #eee;
-    vertical-align: middle; 
+    vertical-align: middle;
     font-size: 0.9em; /* Tamaño de letra ligeramente más grande */
     white-space: normal; /* Permite que el texto se envuelva por defecto */
     overflow: visible; /* Asegura que el contenido sea visible, no oculto */
@@ -567,5 +567,10 @@ body {
     .medidas-menu-buttons {
         flex-direction: column; /* Apila los botones de Medidas en móvil */
     }
-}
 
+    /* Optimización para el campo de búsqueda en móvil */
+    .search-input {
+        width: 100%; /* Asegura que el input de búsqueda ocupe todo el ancho disponible */
+        max-width: none; /* Elimina el límite de ancho máximo en móvil */
+    }
+}
