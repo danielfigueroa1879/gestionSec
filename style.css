@@ -1,5 +1,5 @@
 /* Estilos generales para el reinicio y el cuerpo del documento */
-@import url('https://fonts.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 * {
     margin: 0;
@@ -535,6 +535,51 @@ body {
 
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
+    /* Ajustes para el título principal de la página de inicio */
+    .header h1 {
+        font-size: 1.8rem; /* Título principal más pequeño en móvil */
+    }
+
+    /* Ajustes para el subtítulo del encabezado de la página de inicio */
+    .header p {
+        font-size: 1rem; /* Subtítulo del encabezado más pequeño en móvil */
+    }
+
+    /* Ajustes para las tarjetas del menú principal */
+    .main-menu {
+        grid-template-columns: 1fr; /* Una columna para que ocupen todo el ancho */
+        gap: 20px; /* Reduce el espacio entre tarjetas */
+    }
+
+    /* Ajustes para el padding de las tarjetas de menú en pantallas pequeñas */
+    .menu-card {
+        padding: 20px;
+    }
+
+    /* Ajustes para los iconos dentro de las tarjetas del menú */
+    .menu-card .icon {
+        font-size: 3rem; /* Iconos más pequeños */
+        margin-bottom: 15px;
+    }
+
+    /* Ajustes para los títulos y párrafos dentro de las tarjetas del menú */
+    .menu-card h3 {
+        font-size: 1.2rem; /* Títulos de tarjeta más pequeños */
+        margin-bottom: 10px;
+    }
+
+    .menu-card p {
+        font-size: 0.9rem; /* Párrafos de tarjeta más pequeños */
+        margin-bottom: 15px;
+    }
+
+    /* Ajustes para el contador de registros en las tarjetas */
+    .menu-card .count {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+
     .form-grid {
         grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
     }
@@ -545,8 +590,19 @@ body {
         text-align: center;
     }
     
+    /* Ajustes para el título de la sección */
+    .section-title {
+        font-size: 1.6rem; /* Títulos de sección más pequeños en móvil */
+    }
+
     .section-nav {
         flex-direction: column; /* Apila los botones de navegación */
+    }
+
+    /* Ajustes para los botones generales y de pestaña */
+    .btn, .tab-btn {
+        padding: 10px 20px; /* Reduce el padding de los botones */
+        font-size: 14px; /* Reduce el tamaño de fuente de los botones */
     }
 
     .modal-content {
@@ -601,18 +657,7 @@ body {
         width: auto; 
         min-width: unset; /* Elimina el min-width para mayor flexibilidad */
     }
-
-    /* Ajustes para el menú principal en pantallas pequeñas */
-    .main-menu {
-        grid-template-columns: 1fr; /* Apila las tarjetas verticalmente en pantallas pequeñas */
-        gap: 20px; /* Reduce el espacio entre tarjetas */
-    }
-
-    /* Ajustes para el padding de las tarjetas de menú en pantallas pequeñas */
-    .menu-card {
-        padding: 20px;
-    }
-
+    
     /* Asegurar que el texto dentro de las tarjetas de menú y encabezados se ajuste correctamente */
     .menu-card h3,
     .menu-card p,
