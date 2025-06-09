@@ -304,9 +304,52 @@ function determinarTipoDirectiva(instalacion) {
 
 // Función para generar datos de ejemplo (fallback si no se puede cargar Excel)
 async function generateSampleData() {
-    // El código original de generateSampleData() va aquí como fallback
-    // ... (código original mantenido para compatibilidad)
+    const database = {
+        estudios: [],
+        planes: [],
+        medidas: [],
+        servicentros: [],
+        'sobre-500-uf': [],
+        directivas: [], 
+        'empresas-rrhh': [], 
+        'guardias-propios': [],
+        'eventos-masivos': []
+    };
+
+    // Crear lista de empresas únicas de RRHH (300 empresas)
+    empresasRRHHList = [];
+    const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
+    const sampleAddresses = [
+        'Av. Providencia 1234, Santiago',
+        'Calle Moneda 567, Santiago',
+        'Av. Las Condes 890, Las Condes',
+        'Calle Huérfanos 432, Santiago',
+        'Av. Libertador 678, Santiago',
+        'El Bosque Norte 010, Las Condes',
+        'Rosario Norte 555, Las Condes',
+        'San Antonio 220, Santiago',
+        'Merced 840, Santiago',
+        'Apoquindo 3000, Las Condes'
+    ];
+    const comunasChile = ['Santiago', 'Providencia', 'Las Condes', 'Ñuñoa', 'Maipú', 'Puente Alto', 'La Florida', 'Vitacura', 'Concepción', 'Viña del Mar', 'Valparaíso', 'Antofagasta', 'Temuco', 'Rancagua', 'Talca'];
+
+    for (let i = 1; i <= 300; i++) {
+        const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
+        const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
+        const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
+        const direccion = sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)];
+
+        empresasRRHHList.push({
+            id: i,
+            nombre: empresaName,
+            rut: rut,
+            direccion: direccion,
+            directivasCount: 0
+        });
+    }
+
     console.log('Usando datos de ejemplo en lugar de datos del Excel');
+    return database;
 }
 
 // Helper function to format dates for display
@@ -360,6 +403,7 @@ function showTab(section, tab) {
             document.getElementById('medidas-consultar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
             document.getElementById('sobre-500-uf-page').classList.remove('active');
+            loadData('medidas'); // Cargar medidas directamente
         } else if (tab === 'agregar') {
             document.getElementById('medidas-agregar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
