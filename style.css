@@ -585,7 +585,7 @@ body {
     }
     
     .section-header {
-        flex-direction: column; /* Apila los elementos en pantallas pequeñas */
+        flex-direction: column;
         gap: 20px;
         text-align: center;
     }
@@ -596,7 +596,7 @@ body {
     }
 
     .section-nav {
-        flex-direction: column; /* Apila los botones de navegación */
+        flex-direction: column;
     }
 
     /* Ajustes para los botones generales y de pestaña */
@@ -606,21 +606,21 @@ body {
     }
 
     .modal-content {
-        margin: 10% auto; /* Ajusta el margen del modal */
-        width: 95%; /* Ocupa más ancho en pantallas pequeñas */
+        margin: 10% auto;
+        width: 95%;
         padding: 20px;
     }
 
     .medidas-menu-buttons {
-        flex-direction: column; /* Apila los botones de Medidas en móvil */
+        flex-direction: column;
     }
 
     /* Optimización para el campo de búsqueda en móvil */
     .search-container {
-        display: flex; /* Asegura que el input y el botón de búsqueda se alineen */
-        flex-direction: column; /* Apila el input y el botón de búsqueda */
-        gap: 10px; /* Espacio entre el input y el botón */
-        align-items: stretch; /* Estira los elementos para que ocupen todo el ancho */
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
     }
 
     .search-input {
@@ -672,5 +672,25 @@ body {
     /* Permitir overflow-x en el contenedor para que el usuario pueda hacer scroll horizontal si el contenido es demasiado ancho */
     .container {
         overflow-x: auto;
+    }
+
+    /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros) */
+    .directivas-menu-card {
+        width: 100%; /* Asegura que ocupe todo el ancho */
+        padding: 15px; /* Reduce el padding para un mejor ajuste */
+        margin-bottom: 20px; /* Ajusta el margen inferior */
+    }
+
+    /* Ajustes para los títulos dentro de las tarjetas de directivas */
+    .directivas-menu-card h3 {
+        font-size: 1.1rem; /* Reduce el tamaño del título */
+        margin-bottom: 15px;
+    }
+
+    /* Ajustes para los botones dentro de las tarjetas de directivas */
+    .directivas-menu-card .btn {
+        padding: 8px 15px; /* Reduce el padding de los botones */
+        font-size: 0.9rem; /* Reduce el tamaño de fuente de los botones */
+        margin-top: 15px; /* Ajusta el margen superior */
     }
 }
