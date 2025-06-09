@@ -599,9 +599,9 @@ body {
     .data-table td {
         padding: 8px; /* Reduce el padding para más espacio de contenido */
         font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
-        word-break: break-all; /* Fuerza la rotura de palabras en cualquier punto */
+        word-break: break-word; /* Usa break-word para evitar que las palabras se rompan a medias sin necesidad */
         white-space: normal !important; /* Asegura el ajuste de texto, anula cualquier nowrap */
-        writing-mode: horizontal-tb !important; /* Asegura que el texto en las celdas se vea horizontal */
+        writing-mode: horizontal-tb !important; /* Fuerza que el texto en las celdas se vea horizontal */
     }
 
     /* Eliminar ancho fijo en la primera columna para que se ajuste dinámicamente */
@@ -631,5 +631,10 @@ body {
         white-space: normal !important;
         word-break: break-word !important;
         writing-mode: horizontal-tb !important;
+    }
+
+    /* Permitir overflow-x en el contenedor para que el usuario pueda hacer scroll horizontal si el contenido es demasiado ancho */
+    .container {
+        overflow-x: auto;
     }
 }
