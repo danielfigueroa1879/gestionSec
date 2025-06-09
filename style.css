@@ -705,16 +705,16 @@ body {
     .directivas-menu-card .btn {
         padding: 6px 12px; /* Reduce el padding de los botones */
         font-size: 0.8rem; /* Reduce el tamaño de fuente de los botones */
-        margin-top: 10px; /* Ajusta el margen superior */
+        margin-top: 5px; /* Ajusta el margen superior */
     }
 
     /* Asegurar que la sección directivas ocupe todo el ancho */
     .section.directivas {
-        padding-left: 10px; /* Mantiene un pequeño padding horizontal */
-        padding-right: 10px; /* Mantiene un pequeño padding horizontal */
+        padding-left: 3px; /* Mantiene un pequeño padding horizontal */
+        padding-right: 3px; /* Mantiene un pequeño padding horizontal */
         border-radius: 0; /* Opcional: remover border-radius para una apariencia de borde a borde */
         /* Asegura que el contenedor blanco ocupe todo el ancho de su padre (ahora más ancho) */
-        width: 100%; 
+        width: 110%; 
     }
 
     /* Asegurar que el contenedor del menú de directivas también ocupe todo el ancho */
