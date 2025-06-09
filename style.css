@@ -960,3 +960,39 @@ body {
         writing-mode: horizontal-tb !important;
     }
 }
+/* ======================================
+   BOTONES DE ESTADO UNIFORMES
+   ====================================== */
+
+.status-vigente,
+.status-vencido,
+.status-aprobado,
+.status-rechazado {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 90px;
+    line-height: 1.4;
+    color: white;
+}
+
+/* Colores individuales para cada estado */
+.status-vigente {
+    background-color: #28a745; /* Verde - Vigente */
+}
+
+.status-vencido {
+    background-color: #dc3545; /* Rojo - Vencido */
+}
+
+.status-aprobado {
+    background-color: #007bff; /* Azul - Aprobado */
+}
+
+.status-rechazado {
+    background-color: #6c757d; /* Gris oscuro - Rechazado */
+}
+
