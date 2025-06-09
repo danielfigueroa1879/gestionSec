@@ -14,8 +14,7 @@ function generateSampleData() {
         directivas: [], 
         'empresas-rrhh': [], 
         'guardias-propios': [],
-        'eventos-masivos': [],
-        'directivas-generales': []
+        'eventos-masivos': []
     };
 
     // Crear lista de empresas únicas de RRHH (300 empresas)
@@ -347,42 +346,6 @@ function generateSampleData() {
         });
     }
 
-    // 4. Generar 300 Directivas Generales (Vigencia de 3 años)
-    const areasGenerales = ['Operaciones', 'Mantenimiento', 'Calidad', 'Administración', 'Logística'];
-    for (let i = 1; i <= 300; i++) {
-        const area = areasGenerales[Math.floor(Math.random() * areasGenerales.length)];
-        
-        const approvalYear = 2022 + Math.floor(Math.random() * 4); // 2022-2025
-        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
-        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
-        
-        const approvalDateObj = new Date(fechaAprobacion);
-        const vigenciaDateObj = new Date(approvalDateObj);
-        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // 3 años de vigencia
-        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
-
-        const today = new Date();
-        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
-
-        database['directivas-generales'].push({
-            numero: `GEN-${String(i).padStart(4, '0')}`,
-            area: area, // This will be renamed to 'entidad'
-            version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`, // Removed from display
-            fecha: fechaAprobacion, // Usamos fechaAprobacion para la 'fecha' de emisión
-            titulo: `Directiva General ${i} - ${area}`, // Removed from display
-            contenido: `Directiva general para el área de ${area}. Establece procedimientos estándar de funcionamiento organizacional.`, // Removed from display
-            alcance: 'Toda la organización', // Removed from display
-            responsable: `Jefe de ${area}`, // Removed from display
-            estado: Math.random() > 0.15 ? 'Vigente' : 'En actualización', // Removed from display
-            vigencia: vigencia, // Nueva fecha de vigencia
-            estadoVigencia: estadoVigencia, // Estado de vigencia (Vigente/Vencido)
-            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added RUT
-            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)], // Added Direccion
-            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)] // Added Comuna
-        });
-    }
-
     // Mantener las directivas originales como respaldo (vacío por ahora)
     database.directivas = [];
 
@@ -402,7 +365,6 @@ function formatDateForDisplay(dateString) {
 
 // Define date headers for formatting
 const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', 'fecha', 'fechaEvento'];
-
 
 // Funciones de navegación principal
 function showHome() {
@@ -494,7 +456,6 @@ function showDirectivasSubSection(subSectionType) {
     document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
     document.getElementById('directivas-guardias-propios-list').classList.remove('active');
     document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-    document.getElementById('directivas-generales-list').classList.remove('active');
     document.getElementById('directivas-empresa-specific-details').classList.remove('active'); // Oculta la vista de detalles específicos de empresa
 
     // Muestra la lista correspondiente
@@ -517,10 +478,6 @@ function showDirectivasSubSection(subSectionType) {
                 titleText = '🎉 Lista de Eventos Masivos';
                 loadData(subSectionType);
                 break;
-            case 'directivas-generales':
-                titleText = '📄 Lista de Directivas Generales';
-                loadData(subSectionType);
-                break;
         }
         titleElement.textContent = titleText;
     }
@@ -532,7 +489,6 @@ function backToDirectivasMain() {
     document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
     document.getElementById('directivas-guardias-propios-list').classList.remove('active');
     document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-    document.getElementById('directivas-generales-list').classList.remove('active');
     
     // Muestra la vista principal de consultar directivas
     document.getElementById('directivas-consultar').classList.add('active');
@@ -639,7 +595,7 @@ function searchCompanySpecificDirectivas(searchTerm) {
          directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
          directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
          (directiva.rut && directiva.rut.toLowerCase().includes(searchTerm.toLowerCase())) || // Search by RUT
-         (directiva.comuna && directiba.comuna.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Comuna
+         (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase()))) // Search by Comuna
     );
 
     const resultsContainer = document.getElementById('empresa-specific-details-results');
@@ -689,7 +645,6 @@ function createTableForCompanySpecificDirectivas(data) {
     return tableHTML;
 }
 
-
 // Función para volver a la lista de Empresas RRHH desde los detalles específicos
 function backToEmpresasList() {
     document.getElementById('directivas-empresa-specific-details').classList.remove('active');
@@ -729,7 +684,6 @@ function searchEmpresasRRHH(searchTerm) {
     resultsContainer.innerHTML = tableHTML;
 }
 
-
 // Funciones para manejar datos (agregar, cargar, buscar, mostrar detalles)
 function addRecord(section, event) {
     event.preventDefault(); // Evita el envío del formulario por defecto
@@ -758,7 +712,7 @@ function addRecord(section, event) {
     let targetArray = database[section]; // Por defecto, añade a la sección principal
 
     // Lógica para calcular la vigencia y el estado de vigencia al agregar un registro
-    if (section === 'planes' || section === 'medidas' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'empresas-rrhh' || section === 'guardias-propios' || section === 'directivas-generales') { // Para estas secciones (3 años de vigencia)
+    if (section === 'planes' || section === 'medidas' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'empresas-rrhh' || section === 'guardias-propios') { // Para estas secciones (3 años de vigencia)
         const fechaAprobacion = formData.fechaAprobacion || formData.fecha; // Use fecha for directivas
         if (fechaAprobacion) {
             const approvalDateObj = new Date(fechaAprobacion);
@@ -828,9 +782,14 @@ function loadData(section) {
     let resultsContainerId = `${section}-results`;
     const resultsContainer = document.getElementById(resultsContainerId);
 
+    if (!resultsContainer) {
+        console.error(`No se encontró el contenedor: ${resultsContainerId}`);
+        return;
+    }
+
     const data = database[section];
     
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         resultsContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
         return;
     }
@@ -864,8 +823,6 @@ function createTable(section, data) {
     } else if (section === 'eventos-masivos') { 
         // Eventos Masivos NO tiene vigencia/estadoVigencia
         headers = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
-    } else if (section === 'directivas-generales') {
-        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     } else if (section === 'directivas') { // Para el array 'directivas' genérico, si se usa (not used by design)
         headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     }
@@ -1014,8 +971,6 @@ function showDetails(section, index) {
         detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') { 
         detailKeys = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
-    } else if (section === 'directivas-generales') {
-        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     } else if (section === 'directivas') { // Para el array 'directivas' genérico (not used by design)
         detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
     }
@@ -1064,8 +1019,8 @@ function updateCounts() {
     const totalMedidas = database.servicentros.length + database['sobre-500-uf'].length;
     document.getElementById('medidas-count').textContent = `${totalMedidas} registros`;
     
-    // Suma todos los registros de las subcategorías de directivas
-    const totalDirectivas = database['empresas-rrhh'].length + database['guardias-propios'].length + database['eventos-masivos'].length + database['directivas-generales'].length;
+    // Suma todos los registros de las subcategorías de directivas (SOLO 3 AHORA)
+    const totalDirectivas = database['empresas-rrhh'].length + database['guardias-propios'].length + database['eventos-masivos'].length;
     document.getElementById('directivas-count').textContent = `${totalDirectivas} registros`;
 
     // Actualiza los contadores en los botones de la sección de Medidas (si están visibles)
@@ -1084,7 +1039,6 @@ function updateMedidasSubSectionCounts() {
         sobre500UFCountElement.textContent = database['sobre-500-uf'].length;
     }
 }
-
 
 // Muestra un mensaje de alerta temporal en la interfaz
 function showAlert(section, message, type) {
@@ -1127,32 +1081,52 @@ window.onclick = function(event) {
     }
 }
 
+// Función de debugging para verificar datos
+function debugData() {
+    console.log('=== DEBUG DE DATOS ===');
+    console.log('database[empresas-rrhh]:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'NO EXISTE');
+    console.log('database[guardias-propios]:', database['guardias-propios'] ? database['guardias-propios'].length : 'NO EXISTE');
+    console.log('database[eventos-masivos]:', database['eventos-masivos'] ? database['eventos-masivos'].length : 'NO EXISTE');
+    console.log('empresasRRHHList:', empresasRRHHList ? empresasRRHHList.length : 'NO EXISTE');
+    
+    // Mostrar algunas muestras
+    if (database['empresas-rrhh'] && database['empresas-rrhh'].length > 0) {
+        console.log('Muestra empresas-rrhh:', database['empresas-rrhh'].slice(0, 3));
+    }
+    if (database['guardias-propios'] && database['guardias-propios'].length > 0) {
+        console.log('Muestra guardias-propios:', database['guardias-propios'].slice(0, 3));
+    }
+    if (database['eventos-masivos'] && database['eventos-masivos'].length > 0) {
+        console.log('Muestra eventos-masivos:', database['eventos-masivos'].slice(0, 3));
+    }
+    
+    // Verificar elementos HTML
+    console.log('=== ELEMENTOS HTML ===');
+    console.log('empresas-rrhh-results existe:', !!document.getElementById('empresas-rrhh-results'));
+    console.log('guardias-propios-results existe:', !!document.getElementById('guardias-propios-results'));
+    console.log('eventos-masivos-results existe:', !!document.getElementById('eventos-masivos-results'));
+}
+
+// Función para forzar carga manual (usar desde consola si es necesario)
+function forceLoadData(section) {
+    console.log(`Forzando carga de datos para: ${section}`);
+    
+    if (section === 'empresas-rrhh') {
+        renderEmpresasRRHHList();
+    } else {
+        loadData(section);
+    }
+}
+
 // Inicializa la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
-    updateCounts(); // Actualiza todos los contadores iniciales
-    console.log('Sistema cargado con:', {
-        'Estudios de Seguridad': database.estudios.length,
-        'Planes de Seguridad': database.planes.length, 
-        'Medidas de Seguridad (General)': database.medidas.length,
-        'Servicentros': database.servicentros.length,
-        'Sobre 500 UF': database['sobre-500-uf'].length,
-        'Empresas RRHH': empresasRRHHList.length + ' empresas con ' + database['empresas-rrhh'].length + ' registros totales',
-        'Guardias Propios': database['guardias-propios'].length,
-        'Eventos Masivos': database['eventos-masivos'].length,
-        'Directivas Generales': database['directivas-generales'].length
-    });
-
-// SOLUCIÓN RÁPIDA: Agregar estas líneas al FINAL de tu script.js
-
-// Forzar regeneración de datos al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    // Regenerar la base de datos
+    // Regenerar la base de datos para asegurar que esté disponible
     database = generateSampleData();
     
     // Asegurar que empresasRRHHList esté poblada
     if (!empresasRRHHList || empresasRRHHList.length === 0) {
         console.log("Regenerando empresasRRHHList...");
-        // Esta parte debería estar en generateSampleData(), pero por si acaso:
+        // Esta parte ya debería estar en generateSampleData(), pero por si acaso:
         empresasRRHHList = [];
         const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
         const sampleAddresses = [
@@ -1177,56 +1151,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    updateCounts();
+    updateCounts(); // Actualiza todos los contadores iniciales
     
     console.log('=== VERIFICACIÓN DE DATOS ===');
     console.log('Empresas RRHH DB:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'NO EXISTE');
     console.log('Guardias Propios DB:', database['guardias-propios'] ? database['guardias-propios'].length : 'NO EXISTE');
     console.log('Eventos Masivos DB:', database['eventos-masivos'] ? database['eventos-masivos'].length : 'NO EXISTE');
     console.log('EmpresasRRHHList:', empresasRRHHList ? empresasRRHHList.length : 'NO EXISTE');
-});
-
-// Función de debug simplificada
-function debugData() {
-    console.log('=== DEBUG COMPLETO ===');
-    console.log('Database keys:', Object.keys(database));
-    console.log('Empresas RRHH:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'NO EXISTE');
-    console.log('Guardias Propios:', database['guardias-propios'] ? database['guardias-propios'].length : 'NO EXISTE');
-    console.log('Eventos Masivos:', database['eventos-masivos'] ? database['eventos-masivos'].length : 'NO EXISTE');
-    console.log('EmpresasRRHHList:', empresasRRHHList ? empresasRRHHList.length : 'NO EXISTE');
     
-    // Verificar elementos HTML
-    console.log('=== ELEMENTOS HTML ===');
-    console.log('empresas-rrhh-results existe:', !!document.getElementById('empresas-rrhh-results'));
-    console.log('guardias-propios-results existe:', !!document.getElementById('guardias-propios-results'));
-    console.log('eventos-masivos-results existe:', !!document.getElementById('eventos-masivos-results'));
-}
-
-// Función para forzar carga manual (usar desde consola si es necesario)
-function forceLoadData(section) {
-    console.log(`Forzando carga de datos para: ${section}`);
-    
-    if (section === 'empresas-rrhh') {
-        renderEmpresasRRHHList();
-    } else {
-        loadData(section);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    console.log('Sistema cargado con:', {
+        'Estudios de Seguridad': database.estudios.length,
+        'Planes de Seguridad': database.planes.length, 
+        'Medidas de Seguridad (General)': database.medidas.length,
+        'Servicentros': database.servicentros.length,
+        'Sobre 500 UF': database['sobre-500-uf'].length,
+        'Empresas RRHH': empresasRRHHList.length + ' empresas con ' + database['empresas-rrhh'].length + ' registros totales',
+        'Guardias Propios': database['guardias-propios'].length,
+        'Eventos Masivos': database['eventos-masivos'].length
+    });
 });
