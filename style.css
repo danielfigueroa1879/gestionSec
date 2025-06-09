@@ -597,12 +597,7 @@ body {
         text-align: center;
     }
     
-    /* Ocultar el título de la sección de directivas en móvil */
-    /* Se añade !important para asegurar que se oculte, ya que el usuario reporta que no se borra */
-    .section-title.directivas {
-        display: none !important;
-    }
-
+    
     /* Ocultar el título específico "DIRECTIVAS DE FUNCIONAMIENTO" que el usuario proporcionó */
     #directivas-consultar h2 {
         display: none !important;
