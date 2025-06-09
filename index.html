@@ -155,7 +155,7 @@
             </div>
         </section>
 
-        <!-- Sección de Medidas de Seguridad -->
+        <!-- Sección de Medidas de Seguridad - CON 2 CUADROS NUEVOS -->
         <section id="medidas" class="section">
             <header class="section-header">
                 <h2 class="section-title medidas">Medidas de Seguridad</h2>
@@ -167,10 +167,33 @@
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
             </nav>
 
+            <!-- SECCIÓN PRINCIPAL CON LOS 2 CUADROS DE MEDIDAS -->
             <div id="medidas-consultar" class="tab-content active">
-                    <div class="medidas-container">
-                    <!-- Los 2 cuadros nuevos -->
+                <div class="medidas-container">
+                    
+                    <!-- Cuadro 1: SERVICENTROS -->
+                    <div class="medida-box servicentros-box">
+                        <h3 class="medida-box-title">🏪 SERVICENTROS</h3>
+                        <p class="medida-box-count">(90 registros)</p>
+                        <div class="medida-box-content">
+                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('servicentros')">
+                                📋 Ver Lista de Servicentros
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- Cuadro 2: SOBRE 500 UF -->
+                    <div class="medida-box sobre-500-uf-box">
+                        <h3 class="medida-box-title">💰 SOBRE 500 UF</h3>
+                        <p class="medida-box-count">(95 registros)</p>
+                        <div class="medida-box-content">
+                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('sobre-500-uf')">
+                                📋 Ver Registros Sobre 500 UF
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
             
             <!-- Nueva página para Servicentros -->
@@ -230,7 +253,7 @@
             </div>
         </section>
 
-        <!-- Sección de Directivas de Funcionamiento - ACTUALIZADA CON 3 CUADROS -->
+        <!-- Sección de Directivas de Funcionamiento - CON 3 CUADROS NUEVOS -->
         <section id="directivas" class="section">
             <header class="section-header">
                 <h2 class="section-title directivas">Directivas de Funcionamiento</h2>
@@ -242,7 +265,7 @@
                 <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON LOS 3 CUADROS -->
+            <!-- SECCIÓN PRINCIPAL CON LOS 3 CUADROS DE DIRECTIVAS -->
             <div id="directivas-consultar" class="tab-content active">
                 <div class="directivas-container">
                     
