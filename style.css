@@ -308,7 +308,7 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto; /* Centra la tabla horizontalmente */
     margin-right: auto; /* Centra la tabla horizontalmente */
-    table-layout: fixed; /* Ayuda a que las columnas no se expandan infinitamente */
+    table-layout: fixed; /* Esto se ajustará en móviles */
 }
 
 .data-table th,
@@ -574,5 +574,24 @@ body {
     .search-input {
         width: 100%; /* Asegura que el input de búsqueda ocupe todo el ancho disponible */
         max-width: none; /* Elimina el límite de ancho máximo en móvil */
+    }
+
+    /* Optimización específica para tablas en móviles */
+    .data-table {
+        table-layout: auto; /* Permite que el ancho de las columnas se ajuste al contenido */
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px; /* Reduce el padding para más espacio de contenido */
+        font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
+        word-break: break-all; /* Fuerza la rotura de palabras en cualquier punto */
+    }
+
+    /* Eliminar ancho fijo en la primera columna para que se ajuste dinámicamente */
+    .data-table th:first-child,
+    .data-table td:first-child {
+        width: auto; 
+        min-width: unset; /* Elimina el min-width para mayor flexibilidad */
     }
 }
