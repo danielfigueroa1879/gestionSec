@@ -296,19 +296,18 @@ body {
     font-size: 16px;
 }
 
-/* Estilos para las tablas de datos (default: no truncar) */
+/* Estilos para las tablas de datos */
 .data-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     background: white;
     border-radius: 8px;
-    /* La propiedad clave para la responsividad en móviles es overflow-x: auto; */
-    overflow-x: auto;
+    overflow-x: auto; /* Permite el scroll horizontal si el contenido es demasiado ancho */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-left: auto; /* Centra la tabla horizontalmente */
-    margin-right: auto; /* Centra la tabla horizontalmente */
-    table-layout: fixed; /* Esto se ajustará en móviles */
+    margin-left: auto;
+    margin-right: auto;
+    table-layout: fixed; /* Por defecto, fijo para escritorio */
 }
 
 .data-table th,
@@ -317,20 +316,20 @@ body {
     text-align: left;
     border-bottom: 1px solid #eee;
     vertical-align: middle;
-    font-size: 0.9em; /* Tamaño de letra ligeramente más grande */
-    white-space: normal; /* Permite que el texto se envuelva por defecto */
-    overflow: visible; /* Asegura que el contenido sea visible, no oculto */
-    text-overflow: clip; /* Elimina los puntos suspensivos por defecto */
-    word-break: break-word; /* Asegura que palabras largas se rompan y envuelvan */
-    word-wrap: break-word; /* Propiedad antigua para compatibilidad */
-    writing-mode: horizontal-tb; /* Asegura que el texto en las celdas se vea horizontal */
+    font-size: 0.9em;
+    white-space: normal; /* Permite que el texto se envuelva por defecto en escritorio */
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+    word-wrap: break-word;
+    writing-mode: horizontal-tb;
 }
 
 /* Estilos para la primera columna (códigos/IDs/números) */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: 100px; /* Ancho fijo para la primera columna, ajustado */
-    min-width: 80px; /* Asegura que no sea demasiado pequeña */
+    width: 100px; /* Ancho fijo para la primera columna en escritorio */
+    min-width: 80px;
 }
 
 
@@ -350,15 +349,7 @@ body {
     background: #f8f9fa;
 }
 
-/* Estilos para la tabla de eventos masivos (con truncado) */
-.data-table.truncate-text th,
-.data-table.truncate-text td {
-    white-space: nowrap; /* Evita que el texto se envuelva */
-    overflow: hidden; /* Oculta el texto que se desborda */
-    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto oculto */
-    word-break: normal; /* Desactiva el word-break para el truncado */
-    word-wrap: normal; /* Desactiva el word-wrap para el truncado */
-}
+/* ELIMINADA LA CLASE .truncate-text para unificar el comportamiento en móvil */
 
 /* Mensaje cuando no hay datos */
 .no-data {
@@ -599,8 +590,10 @@ body {
     .data-table td {
         padding: 8px; /* Reduce el padding para más espacio de contenido */
         font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
-        word-break: break-word; /* Usa break-word para evitar que las palabras se rompan a medias sin necesidad */
-        white-space: normal !important; /* Asegura el ajuste de texto, anula cualquier nowrap */
+        white-space: nowrap; /* Impide que el texto se envuelva */
+        overflow: hidden; /* Oculta el texto que se desborda */
+        text-overflow: ellipsis; /* Muestra puntos suspensivos */
+        word-break: normal; /* Desactiva la rotura de palabras si el texto no se envuelve */
         writing-mode: horizontal-tb !important; /* Fuerza que el texto en las celdas se vea horizontal */
     }
 
@@ -628,8 +621,8 @@ body {
     .header h1,
     .header p,
     .section-title {
-        white-space: normal !important;
-        word-break: break-word !important;
+        white-space: normal !important; /* Permite que el texto se envuelva */
+        word-break: break-word !important; /* Asegura que palabras largas se rompan */
         writing-mode: horizontal-tb !important;
     }
 
