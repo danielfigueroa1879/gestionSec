@@ -674,7 +674,7 @@ body {
     .menu-card h3,
     .menu-card p,
     .header h1,
-    .header p,
+    .menu-card p,
     .section-title {
         white-space: normal !important; /* Permite que el texto se envuelva */
         word-break: break-word !important; /* Asegura que palabras largas se rompan */
@@ -684,7 +684,7 @@ body {
     /* Ajustes para el contenedor blanco principal de las tarjetas de directivas (requiere la clase en HTML) */
     .directivas-main-content-wrapper {
         max-width: 100% !important; /* Elimina la limitación de ancho */
-        width: 95% !important; /* Ocupa casi todo el ancho */
+        width: 98% !important; /* Ocupa casi todo el ancho, dejando un pequeño margen */
         margin: 0 auto !important; /* Centra el contenedor */
         padding: 15px !important; /* Ajusta el padding interno */
         border-radius: 10px !important; /* Opcional: ajusta el radio de borde */
@@ -692,8 +692,8 @@ body {
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
-        width: 120%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
-        padding: 3px; /* Mantiene el padding para un mejor ajuste */
+        width: 100%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
+        padding: 12px; /* Mantiene el padding para un mejor ajuste */
         margin-bottom: 15px; /* Ajusta el margen inferior */
     }
 
