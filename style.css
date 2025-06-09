@@ -590,7 +590,12 @@ body {
         text-align: center;
     }
     
-    /* Ajustes para el título de la sección */
+    /* Ocultar el título de la sección de directivas en móvil */
+    .section-title.directivas {
+        display: none;
+    }
+
+    /* Ajustes para el título de la sección (resto de secciones) */
     .section-title {
         font-size: 1.6rem; /* Títulos de sección más pequeños en móvil */
     }
@@ -674,7 +679,7 @@ body {
         overflow-x: auto;
     }
 
-    /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros) */
+    /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
         width: 100%; /* Asegura que ocupe todo el ancho */
         padding: 12px; /* Reduce el padding para un mejor ajuste */
@@ -684,13 +689,13 @@ body {
     /* Ajustes para los títulos dentro de las tarjetas de directivas */
     .directivas-menu-card h3 {
         font-size: 1rem; /* Reduce el tamaño del título */
-        margin-bottom: 15px;
+        margin-bottom: 10px; /* Reduce el margen inferior del título */
     }
 
-    /* Ajustes para los botones dentro de las tarjetas de directivas */
+    /* Ajustes para los botones dentro de las tarjetas de directivas (Ver Registro) */
     .directivas-menu-card .btn {
         padding: 6px 12px; /* Reduce el padding de los botones */
         font-size: 0.8rem; /* Reduce el tamaño de fuente de los botones */
-        margin-top: 15px; /* Ajusta el margen superior */
+        margin-top: 10px; /* Ajusta el margen superior */
     }
 }
