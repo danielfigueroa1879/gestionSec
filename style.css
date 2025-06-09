@@ -597,7 +597,6 @@ body {
         text-align: center;
     }
     
-    
     /* Ocultar el título específico "DIRECTIVAS DE FUNCIONAMIENTO" que el usuario proporcionó */
     #directivas-consultar h2 {
         display: none !important;
@@ -682,15 +681,19 @@ body {
         writing-mode: horizontal-tb !important;
     }
 
-    /* Permitir overflow-x en el contenedor para que el usuario pueda hacer scroll horizontal si el contenido es demasiado ancho */
-    /* Se elimina esta propiedad del .container ya que los elementos internos ya se adaptarán */
-    /* .container {
-        overflow-x: auto;
-    } */
+    /* Ajustes para el contenedor blanco principal de las tarjetas de directivas (requiere la clase en HTML) */
+    .directivas-main-content-wrapper {
+        max-width: 100% !important; /* Elimina la limitación de ancho */
+        width: 95% !important; /* Ocupa casi todo el ancho */
+        margin: 0 auto !important; /* Centra el contenedor */
+        padding: 15px !important; /* Ajusta el padding interno */
+        border-radius: 10px !important; /* Opcional: ajusta el radio de borde */
+    }
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
-        width: 100%; /* Asegura que ocupe todo el ancho */
+        width: 100%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
+        padding: 12px; /* Mantiene el padding para un mejor ajuste */
         margin-bottom: 15px; /* Ajusta el margen inferior */
     }
 
@@ -704,16 +707,15 @@ body {
     .directivas-menu-card .btn {
         padding: 6px 12px; /* Reduce el padding de los botones */
         font-size: 0.8rem; /* Reduce el tamaño de fuente de los botones */
-        margin-top: 5px; /* Ajusta el margen superior */
+        margin-top: 10px; /* Ajusta el margen superior */
     }
 
-    /* Asegurar que la sección directivas ocupe todo el ancho */
+    /* Asegurar que la sección directivas (el contenedor blanco general de la sección) ocupe todo el ancho */
     .section.directivas {
-        padding-left: 3px; /* Mantiene un pequeño padding horizontal */
-        padding-right: 3px; /* Mantiene un pequeño padding horizontal */
+        padding-left: 10px; /* Mantiene un pequeño padding horizontal */
+        padding-right: 10px; /* Mantiene un pequeño padding horizontal */
         border-radius: 0; /* Opcional: remover border-radius para una apariencia de borde a borde */
-        /* Asegura que el contenedor blanco ocupe todo el ancho de su padre (ahora más ancho) */
-        width: 110%; 
+        width: 100%; /* Asegura que el contenedor blanco ocupe todo el ancho */
     }
 
     /* Asegurar que el contenedor del menú de directivas también ocupe todo el ancho */
