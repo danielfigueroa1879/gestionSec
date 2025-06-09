@@ -231,7 +231,7 @@
             </div>
         </section>
 
-        <!-- Sección de Directivas de Funcionamiento -->
+        <!-- Sección de Directivas de Funcionamiento - ACTUALIZADA CON 3 CUADROS -->
         <section id="directivas" class="section">
             <header class="section-header">
                 <h2 class="section-title directivas">Directivas de Funcionamiento</h2>
@@ -243,46 +243,43 @@
                 <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
             </nav>
 
+            <!-- SECCIÓN PRINCIPAL CON LOS 3 CUADROS -->
             <div id="directivas-consultar" class="tab-content active">
-                <div style="padding: 30px;">
-                    <div style="text-align: center; margin-bottom: 40px;">
-                        <h2 style="color: #f39c12; font-size: 2.2rem; margin-bottom: 20px;">📄 DIRECTIVAS DE FUNCIONAMIENTO</h2>
-                    </div>
-
-                    <div style="max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                        
-                        <!-- EMPRESAS DE RECURSOS HUMANOS -->
-                        <div class="directivas-menu-card">
-                            <h3 style="color: #f39c12; margin-bottom: 20px; font-size: 1.5rem;">• EMPRESAS DE RECURSOS HUMANOS (300)</h3>
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="btn directivas" onclick="showDirectivasSubSection('empresas-rrhh')" style="font-size: 16px; font-weight: bold;">📋 Ver Lista de 300 Empresas</button>
-                            </div>
-                        </div>
-
-                        <!-- GUARDIAS PROPIOS -->
-                        <div class="directivas-menu-card">
-                            <h3 style="color: #f39c12; margin-bottom: 20px; font-size: 1.5rem;">• GUARDIAS PROPIOS (50)</h3>
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="btn directivas" onclick="showDirectivasSubSection('guardias-propios')" style="font-size: 16px; font-weight: bold;">📋 Ver Todos los Registros</button>
-                            </div>
-                        </div>
-
-                        <!-- EVENTOS MASIVOS -->
-                        <div class="directivas-menu-card">
-                            <h3 style="color: #f39c12; margin-bottom: 20px; font-size: 1.5rem;">• EVENTOS MASIVOS (50)</h3>
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="btn directivas" onclick="showDirectivasSubSection('eventos-masivos')" style="font-size: 16px; font-weight: bold;">📋 Ver Todos los Registros</button>
-                            </div>
-                        </div>
-
-                        <!-- DIRECTIVAS GENERALES -->
-                        <div class="directivas-menu-card">
-                            <h3 style="color: #f39c12; margin-bottom: 20px; font-size: 1.5rem;">• DIRECTIVAS GENERALES (300)</h3>
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="btn directivas" onclick="showDirectivasSubSection('directivas-generales')" style="font-size: 16px; font-weight: bold;">📋 Ver Todos los Registros</button>
-                            </div>
+                <div class="directivas-container">
+                    
+                    <!-- Cuadro 1: EMPRESAS DE RECURSOS HUMANOS -->
+                    <div class="directiva-box empresas-rrhh-box">
+                        <h3 class="directiva-box-title">👥 EMPRESAS DE RECURSOS HUMANOS</h3>
+                        <p class="directiva-box-count">(300 empresas)</p>
+                        <div class="directiva-box-content">
+                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('empresas-rrhh')">
+                                📋 Ver Lista de Empresas
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Cuadro 2: GUARDIAS PROPIOS -->
+                    <div class="directiva-box guardias-propios-box">
+                        <h3 class="directiva-box-title">🛡️ GUARDIAS PROPIOS</h3>
+                        <p class="directiva-box-count">(50 registros)</p>
+                        <div class="directiva-box-content">
+                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('guardias-propios')">
+                                📋 Ver Todos los Registros
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro 3: EVENTOS MASIVOS -->
+                    <div class="directiva-box eventos-masivos-box">
+                        <h3 class="directiva-box-title">🎉 EVENTOS MASIVOS</h3>
+                        <p class="directiva-box-count">(50 registros)</p>
+                        <div class="directiva-box-content">
+                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('eventos-masivos')">
+                                📋 Ver Todos los Registros
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -322,18 +319,6 @@
                 <div id="eventos-masivos-results"></div>
             </div>
 
-            <!-- Listado de Directivas Generales -->
-            <div id="directivas-generales-list" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title directivas" id="directivas-generales-list-title">📄 Lista de Directivas Generales</h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar directivas generales..." onkeyup="searchData('directivas-generales', this.value)">
-                </div>
-                <div id="directivas-generales-results"></div>
-            </div>
-
             <!-- Nueva sección para el detalle de directivas de una empresa específica -->
             <div id="directivas-empresa-specific-details" class="tab-content">
                 <div class="section-header">
@@ -348,7 +333,7 @@
                 </div>
             </div>
 
-            <!-- Formulario para agregar nuevas directivas (se mantiene) -->
+            <!-- Formulario para agregar nuevas directivas -->
             <div id="directivas-agregar" class="tab-content">
                 <form onsubmit="addRecord('directivas', event)">
                     <div class="form-grid">
@@ -387,7 +372,7 @@
                     <button type="submit" class="btn btn-success">💾 Guardar Directiva</button>
                 </form>
             </div>
-        </div>
+        </section>
     </div>
 
     <!-- Modal para mostrar detalles de los registros -->
