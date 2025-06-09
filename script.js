@@ -2,14 +2,27 @@
 let empresasRRHHList = [];
 let currentDirectivasSubSectionType = ''; 
 let currentEmpresaSelected = ''; 
-let database = {}; // Se llenará con datos del Excel
+let database = {}; // Se llenará con datos del Excel o ejemplos
 
-// Función para cargar datos desde el Excel
-async function loadDataFromExcel() {
+// Función para cargar datos desde el Excel (versión para navegadores normales)
+async function loadDataFromExcel(file = null) {
     try {
-        // Leer el archivo Excel
-        const response = await window.fs.readFile('BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx');
-        const workbook = XLSX.read(response, {
+        let arrayBuffer;
+        
+        if (file) {
+            // Si se proporciona un archivo, leerlo
+            arrayBuffer = await file.arrayBuffer();
+        } else {
+            // Intentar cargar archivo automáticamente (solo funciona en entornos especiales)
+            if (typeof window.fs !== 'undefined') {
+                const response = await window.fs.readFile('BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx');
+                arrayBuffer = response.buffer;
+            } else {
+                throw new Error('window.fs no disponible y no se proporcionó archivo');
+            }
+        }
+
+        const workbook = XLSX.read(arrayBuffer, {
             cellStyles: true,
             cellFormulas: true,
             cellDates: true,
@@ -45,7 +58,7 @@ async function loadDataFromExcel() {
         // Cargar EMPRESAS RECURSOS HUMANOS (como lista de empresas)
         await loadEmpresasRRHH(workbook);
 
-        console.log('Datos cargados exitosamente desde Excel:', {
+        console.log('✅ Datos cargados exitosamente desde Excel:', {
             estudios: database.estudios.length,
             planes: database.planes.length,
             medidas: database.medidas.length,
@@ -53,16 +66,84 @@ async function loadDataFromExcel() {
             empresas: empresasRRHHList.length
         });
 
+        // Actualizar UI para mostrar éxito
+        showExcelLoadSuccess();
+
     } catch (error) {
-        console.error('Error cargando datos del Excel:', error);
+        console.error('❌ Error cargando datos del Excel:', error);
         // Si hay error, generar datos de ejemplo como fallback
-        await generateSampleData();
+        generateSampleData();
+        showExcelLoadError();
     }
+}
+
+// Función para mostrar mensaje de éxito
+function showExcelLoadSuccess() {
+    const statusDiv = document.getElementById('excel-status');
+    if (statusDiv) {
+        statusDiv.innerHTML = `
+            <div style="padding: 15px; background-color: #e8f5e8; border-radius: 8px; border-left: 4px solid #27ae60; margin: 10px 0;">
+                <p style="margin: 0; color: #2c5530; font-weight: bold;">
+                    ✅ Datos cargados exitosamente desde Excel
+                </p>
+                <p style="margin: 5px 0 0 0; color: #2c5530; font-size: 0.9em;">
+                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.medidas.length} medidas, ${database['empresas-rrhh'].length} directivas
+                </p>
+            </div>
+        `;
+    }
+}
+
+// Función para mostrar mensaje de error
+function showExcelLoadError() {
+    const statusDiv = document.getElementById('excel-status');
+    if (statusDiv) {
+        statusDiv.innerHTML = `
+            <div style="padding: 15px; background-color: #ffeaa7; border-radius: 8px; border-left: 4px solid #fdcb6e; margin: 10px 0;">
+                <p style="margin: 0; color: #8b4513; font-weight: bold;">
+                    ⚠️ No se pudo cargar el Excel automáticamente
+                </p>
+                <p style="margin: 5px 0 0 0; color: #8b4513; font-size: 0.9em;">
+                    Usando datos de ejemplo. <button onclick="showFileSelector()" style="background: #fdcb6e; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Cargar Excel manualmente</button>
+                </p>
+            </div>
+        `;
+    }
+}
+
+// Función para mostrar selector de archivo
+function showFileSelector() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx,.xls';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            console.log('📁 Archivo seleccionado:', file.name);
+            await loadDataFromExcel(file);
+            updateCounts();
+            
+            // Recargar datos en la vista actual si es necesario
+            const activeSection = document.querySelector('.section.active');
+            if (activeSection && activeSection.id !== 'home') {
+                const activeTab = activeSection.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id.includes('consultar')) {
+                    loadData(activeSection.id);
+                }
+            }
+        }
+    };
+    input.click();
 }
 
 // Función para cargar estudios desde el Excel
 async function loadEstudios(workbook) {
     const worksheet = workbook.Sheets['ESTUDIOS '];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "ESTUDIOS " no encontrada');
+        return;
+    }
+    
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
     // Los encabezados están en la fila 1, datos empiezan en fila 2
@@ -95,6 +176,11 @@ async function loadEstudios(workbook) {
 // Función para cargar planes desde el Excel
 async function loadPlanes(workbook) {
     const worksheet = workbook.Sheets['PLANES DE SEGURIDAD'];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "PLANES DE SEGURIDAD" no encontrada');
+        return;
+    }
+    
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
     for (let i = 2; i < jsonData.length; i++) {
@@ -123,6 +209,11 @@ async function loadPlanes(workbook) {
 // Función para cargar medidas desde el Excel
 async function loadMedidas(workbook) {
     const worksheet = workbook.Sheets['MEDIDAS DE SEGURIDAD LEY 19.303'];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "MEDIDAS DE SEGURIDAD LEY 19.303" no encontrada');
+        return;
+    }
+    
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
     for (let i = 3; i < jsonData.length; i++) {
@@ -154,6 +245,11 @@ async function loadMedidas(workbook) {
 // Función para cargar directivas desde el Excel
 async function loadDirectivas(workbook) {
     const worksheet = workbook.Sheets['DIRECTIVAS DE FUNCIONAMIENTOS '];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "DIRECTIVAS DE FUNCIONAMIENTOS " no encontrada');
+        return;
+    }
+    
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
     for (let i = 3; i < jsonData.length; i++) {
@@ -192,6 +288,11 @@ async function loadDirectivas(workbook) {
 // Función para cargar empresas RRHH desde el Excel
 async function loadEmpresasRRHH(workbook) {
     const worksheet = workbook.Sheets['EMPRESAS RECURSOS HUMANOS '];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "EMPRESAS RECURSOS HUMANOS " no encontrada');
+        return;
+    }
+    
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
     empresasRRHHList = [];
@@ -302,9 +403,12 @@ function determinarTipoDirectiva(instalacion) {
     }
 }
 
-// Función para generar datos de ejemplo (fallback si no se puede cargar Excel)
-async function generateSampleData() {
-    const database = {
+// Función para generar datos de ejemplo (fallback si no se puede cargar Excel) - CORREGIDA
+function generateSampleData() {
+    console.log('🔄 Generando datos de ejemplo...');
+    
+    // IMPORTANTE: Asignar directamente a la variable global database
+    database = {
         estudios: [],
         planes: [],
         medidas: [],
@@ -316,24 +420,19 @@ async function generateSampleData() {
         'eventos-masivos': []
     };
 
-    // Crear lista de empresas únicas de RRHH (300 empresas)
+    // Crear lista de empresas únicas de RRHH (30 empresas para ejemplo)
     empresasRRHHList = [];
     const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
     const sampleAddresses = [
-        'Av. Providencia 1234, Santiago',
-        'Calle Moneda 567, Santiago',
-        'Av. Las Condes 890, Las Condes',
-        'Calle Huérfanos 432, Santiago',
-        'Av. Libertador 678, Santiago',
-        'El Bosque Norte 010, Las Condes',
-        'Rosario Norte 555, Las Condes',
-        'San Antonio 220, Santiago',
-        'Merced 840, Santiago',
-        'Apoquindo 3000, Las Condes'
+        'Av. Providencia 1234, La Serena',
+        'Calle Moneda 567, Coquimbo',
+        'Av. Las Condes 890, Ovalle',
+        'Calle Huérfanos 432, La Serena',
+        'Av. Libertador 678, Coquimbo'
     ];
-    const comunasChile = ['Santiago', 'Providencia', 'Las Condes', 'Ñuñoa', 'Maipú', 'Puente Alto', 'La Florida', 'Vitacura', 'Concepción', 'Viña del Mar', 'Valparaíso', 'Antofagasta', 'Temuco', 'Rancagua', 'Talca'];
+    const comunasChile = ['La Serena', 'Coquimbo', 'Ovalle', 'Vicuña', 'Illapel'];
 
-    for (let i = 1; i <= 300; i++) {
+    for (let i = 1; i <= 30; i++) {
         const empresaName = `Empresa RRHH ${String(i).padStart(3, '0')}`;
         const baseRut = Math.floor(Math.random() * 90000000) + 10000000;
         const rut = `${baseRut.toString().slice(0, 2)}.${baseRut.toString().slice(2, 5)}.${baseRut.toString().slice(5, 8)}${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`;
@@ -348,8 +447,126 @@ async function generateSampleData() {
         });
     }
 
-    console.log('Usando datos de ejemplo en lugar de datos del Excel');
-    return database;
+    // Generar 5 estudios de ejemplo
+    for (let i = 1; i <= 5; i++) {
+        const startDate = `2025-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(startDateObj);
+        endDateObj.setFullYear(endDateObj.getFullYear() + 2);
+        const fechaFin = endDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = endDateObj > today ? 'Vigente' : 'Vencido';
+
+        database.estudios.push({
+            codigo: `EST-${String(i).padStart(3, '0')}`,
+            tipo: `Entidad de Ejemplo ${i}`,
+            fechaInicio: startDate,
+            fechaFin: fechaFin,
+            estadoVigencia: estadoVigencia,
+            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)]
+        });
+    }
+
+    // Generar 10 planes de ejemplo
+    for (let i = 1; i <= 10; i++) {
+        const approvalYear = 2024;
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
+        database.planes.push({
+            codigo: `PLN-${String(i).padStart(3, '0')}`,
+            tipo: `Entidad Financiera ${i}`,
+            fechaAprobacion: fechaAprobacion,
+            vigencia: vigencia,
+            revision: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
+            estadoVigencia: estadoVigencia,
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)],
+            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`
+        });
+    }
+
+    // Generar 15 medidas de ejemplo
+    const categorias = ['Entidad Comercial', 'Entidad Industrial', 'Entidad de Servicios'];
+    
+    for (let i = 1; i <= 15; i++) {
+        const approvalYear = 2024;
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
+        database.medidas.push({
+            codigo: `MED-${String(i).padStart(3, '0')}`,
+            categoria: categorias[Math.floor(Math.random() * categorias.length)],
+            fechaAprobacion: fechaAprobacion,
+            vigencia: vigencia,
+            estadoVigencia: estadoVigencia,
+            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)]
+        });
+    }
+
+    // Generar 20 directivas de empresas RRHH
+    const tiposDirectiva = ['Contratación', 'Capacitación', 'Evaluación', 'Bienestar'];
+    
+    for (let i = 1; i <= 20; i++) {
+        const empresaAsignada = empresasRRHHList[Math.floor(Math.random() * empresasRRHHList.length)];
+        
+        const approvalYear = 2024;
+        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
+        
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
+        database['empresas-rrhh'].push({
+            numero: `RRHH-${String(i).padStart(4, '0')}`,
+            empresa: empresaAsignada.nombre,
+            rut: empresaAsignada.rut,
+            tipoDirectiva: tiposDirectiva[Math.floor(Math.random() * tiposDirectiva.length)],
+            direccion: empresaAsignada.direccion,
+            fechaAprobacion: fechaAprobacion,
+            vigencia: vigencia,
+            estadoVigencia: estadoVigencia,
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)]
+        });
+        
+        empresaAsignada.directivasCount++;
+    }
+
+    console.log('✅ Datos de ejemplo generados:', {
+        estudios: database.estudios.length,
+        planes: database.planes.length,
+        medidas: database.medidas.length,
+        directivas: database['empresas-rrhh'].length,
+        empresas: empresasRRHHList.length
+    });
 }
 
 // Helper function to format dates for display
@@ -426,7 +643,6 @@ function showSubMedidaPage(subSectionType) {
 
     if (subSectionType === 'servicentros') {
         document.getElementById('servicentros-page').classList.add('active');
-        // Para servicentros, mostrar medidas filtradas por categoría comercial/servicios
         const servicentrosData = database.medidas.filter(medida => 
             medida.categoria && (
                 medida.categoria.toLowerCase().includes('comercial') ||
@@ -448,8 +664,7 @@ function showSubMedidaPage(subSectionType) {
         loadData('servicentros');
     } else if (subSectionType === 'sobre-500-uf') {
         document.getElementById('sobre-500-uf-page').classList.add('active');
-        // Para sobre 500 UF, mostrar medidas de mayor valor o empresas grandes
-        const sobre500Data = database.medidas.filter((medida, index) => index % 2 === 0); // Cada segunda medida
+        const sobre500Data = database.medidas.filter((medida, index) => index % 2 === 0);
         database['sobre-500-uf'] = sobre500Data.map(medida => ({
             id: medida.codigo,
             tipo: medida.categoria,
@@ -591,11 +806,11 @@ function loadCompanySpecificDirectivas(empresaNombre) {
 function searchCompanySpecificDirectivas(searchTerm) {
     const filteredDirectivas = database['empresas-rrhh'].filter(directiva => 
         directiva.empresa === currentEmpresaSelected &&
-        (directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (directiva.lugarInstalacion && directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.direccion && directiva.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.fechaAprobacion && directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.numero && directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.tipoDirectiva && directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
          (directiva.rut && directiva.rut.toLowerCase().includes(searchTerm.toLowerCase())) ||
          (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase())))
     );
@@ -921,7 +1136,7 @@ function searchData(section, searchTerm) {
     const data = database[section];
     const filteredData = data.filter(item => {
         return Object.values(item).some(value => 
-            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
     
@@ -996,16 +1211,36 @@ function closeModal() {
     document.getElementById('detailModal').style.display = 'none';
 }
 
-// Actualiza los contadores
+// Actualiza los contadores - CORREGIDA PARA EVITAR ERRORES
 function updateCounts() {
-    document.getElementById('estudios-count').textContent = `${database.estudios.length} registros`;
-    document.getElementById('planes-count').textContent = `${database.planes.length} registros`;
+    // Verificar que database existe y tiene las propiedades necesarias
+    if (!database || typeof database !== 'object') {
+        console.warn('⚠️ Base de datos no inicializada para updateCounts');
+        return;
+    }
     
-    const totalMedidas = database.servicentros.length + database['sobre-500-uf'].length;
-    document.getElementById('medidas-count').textContent = `${database.medidas.length} registros`;
+    // Verificar cada sección individualmente y usar valores seguros
+    const estudiosCount = (database.estudios && Array.isArray(database.estudios)) ? database.estudios.length : 0;
+    const planesCount = (database.planes && Array.isArray(database.planes)) ? database.planes.length : 0;
+    const medidasCount = (database.medidas && Array.isArray(database.medidas)) ? database.medidas.length : 0;
+    const servicentrosCount = (database.servicentros && Array.isArray(database.servicentros)) ? database.servicentros.length : 0;
+    const sobre500Count = (database['sobre-500-uf'] && Array.isArray(database['sobre-500-uf'])) ? database['sobre-500-uf'].length : 0;
+    const empresasRRHHCount = (database['empresas-rrhh'] && Array.isArray(database['empresas-rrhh'])) ? database['empresas-rrhh'].length : 0;
+    const guardiasPropiosCount = (database['guardias-propios'] && Array.isArray(database['guardias-propios'])) ? database['guardias-propios'].length : 0;
+    const eventosMasivosCount = (database['eventos-masivos'] && Array.isArray(database['eventos-masivos'])) ? database['eventos-masivos'].length : 0;
     
-    const totalDirectivas = database['empresas-rrhh'].length + database['guardias-propios'].length + database['eventos-masivos'].length;
-    document.getElementById('directivas-count').textContent = `${totalDirectivas} registros`;
+    // Actualizar los elementos del DOM de forma segura
+    const estudiosElement = document.getElementById('estudios-count');
+    const planesElement = document.getElementById('planes-count');
+    const medidasElement = document.getElementById('medidas-count');
+    const directivasElement = document.getElementById('directivas-count');
+    
+    if (estudiosElement) estudiosElement.textContent = `${estudiosCount} registros`;
+    if (planesElement) planesElement.textContent = `${planesCount} registros`;
+    if (medidasElement) medidasElement.textContent = `${medidasCount} registros`;
+    
+    const totalDirectivas = empresasRRHHCount + guardiasPropiosCount + eventosMasivosCount;
+    if (directivasElement) directivasElement.textContent = `${totalDirectivas} registros`;
 
     updateMedidasSubSectionCounts();
 }
@@ -1015,10 +1250,10 @@ function updateMedidasSubSectionCounts() {
     const servicentrosCountElement = document.getElementById('servicentros-count-sub');
     const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-sub');
 
-    if (servicentrosCountElement) {
+    if (servicentrosCountElement && database.servicentros) {
         servicentrosCountElement.textContent = database.servicentros.length;
     }
-    if (sobre500UFCountElement) {
+    if (sobre500UFCountElement && database['sobre-500-uf']) {
         sobre500UFCountElement.textContent = database['sobre-500-uf'].length;
     }
 }
@@ -1063,23 +1298,21 @@ window.onclick = function(event) {
     }
 }
 
-// Inicializa la aplicación
+// Inicializa la aplicación - CORREGIDA
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Iniciando carga de datos desde Excel...');
+    console.log('🚀 Iniciando sistema...');
     
-    // Intentar cargar datos desde Excel
+    // Intentar cargar datos desde Excel automáticamente
     await loadDataFromExcel();
     
+    // Actualizar contadores de forma segura
     updateCounts();
     
-    console.log('Sistema cargado con datos del Excel:', {
-        'Estudios de Seguridad': database.estudios.length,
-        'Planes de Seguridad': database.planes.length, 
-        'Medidas de Seguridad': database.medidas.length,
-        'Servicentros': database.servicentros.length,
-        'Sobre 500 UF': database['sobre-500-uf'].length,
-        'Empresas RRHH': empresasRRHHList.length + ' empresas con ' + database['empresas-rrhh'].length + ' registros totales',
-        'Guardias Propios': database['guardias-propios'].length,
-        'Eventos Masivos': database['eventos-masivos'].length
+    console.log('✅ Sistema iniciado correctamente:', {
+        'Estudios de Seguridad': database.estudios ? database.estudios.length : 0,
+        'Planes de Seguridad': database.planes ? database.planes.length : 0, 
+        'Medidas de Seguridad': database.medidas ? database.medidas.length : 0,
+        'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
+        'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
     });
 });
