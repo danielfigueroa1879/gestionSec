@@ -692,8 +692,8 @@ body {
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
-        width: 100%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
-        padding: 12px; /* Mantiene el padding para un mejor ajuste */
+        width: 120%; /* Asegura que ocupe todo el ancho de su padre (directivas-main-content-wrapper) */
+        padding: 3px; /* Mantiene el padding para un mejor ajuste */
         margin-bottom: 15px; /* Ajusta el margen inferior */
     }
 
