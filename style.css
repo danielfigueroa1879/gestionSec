@@ -677,20 +677,20 @@ body {
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros) */
     .directivas-menu-card {
         width: 100%; /* Asegura que ocupe todo el ancho */
-        padding: 15px; /* Reduce el padding para un mejor ajuste */
-        margin-bottom: 20px; /* Ajusta el margen inferior */
+        padding: 12px; /* Reduce el padding para un mejor ajuste */
+        margin-bottom: 15px; /* Ajusta el margen inferior */
     }
 
     /* Ajustes para los títulos dentro de las tarjetas de directivas */
     .directivas-menu-card h3 {
-        font-size: 1.1rem; /* Reduce el tamaño del título */
+        font-size: 1rem; /* Reduce el tamaño del título */
         margin-bottom: 15px;
     }
 
     /* Ajustes para los botones dentro de las tarjetas de directivas */
     .directivas-menu-card .btn {
-        padding: 8px 15px; /* Reduce el padding de los botones */
-        font-size: 0.9rem; /* Reduce el tamaño de fuente de los botones */
+        padding: 6px 12px; /* Reduce el padding de los botones */
+        font-size: 0.8rem; /* Reduce el tamaño de fuente de los botones */
         margin-top: 15px; /* Ajusta el margen superior */
     }
 }
