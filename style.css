@@ -407,7 +407,7 @@ body {
     border-radius: 15px;
     width: 90%;
     max-width: 800px; /* Ancho máximo para pantallas grandes */
-    max-height: 80vh; /* Altura máxima para evitar desbordamiento */
+    max-height: 80vh;
     overflow-y: auto; /* Permite desplazamiento si el contenido es largo */
     position: relative;
 }
@@ -535,6 +535,13 @@ body {
 
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
+    /* Ajustes para el contenedor principal de la aplicación en móvil */
+    .container {
+        padding: 0px; /* Elimina el padding para que el contenido ocupe todo el ancho */
+        max-width: 100%; /* Asegura que no tenga un ancho máximo en móvil */
+        width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    }
+
     /* Ajustes para el título principal de la página de inicio */
     .header h1 {
         font-size: 1.8rem; /* Título principal más pequeño en móvil */
@@ -593,6 +600,11 @@ body {
     /* Ocultar el título de la sección de directivas en móvil */
     /* Se añade !important para asegurar que se oculte, ya que el usuario reporta que no se borra */
     .section-title.directivas {
+        display: none !important;
+    }
+
+    /* Ocultar el título específico "DIRECTIVAS DE FUNCIONAMIENTO" que el usuario proporcionó */
+    #directivas-consultar h2 {
         display: none !important;
     }
 
@@ -676,9 +688,10 @@ body {
     }
 
     /* Permitir overflow-x en el contenedor para que el usuario pueda hacer scroll horizontal si el contenido es demasiado ancho */
-    .container {
+    /* Se elimina esta propiedad del .container ya que los elementos internos ya se adaptarán */
+    /* .container {
         overflow-x: auto;
-    }
+    } */
 
     /* Ajustes para las tarjetas de menú dentro de Directivas (subcuadros amarillos) */
     .directivas-menu-card {
@@ -700,16 +713,19 @@ body {
         margin-top: 10px; /* Ajusta el margen superior */
     }
 
-    /* Asegurar que la sección directivas ocupe todo el ancho, ajustando su padding si es necesario */
+    /* Asegurar que la sección directivas ocupe todo el ancho */
     .section.directivas {
-        padding-left: 10px; /* Reduce el padding horizontal */
-        padding-right: 10px; /* Reduce el padding horizontal */
+        padding-left: 10px; /* Mantiene un pequeño padding horizontal */
+        padding-right: 10px; /* Mantiene un pequeño padding horizontal */
         border-radius: 0; /* Opcional: remover border-radius para una apariencia de borde a borde */
+        /* Asegura que el contenedor blanco ocupe todo el ancho de su padre (ahora más ancho) */
+        width: 100%; 
     }
 
     /* Asegurar que el contenedor del menú de directivas también ocupe todo el ancho */
     #directivas-menu { /* Asumiendo que el contenedor de los cuadros amarillos tiene este ID */
         grid-template-columns: 1fr; /* Asegura una sola columna en móvil */
         gap: 15px; /* Ajusta el espacio entre las tarjetas */
+        width: 100%; /* Asegura que este contenedor también ocupe todo el ancho */
     }
 }
