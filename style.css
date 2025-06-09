@@ -571,14 +571,28 @@ body {
     }
 
     /* Optimización para el campo de búsqueda en móvil */
+    .search-container {
+        display: flex; /* Asegura que el input y el botón de búsqueda se alineen */
+        flex-direction: column; /* Apila el input y el botón de búsqueda */
+        gap: 10px; /* Espacio entre el input y el botón */
+        align-items: stretch; /* Estira los elementos para que ocupen todo el ancho */
+    }
+
     .search-input {
         width: 100%; /* Asegura que el input de búsqueda ocupe todo el ancho disponible */
         max-width: none; /* Elimina el límite de ancho máximo en móvil */
+    }
+    
+    /* Ajustes para el botón de búsqueda */
+    .search-container .btn {
+        width: 100%; /* El botón de búsqueda también ocupa todo el ancho */
+        margin-top: 0; /* Elimina márgenes extra si los hay */
     }
 
     /* Optimización específica para tablas en móviles */
     .data-table {
         table-layout: auto; /* Permite que el ancho de las columnas se ajuste al contenido */
+        min-width: 100%; /* Asegura que la tabla no se encoja menos que el ancho del viewport */
     }
 
     .data-table th,
@@ -586,6 +600,8 @@ body {
         padding: 8px; /* Reduce el padding para más espacio de contenido */
         font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
         word-break: break-all; /* Fuerza la rotura de palabras en cualquier punto */
+        white-space: normal !important; /* Asegura el ajuste de texto, anula cualquier nowrap */
+        writing-mode: horizontal-tb !important; /* Asegura que el texto en las celdas se vea horizontal */
     }
 
     /* Eliminar ancho fijo en la primera columna para que se ajuste dinámicamente */
@@ -593,5 +609,27 @@ body {
     .data-table td:first-child {
         width: auto; 
         min-width: unset; /* Elimina el min-width para mayor flexibilidad */
+    }
+
+    /* Ajustes para el menú principal en pantallas pequeñas */
+    .main-menu {
+        grid-template-columns: 1fr; /* Apila las tarjetas verticalmente en pantallas pequeñas */
+        gap: 20px; /* Reduce el espacio entre tarjetas */
+    }
+
+    /* Ajustes para el padding de las tarjetas de menú en pantallas pequeñas */
+    .menu-card {
+        padding: 20px;
+    }
+
+    /* Asegurar que el texto dentro de las tarjetas de menú y encabezados se ajuste correctamente */
+    .menu-card h3,
+    .menu-card p,
+    .header h1,
+    .header p,
+    .section-title {
+        white-space: normal !important;
+        word-break: break-word !important;
+        writing-mode: horizontal-tb !important;
     }
 }
