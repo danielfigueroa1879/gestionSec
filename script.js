@@ -41,9 +41,9 @@ async function loadDataFromExcel(file = null) {
         database = {
             estudios: [],
             planes: [],
-            medidas: [], // Corresponde a MEDIDAS DE SEGURIDAD LEY 19.303
-            servicentros: [], // Se puede usar para categorizar medidas
-            'sobre-500-uf': [], // Se puede usar para categorizar medidas
+            medidas: [], // Array general para compatibilidad
+            servicentros: [], // MEDIDAS SERVICENTRO
+            'sobre-500-uf': [], // MEDIDAS SOBRE 500 UF
             directivas: [], 
             'empresas-rrhh': [], // Corresponde a DIRECTIVAS DE FUNCIONAMIENTOS
             'guardias-propios': [],
@@ -250,6 +250,8 @@ async function loadPlanes(workbook) {
 
 // Función para cargar medidas SOBRE 500 UF desde el Excel
 async function loadMedidasSobre500UF(workbook) {
+    console.log('🔄 Cargando medidas SOBRE 500 UF...');
+    
     const worksheet = workbook.Sheets['MEDIDAS SOBRE 500 UF '];
     if (!worksheet) {
         console.warn('⚠️ Hoja "MEDIDAS SOBRE 500 UF " no encontrada');
@@ -257,40 +259,54 @@ async function loadMedidasSobre500UF(workbook) {
     }
     
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+    console.log(`📋 Filas totales en SOBRE 500 UF: ${jsonData.length}`);
     
     // Los datos empiezan en la fila 4 (índice 3)
+    let registrosCargados = 0;
     for (let i = 3; i < jsonData.length; i++) {
         const row = jsonData[i];
-        if (!row || !row[1]) continue; // NRO está en índice 1
+        if (!row || !row[1] || row[1] === null) continue; // NRO está en índice 1
         
-        const fechaVigencia = parseFecha(row[11]); // FECHA DE VIGENCIA MEDIDAS DE SEGURIDAD
-        const fechaAprobacion = new Date(fechaVigencia);
-        fechaAprobacion.setFullYear(fechaAprobacion.getFullYear() - 3);
-        
-        database['sobre-500-uf'].push({
-            id: `S500-${String(row[1]).padStart(3, '0')}`, // NRO
-            entidad: row[2] || 'Entidad no especificada', // ENTIDAD
-            rut: row[3] || '', // RUT ENTIDAD
-            instalacion: row[4] || '', // INSTALACIÓN
-            ubicacion: row[5] || '', // UBICACIÓN INSTALACIÓN
-            encargado: row[7] || 'No especificado', // IDENTIFICACION ENCARGADO
-            telefono: row[8] || '', // TELEFONO
-            correo: row[9] || '', // CORREO ELECTRONICO
-            resolucion: row[10] || '', // RESOLUCION APROB. MEDIDAS DE SEGURIDAD
-            fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-            vigencia: fechaVigencia.toISOString().split('T')[0],
-            estadoTramitacion: row[12] || 'VIGENTE', // ESTADO DE TRAMITACIÓN
-            estadoVigencia: fechaVigencia > new Date() ? 'Vigente' : 'Vencido',
-            tipo: row[2] || 'Entidad Comercial',
-            direccion: row[5] || '',
-            comuna: extraerComuna(row[5] || ''),
-            monto: `${500 + Math.floor(Math.random() * 1000)} UF` // Simular monto sobre 500 UF
-        });
+        try {
+            // Usar fecha más simple para evitar errores
+            const fechaVigencia = row[11] ? parseFechaSimple(row[11]) : new Date();
+            const fechaAprobacion = new Date(fechaVigencia.getTime() - (3 * 365 * 24 * 60 * 60 * 1000)); // 3 años antes
+            
+            const registro = {
+                id: `S500-${String(row[1]).padStart(3, '0')}`, // NRO
+                entidad: row[2] || 'Entidad no especificada', // ENTIDAD
+                rut: row[3] || '', // RUT ENTIDAD
+                instalacion: row[4] || '', // INSTALACIÓN
+                ubicacion: row[5] || '', // UBICACIÓN INSTALACIÓN
+                encargado: row[7] || 'No especificado', // IDENTIFICACION ENCARGADO
+                telefono: row[8] || '', // TELEFONO
+                correo: row[9] || '', // CORREO ELECTRONICO
+                resolucion: row[10] || '', // RESOLUCION APROB. MEDIDAS DE SEGURIDAD
+                fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
+                vigencia: fechaVigencia.toISOString().split('T')[0],
+                estadoTramitacion: row[12] || 'VIGENTE', // ESTADO DE TRAMITACIÓN
+                estadoVigencia: fechaVigencia > new Date() ? 'Vigente' : 'Vencido',
+                tipo: row[2] || 'Entidad Comercial',
+                direccion: row[5] || '',
+                comuna: extraerComuna(row[5] || ''),
+                monto: `${500 + Math.floor(Math.random() * 1000)} UF` // Simular monto sobre 500 UF
+            };
+            
+            database['sobre-500-uf'].push(registro);
+            registrosCargados++;
+            
+        } catch (error) {
+            console.warn(`⚠️ Error procesando fila ${i} de SOBRE 500 UF:`, error);
+        }
     }
+    
+    console.log(`✅ Medidas SOBRE 500 UF cargadas: ${registrosCargados} registros`);
 }
 
 // Función para cargar medidas SERVICENTROS desde el Excel
 async function loadMedidasServicentros(workbook) {
+    console.log('🔄 Cargando medidas SERVICENTROS...');
+    
     const worksheet = workbook.Sheets['MEDIDAS SERVICENTRO'];
     if (!worksheet) {
         console.warn('⚠️ Hoja "MEDIDAS SERVICENTRO" no encontrada');
@@ -298,32 +314,66 @@ async function loadMedidasServicentros(workbook) {
     }
     
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+    console.log(`📋 Filas totales en SERVICENTROS: ${jsonData.length}`);
     
     // Los datos empiezan en la fila 3 (índice 2)
+    let registrosCargados = 0;
     for (let i = 2; i < jsonData.length; i++) {
         const row = jsonData[i];
-        if (!row || !row[0]) continue; // NRO está en índice 0
+        if (!row || !row[0] || row[0] === null) continue; // NRO está en índice 0
         
-        const fechaAprobacion = parseFecha(row[7]); // FECHA DE APROBACIÓN
-        const vigencia = new Date(fechaAprobacion);
-        vigencia.setFullYear(vigencia.getFullYear() + 3);
-        
-        database.servicentros.push({
-            codigo: `SER-${String(row[0]).padStart(3, '0')}`, // NRO
-            nombreServicentro: row[1] || 'Servicentro', // NOMBRE SERVICENTRO
-            propietario: row[2] || 'Propietario no especificado', // PROPIETARIO O CONCESIONARIO
-            rut: row[3] || '', // RUT
-            ubicacion: row[4] || '', // UBICACION
-            comuna: row[5] || extraerComuna(row[4] || ''), // COMUNA
-            maximoDinero: row[6] || 'No especificado', // MAXIMO DE DINERO
-            fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-            vigencia: vigencia.toISOString().split('T')[0],
-            estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
-            tipo: row[1] || 'Servicentro',
-            direccion: row[4] || '',
-            estado: 'Implementada'
-        });
+        try {
+            // Usar fecha más simple para evitar errores
+            const fechaAprobacion = row[7] ? parseFechaSimple(row[7]) : new Date();
+            const vigencia = new Date(fechaAprobacion.getTime() + (3 * 365 * 24 * 60 * 60 * 1000)); // 3 años después
+            
+            const registro = {
+                codigo: `SER-${String(row[0]).padStart(3, '0')}`, // NRO
+                nombreServicentro: row[1] || 'Servicentro', // NOMBRE SERVICENTRO
+                propietario: row[2] || 'Propietario no especificado', // PROPIETARIO O CONCESIONARIO
+                rut: row[3] || '', // RUT
+                ubicacion: row[4] || '', // UBICACION
+                comuna: row[5] || extraerComuna(row[4] || ''), // COMUNA
+                maximoDinero: row[6] || 'No especificado', // MAXIMO DE DINERO
+                fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
+                vigencia: vigencia.toISOString().split('T')[0],
+                estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
+                tipo: row[1] || 'Servicentro',
+                direccion: row[4] || '',
+                estado: 'Implementada'
+            };
+            
+            database.servicentros.push(registro);
+            registrosCargados++;
+            
+        } catch (error) {
+            console.warn(`⚠️ Error procesando fila ${i} de SERVICENTROS:`, error);
+        }
     }
+    
+    console.log(`✅ Medidas SERVICENTROS cargadas: ${registrosCargados} registros`);
+}
+
+// Función auxiliar para parsear fechas de manera más simple
+function parseFechaSimple(fechaStr) {
+    if (!fechaStr) return new Date();
+    
+    // Si es un número (fecha de Excel)
+    if (typeof fechaStr === 'number') {
+        return new Date((fechaStr - 25569) * 86400 * 1000);
+    }
+    
+    // Si es una fecha en formato DD.MM.YYYY
+    if (typeof fechaStr === 'string' && fechaStr.includes('.')) {
+        const parts = fechaStr.split('.');
+        if (parts.length === 3) {
+            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+    }
+    
+    // Si es una fecha en formato YYYY-MM-DD o similar
+    const fecha = new Date(fechaStr);
+    return isNaN(fecha.getTime()) ? new Date() : fecha;
 }
 
 // Función para cargar directivas desde el Excel
@@ -495,9 +545,9 @@ function generateSampleData() {
     database = {
         estudios: [],
         planes: [],
-        medidas: [],
-        servicentros: [],
-        'sobre-500-uf': [],
+        medidas: [], // Array general para compatibilidad
+        servicentros: [], // Array específico para servicentros
+        'sobre-500-uf': [], // Array específico para medidas sobre 500 UF
         directivas: [], 
         'empresas-rrhh': [], 
         'guardias-propios': [],
@@ -669,14 +719,21 @@ function generateSampleData() {
         empresaAsignada.directivasCount++;
     }
 
-    console.log('✅ Datos de ejemplo generados:', {
-        estudios: database.estudios.length,
-        planes: database.planes.length,
-        servicentros: database.servicentros.length,
-        'sobre-500-uf': database['sobre-500-uf'].length,
-        directivas: database['empresas-rrhh'].length,
-        empresas: empresasRRHHList.length
-    });
+    console.log('✅ Datos de ejemplo generados:');
+    console.log('- Estudios:', database.estudios.length);
+    console.log('- Planes:', database.planes.length);
+    console.log('- Servicentros:', database.servicentros.length);
+    console.log('- Sobre 500 UF:', database['sobre-500-uf'].length);
+    console.log('- Directivas:', database['empresas-rrhh'].length);
+    console.log('- Empresas RRHH:', empresasRRHHList.length);
+    
+    // Verificar que los arrays están correctamente poblados
+    if (database.servicentros.length === 0) {
+        console.error('❌ ERROR: No se generaron servicentros de ejemplo');
+    }
+    if (database['sobre-500-uf'].length === 0) {
+        console.error('❌ ERROR: No se generaron medidas sobre 500 UF de ejemplo');
+    }
 }
 
 // Helper function to format dates for display
@@ -733,7 +790,9 @@ function showTab(section, tab) {
             document.getElementById('servicentros-page').classList.remove('active');
             document.getElementById('sobre-500-uf-page').classList.remove('active');
             updateMedidasSubSectionCounts(); // Actualizar contadores al mostrar la vista principal
-            console.log(`📊 Medidas principales mostradas, total: ${database.medidas ? database.medidas.length : 0}`);
+            console.log(`📊 Vista principal de medidas mostrada`);
+            console.log(`📊 Servicentros disponibles: ${database.servicentros ? database.servicentros.length : 0}`);
+            console.log(`📊 Sobre 500 UF disponibles: ${database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0}`);
         } else if (tab === 'agregar') {
             document.getElementById('medidas-agregar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
@@ -746,18 +805,30 @@ function showTab(section, tab) {
 
 // Función para mostrar las subsecciones de medidas
 function showSubMedidaPage(subSectionType) {
+    console.log(`🔄 Mostrando subsección de medidas: ${subSectionType}`);
+    
     document.querySelectorAll('#medidas .tab-content').forEach(content => {
         content.classList.remove('active');
     });
 
     if (subSectionType === 'servicentros') {
         document.getElementById('servicentros-page').classList.add('active');
-        console.log(`📋 Servicentros cargados: ${database.servicentros.length} registros`);
+        console.log(`📋 Datos de servicentros disponibles: ${database.servicentros ? database.servicentros.length : 'undefined'}`);
+        
+        if (!database.servicentros || database.servicentros.length === 0) {
+            console.warn('⚠️ No hay datos de servicentros para mostrar');
+        }
+        
         loadData('servicentros');
         
     } else if (subSectionType === 'sobre-500-uf') {
         document.getElementById('sobre-500-uf-page').classList.add('active');
-        console.log(`💰 Medidas Sobre 500 UF cargadas: ${database['sobre-500-uf'].length} registros`);
+        console.log(`💰 Datos de sobre 500 UF disponibles: ${database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined'}`);
+        
+        if (!database['sobre-500-uf'] || database['sobre-500-uf'].length === 0) {
+            console.warn('⚠️ No hay datos de sobre 500 UF para mostrar');
+        }
+        
         loadData('sobre-500-uf');
     }
 }
@@ -1073,21 +1144,26 @@ function addRecord(section, event) {
 
 // Carga y muestra los datos de una sección en formato de tabla
 function loadData(section) {
+    console.log(`🔄 Cargando datos para sección: ${section}`);
+    
     let resultsContainerId = `${section}-results`;
     const resultsContainer = document.getElementById(resultsContainerId);
 
     if (!resultsContainer) {
-        console.error(`No se encontró el contenedor: ${resultsContainerId}`);
+        console.error(`❌ No se encontró el contenedor: ${resultsContainerId}`);
         return;
     }
 
     const data = database[section];
+    console.log(`📊 Datos disponibles para ${section}:`, data ? data.length : 'undefined');
     
     if (!data || data.length === 0) {
+        console.warn(`⚠️ No hay datos para la sección: ${section}`);
         resultsContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
         return;
     }
 
+    console.log(`✅ Creando tabla para ${section} con ${data.length} registros`);
     const table = createTable(section, data);
     resultsContainer.innerHTML = table;
 }
@@ -1402,6 +1478,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Intentar cargar datos desde Excel automáticamente
     await loadDataFromExcel();
+    
+    // Debug: Verificar estado de la base de datos después de la carga
+    console.log('🔍 Estado de la base de datos después de la carga:');
+    console.log('- Estudios:', database.estudios ? database.estudios.length : 'undefined');
+    console.log('- Planes:', database.planes ? database.planes.length : 'undefined');
+    console.log('- Servicentros:', database.servicentros ? database.servicentros.length : 'undefined');
+    console.log('- Sobre 500 UF:', database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined');
+    console.log('- Directivas:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'undefined');
     
     // Actualizar contadores de forma segura
     updateCounts();
