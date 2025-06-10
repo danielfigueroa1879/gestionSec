@@ -535,8 +535,13 @@ function generateSampleData() {
         });
     }
 
-    // Generar 15 medidas de ejemplo
-    const categorias = ['Entidad Comercial', 'Entidad Industrial', 'Entidad de Servicios'];
+    // Generar 15 medidas de ejemplo con categorías más variadas
+    const categorias = [
+        'Entidad Comercial', 'Entidad Industrial', 'Entidad de Servicios',
+        'Empresa Financiera', 'Centro Comercial', 'Servicentro Shell',
+        'Banco Santander', 'Corporación Minera', 'Empresa de Retail',
+        'Tienda Comercial', 'Negocio Local', 'Empresa de Servicios'
+    ];
     
     for (let i = 1; i <= 15; i++) {
         const approvalYear = 2024;
@@ -636,6 +641,8 @@ function showSection(sectionName) {
 }
 
 function showTab(section, tab) {
+    console.log(`🔄 Cambiando a pestaña: ${section} - ${tab}`);
+    
     const tabButtons = document.querySelectorAll(`#${section} .tab-btn`);
     tabButtons.forEach(btn => btn.classList.remove('active'));
 
@@ -659,6 +666,7 @@ function showTab(section, tab) {
             document.getElementById('servicentros-page').classList.remove('active');
             document.getElementById('sobre-500-uf-page').classList.remove('active');
             updateMedidasSubSectionCounts(); // Actualizar contadores al mostrar la vista principal
+            console.log(`📊 Medidas principales mostradas, total: ${database.medidas ? database.medidas.length : 0}`);
         } else if (tab === 'agregar') {
             document.getElementById('medidas-agregar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
@@ -677,14 +685,24 @@ function showSubMedidaPage(subSectionType) {
 
     if (subSectionType === 'servicentros') {
         document.getElementById('servicentros-page').classList.add('active');
-        const servicentrosData = database.medidas.filter(medida => 
-            medida.categoria && (
-                medida.categoria.toLowerCase().includes('comercial') ||
-                medida.categoria.toLowerCase().includes('servicio') ||
-                medida.categoria.toLowerCase().includes('centro')
-            )
-        );
-        database.servicentros = servicentrosData.map(medida => ({
+        
+        // Filtro más amplio para servicentros - incluir todas las medidas comerciales y de servicio
+        const servicentrosData = database.medidas.filter(medida => {
+            if (!medida.categoria) return false;
+            const categoria = medida.categoria.toLowerCase();
+            return categoria.includes('comercial') || 
+                   categoria.includes('servicio') || 
+                   categoria.includes('centro') ||
+                   categoria.includes('empresa') ||
+                   categoria.includes('negocio') ||
+                   categoria.includes('retail') ||
+                   categoria.includes('tienda');
+        });
+        
+        // Si no hay datos con filtros específicos, tomar la mitad de las medidas
+        const finalServicentrosData = servicentrosData.length > 0 ? servicentrosData : database.medidas.slice(0, Math.ceil(database.medidas.length / 2));
+        
+        database.servicentros = finalServicentrosData.map(medida => ({
             codigo: medida.codigo,
             tipo: medida.categoria,
             fechaAprobacion: medida.fechaAprobacion,
@@ -693,13 +711,32 @@ function showSubMedidaPage(subSectionType) {
             rut: medida.rut,
             direccion: medida.direccion,
             comuna: medida.comuna,
-            alcance: medida.alcance
+            alcance: medida.alcance || `Medidas aplicables a ${medida.categoria}`
         }));
+        
+        console.log(`📋 Servicentros cargados: ${database.servicentros.length} registros`);
         loadData('servicentros');
+        
     } else if (subSectionType === 'sobre-500-uf') {
         document.getElementById('sobre-500-uf-page').classList.add('active');
-        const sobre500Data = database.medidas.filter((medida, index) => index % 2 === 0);
-        database['sobre-500-uf'] = sobre500Data.map(medida => ({
+        
+        // Para Sobre 500 UF, tomar registros alternos (simulando criterio de monto)
+        const sobre500Data = database.medidas.filter((medida, index) => {
+            // Simular que algunos registros son "sobre 500 UF" basado en:
+            // - Índice par
+            // - O si la categoría incluye términos que sugieren mayor valor
+            const categoria = medida.categoria ? medida.categoria.toLowerCase() : '';
+            const esMayorValor = categoria.includes('financier') || 
+                               categoria.includes('banco') || 
+                               categoria.includes('industrial') ||
+                               categoria.includes('corporativ');
+            return (index % 2 === 0) || esMayorValor;
+        });
+        
+        // Asegurar que siempre haya al menos algunos registros
+        const finalSobre500Data = sobre500Data.length > 0 ? sobre500Data : database.medidas.slice(Math.ceil(database.medidas.length / 2));
+        
+        database['sobre-500-uf'] = finalSobre500Data.map(medida => ({
             id: medida.codigo,
             tipo: medida.categoria,
             fechaAprobacion: medida.fechaAprobacion,
@@ -708,8 +745,11 @@ function showSubMedidaPage(subSectionType) {
             rut: medida.rut,
             direccion: medida.direccion,
             comuna: medida.comuna,
-            alcance: medida.alcance
+            alcance: medida.alcance || `Medidas sobre 500 UF para ${medida.categoria}`,
+            monto: `${500 + Math.floor(Math.random() * 1000)} UF` // Simular monto
         }));
+        
+        console.log(`💰 Medidas Sobre 500 UF cargadas: ${database['sobre-500-uf'].length} registros`);
         loadData('sobre-500-uf');
     }
 }
@@ -1060,7 +1100,7 @@ function createTable(section, data) {
     } else if (section === 'servicentros') {
         headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'sobre-500-uf') {
-        headers = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        headers = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'monto', 'rut', 'direccion', 'comuna'];
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
@@ -1202,7 +1242,7 @@ function showDetails(section, index) {
     } else if (section === 'servicentros') {
         detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
     } else if (section === 'sobre-500-uf') {
-        detailKeys = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        detailKeys = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'monto', 'rut', 'direccion', 'comuna'];
     } else if (section === 'empresas-rrhh') {
         detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
@@ -1281,27 +1321,52 @@ function updateCounts() {
 
 // Función para actualizar los contadores en los cuadros de "Medidas de Seguridad"
 function updateMedidasSubSectionCounts() {
-    // Calcular datos para servicentros (medidas comerciales/servicios)
-    const servicentrosData = database.medidas ? database.medidas.filter(medida => 
-        medida.categoria && (
-            medida.categoria.toLowerCase().includes('comercial') ||
-            medida.categoria.toLowerCase().includes('servicio') ||
-            medida.categoria.toLowerCase().includes('centro')
-        )
-    ) : [];
+    // Verificar que tenemos datos de medidas
+    if (!database.medidas || database.medidas.length === 0) {
+        console.log('⚠️ No hay datos de medidas para calcular contadores');
+        return;
+    }
+
+    // Calcular datos para servicentros (con filtros más amplios)
+    const servicentrosData = database.medidas.filter(medida => {
+        if (!medida.categoria) return false;
+        const categoria = medida.categoria.toLowerCase();
+        return categoria.includes('comercial') || 
+               categoria.includes('servicio') || 
+               categoria.includes('centro') ||
+               categoria.includes('empresa') ||
+               categoria.includes('negocio') ||
+               categoria.includes('retail') ||
+               categoria.includes('tienda');
+    });
     
-    // Calcular datos para sobre 500 UF (alternando registros como ejemplo)
-    const sobre500Data = database.medidas ? database.medidas.filter((medida, index) => index % 2 === 0) : [];
+    // Si no hay datos con filtros específicos, tomar la mitad de las medidas
+    const finalServicentrosCount = servicentrosData.length > 0 ? servicentrosData.length : Math.ceil(database.medidas.length / 2);
+    
+    // Calcular datos para sobre 500 UF (registros alternos + categorías de mayor valor)
+    const sobre500Data = database.medidas.filter((medida, index) => {
+        const categoria = medida.categoria ? medida.categoria.toLowerCase() : '';
+        const esMayorValor = categoria.includes('financier') || 
+                           categoria.includes('banco') || 
+                           categoria.includes('industrial') ||
+                           categoria.includes('corporativ');
+        return (index % 2 === 0) || esMayorValor;
+    });
+    
+    // Asegurar que siempre haya al menos algunos registros
+    const finalSobre500Count = sobre500Data.length > 0 ? sobre500Data.length : Math.ceil(database.medidas.length / 2);
     
     // Actualizar contadores en la UI
     const servicentrosCountElement = document.getElementById('servicentros-count-display');
     const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-display');
 
     if (servicentrosCountElement) {
-        servicentrosCountElement.textContent = `(${servicentrosData.length} registros)`;
+        servicentrosCountElement.textContent = `(${finalServicentrosCount} registros)`;
+        console.log(`📊 Contador Servicentros actualizado: ${finalServicentrosCount}`);
     }
     if (sobre500UFCountElement) {
-        sobre500UFCountElement.textContent = `(${sobre500Data.length} registros)`;
+        sobre500UFCountElement.textContent = `(${finalSobre500Count} registros)`;
+        console.log(`📊 Contador Sobre 500 UF actualizado: ${finalSobre500Count}`);
     }
 }
 
