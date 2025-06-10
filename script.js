@@ -56,8 +56,11 @@ async function loadDataFromExcel(file = null) {
         // Cargar PLANES DE SEGURIDAD
         await loadPlanes(workbook);
         
-        // Cargar MEDIDAS DE SEGURIDAD
-        await loadMedidas(workbook);
+        // Cargar MEDIDAS SOBRE 500 UF
+        await loadMedidasSobre500UF(workbook);
+        
+        // Cargar MEDIDAS SERVICENTROS
+        await loadMedidasServicentros(workbook);
         
         // Cargar DIRECTIVAS DE FUNCIONAMIENTOS (como empresas-rrhh)
         await loadDirectivas(workbook);
@@ -68,7 +71,8 @@ async function loadDataFromExcel(file = null) {
         console.log('✅ Datos cargados exitosamente desde Excel:', {
             estudios: database.estudios.length,
             planes: database.planes.length,
-            medidas: database.medidas.length,
+            servicentros: database.servicentros.length,
+            'sobre-500-uf': database['sobre-500-uf'].length,
             directivas: database['empresas-rrhh'].length,
             empresas: empresasRRHHList.length
         });
@@ -96,7 +100,7 @@ function showExcelLoadSuccess() {
                     ✅ Datos cargados exitosamente desde Excel
                 </p>
                 <p style="margin: 5px 0 0 0; color: #2c5530; font-size: 0.9em;">
-                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.medidas.length} medidas, ${database['empresas-rrhh'].length} directivas
+                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.servicentros.length} servicentros, ${database['sobre-500-uf'].length} medidas +500UF, ${database['empresas-rrhh'].length} directivas
                 </p>
             `;
         }
@@ -115,7 +119,7 @@ function showExcelLoadError() {
                     📝 Usando datos de ejemplo
                 </p>
                 <p style="margin: 5px 0 0 0; color: #8b4513; font-size: 0.9em;">
-                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.medidas.length} medidas de ejemplo.
+                    ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.servicentros.length} servicentros, ${database['sobre-500-uf'].length} medidas +500UF de ejemplo.
                     <br><button onclick="showFileSelector()" style="background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px;">📁 Cargar Excel Real</button>
                 </p>
             `;
@@ -244,38 +248,80 @@ async function loadPlanes(workbook) {
     }
 }
 
-// Función para cargar medidas desde el Excel
-async function loadMedidas(workbook) {
-    const worksheet = workbook.Sheets['MEDIDAS DE SEGURIDAD LEY 19.303'];
+// Función para cargar medidas SOBRE 500 UF desde el Excel
+async function loadMedidasSobre500UF(workbook) {
+    const worksheet = workbook.Sheets['MEDIDAS SOBRE 500 UF '];
     if (!worksheet) {
-        console.warn('⚠️ Hoja "MEDIDAS DE SEGURIDAD LEY 19.303" no encontrada');
+        console.warn('⚠️ Hoja "MEDIDAS SOBRE 500 UF " no encontrada');
         return;
     }
     
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
+    // Los datos empiezan en la fila 4 (índice 3)
     for (let i = 3; i < jsonData.length; i++) {
         const row = jsonData[i];
-        if (!row || !row[1]) continue; // La primera columna está vacía, datos empiezan en índice 1
+        if (!row || !row[1]) continue; // NRO está en índice 1
         
         const fechaVigencia = parseFecha(row[11]); // FECHA DE VIGENCIA MEDIDAS DE SEGURIDAD
         const fechaAprobacion = new Date(fechaVigencia);
         fechaAprobacion.setFullYear(fechaAprobacion.getFullYear() - 3);
         
-        database.medidas.push({
-            codigo: `MED-${String(row[1]).padStart(3, '0')}`,
-            categoria: row[2] || 'Entidad Comercial', // ENTIDAD
-            prioridad: 'Media',
-            estado: row[12] === 'VIGENTE' ? 'Implementada' : 'Pendiente', // ESTADO DE TRAMITACIÓN
-            descripcion: `Medidas de seguridad para ${row[4]} - ${row[2]}`, // INSTALACIÓN - ENTIDAD
-            responsable: row[7] || 'No especificado', // IDENTIFICACION ENCARGADO
+        database['sobre-500-uf'].push({
+            id: `S500-${String(row[1]).padStart(3, '0')}`, // NRO
+            entidad: row[2] || 'Entidad no especificada', // ENTIDAD
+            rut: row[3] || '', // RUT ENTIDAD
+            instalacion: row[4] || '', // INSTALACIÓN
+            ubicacion: row[5] || '', // UBICACIÓN INSTALACIÓN
+            encargado: row[7] || 'No especificado', // IDENTIFICACION ENCARGADO
+            telefono: row[8] || '', // TELEFONO
+            correo: row[9] || '', // CORREO ELECTRONICO
+            resolucion: row[10] || '', // RESOLUCION APROB. MEDIDAS DE SEGURIDAD
             fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
             vigencia: fechaVigencia.toISOString().split('T')[0],
+            estadoTramitacion: row[12] || 'VIGENTE', // ESTADO DE TRAMITACIÓN
             estadoVigencia: fechaVigencia > new Date() ? 'Vigente' : 'Vencido',
-            rut: row[3] || '', // RUT ENTIDAD
-            direccion: row[5] || '', // UBICACIÓN INSTALACIÓN
-            comuna: row[6] || extraerComuna(row[5] || ''), // Hay una columna que parece ser comuna
-            alcance: `Medidas aplicables a ${row[4]}` // INSTALACIÓN
+            tipo: row[2] || 'Entidad Comercial',
+            direccion: row[5] || '',
+            comuna: extraerComuna(row[5] || ''),
+            monto: `${500 + Math.floor(Math.random() * 1000)} UF` // Simular monto sobre 500 UF
+        });
+    }
+}
+
+// Función para cargar medidas SERVICENTROS desde el Excel
+async function loadMedidasServicentros(workbook) {
+    const worksheet = workbook.Sheets['MEDIDAS SERVICENTRO'];
+    if (!worksheet) {
+        console.warn('⚠️ Hoja "MEDIDAS SERVICENTRO" no encontrada');
+        return;
+    }
+    
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+    
+    // Los datos empiezan en la fila 3 (índice 2)
+    for (let i = 2; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || !row[0]) continue; // NRO está en índice 0
+        
+        const fechaAprobacion = parseFecha(row[7]); // FECHA DE APROBACIÓN
+        const vigencia = new Date(fechaAprobacion);
+        vigencia.setFullYear(vigencia.getFullYear() + 3);
+        
+        database.servicentros.push({
+            codigo: `SER-${String(row[0]).padStart(3, '0')}`, // NRO
+            nombreServicentro: row[1] || 'Servicentro', // NOMBRE SERVICENTRO
+            propietario: row[2] || 'Propietario no especificado', // PROPIETARIO O CONCESIONARIO
+            rut: row[3] || '', // RUT
+            ubicacion: row[4] || '', // UBICACION
+            comuna: row[5] || extraerComuna(row[4] || ''), // COMUNA
+            maximoDinero: row[6] || 'No especificado', // MAXIMO DE DINERO
+            fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
+            vigencia: vigencia.toISOString().split('T')[0],
+            estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
+            tipo: row[1] || 'Servicentro',
+            direccion: row[4] || '',
+            estado: 'Implementada'
         });
     }
 }
@@ -535,20 +581,9 @@ function generateSampleData() {
         });
     }
 
-    // Generar 15 medidas de ejemplo con categorías más variadas
-    const categorias = [
-        'Entidad Comercial', 'Entidad Industrial', 'Entidad de Servicios',
-        'Empresa Financiera', 'Centro Comercial', 'Servicentro Shell',
-        'Banco Santander', 'Corporación Minera', 'Empresa de Retail',
-        'Tienda Comercial', 'Negocio Local', 'Empresa de Servicios'
-    ];
-    
-    for (let i = 1; i <= 15; i++) {
-        const approvalYear = 2024;
-        const approvalMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-        const approvalDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
-        const fechaAprobacion = `${approvalYear}-${approvalMonth}-${approvalDay}`;
-        
+    // Generar 10 servicentros de ejemplo
+    for (let i = 1; i <= 10; i++) {
+        const fechaAprobacion = `2024-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const approvalDateObj = new Date(fechaAprobacion);
         const vigenciaDateObj = new Date(approvalDateObj);
         vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
@@ -557,15 +592,46 @@ function generateSampleData() {
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
 
-        database.medidas.push({
-            codigo: `MED-${String(i).padStart(3, '0')}`,
-            categoria: categorias[Math.floor(Math.random() * categorias.length)],
+        database.servicentros.push({
+            codigo: `SER-${String(i).padStart(3, '0')}`,
+            nombreServicentro: `Servicentro ${i}`,
+            propietario: `Propietario Ejemplo ${i}`,
+            rut: `${Math.floor(Math.random() * 20) + 70}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            ubicacion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)],
+            maximoDinero: `${Math.floor(Math.random() * 500) + 100}.000`,
             fechaAprobacion: fechaAprobacion,
             vigencia: vigencia,
             estadoVigencia: estadoVigencia,
-            rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
-            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
-            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)]
+            tipo: 'Servicentro',
+            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)]
+        });
+    }
+
+    // Generar 8 medidas sobre 500 UF de ejemplo
+    for (let i = 1; i <= 8; i++) {
+        const fechaAprobacion = `2024-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        const approvalDateObj = new Date(fechaAprobacion);
+        const vigenciaDateObj = new Date(approvalDateObj);
+        vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
+        const vigencia = vigenciaDateObj.toISOString().split('T')[0];
+
+        const today = new Date();
+        const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+
+        database['sobre-500-uf'].push({
+            id: `S500-${String(i).padStart(3, '0')}`,
+            entidad: `Entidad Financiera ${i}`,
+            instalacion: `Instalación ${i}`,
+            rut: `${Math.floor(Math.random() * 20) + 90}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            ubicacion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)],
+            monto: `${500 + Math.floor(Math.random() * 1000)} UF`,
+            fechaAprobacion: fechaAprobacion,
+            vigencia: vigencia,
+            estadoVigencia: estadoVigencia,
+            tipo: 'Entidad Financiera',
+            direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)]
         });
     }
 
@@ -606,7 +672,8 @@ function generateSampleData() {
     console.log('✅ Datos de ejemplo generados:', {
         estudios: database.estudios.length,
         planes: database.planes.length,
-        medidas: database.medidas.length,
+        servicentros: database.servicentros.length,
+        'sobre-500-uf': database['sobre-500-uf'].length,
         directivas: database['empresas-rrhh'].length,
         empresas: empresasRRHHList.length
     });
@@ -685,70 +752,11 @@ function showSubMedidaPage(subSectionType) {
 
     if (subSectionType === 'servicentros') {
         document.getElementById('servicentros-page').classList.add('active');
-        
-        // Filtro más amplio para servicentros - incluir todas las medidas comerciales y de servicio
-        const servicentrosData = database.medidas.filter(medida => {
-            if (!medida.categoria) return false;
-            const categoria = medida.categoria.toLowerCase();
-            return categoria.includes('comercial') || 
-                   categoria.includes('servicio') || 
-                   categoria.includes('centro') ||
-                   categoria.includes('empresa') ||
-                   categoria.includes('negocio') ||
-                   categoria.includes('retail') ||
-                   categoria.includes('tienda');
-        });
-        
-        // Si no hay datos con filtros específicos, tomar la mitad de las medidas
-        const finalServicentrosData = servicentrosData.length > 0 ? servicentrosData : database.medidas.slice(0, Math.ceil(database.medidas.length / 2));
-        
-        database.servicentros = finalServicentrosData.map(medida => ({
-            codigo: medida.codigo,
-            tipo: medida.categoria,
-            fechaAprobacion: medida.fechaAprobacion,
-            vigencia: medida.vigencia,
-            estadoVigencia: medida.estadoVigencia,
-            rut: medida.rut,
-            direccion: medida.direccion,
-            comuna: medida.comuna,
-            alcance: medida.alcance || `Medidas aplicables a ${medida.categoria}`
-        }));
-        
         console.log(`📋 Servicentros cargados: ${database.servicentros.length} registros`);
         loadData('servicentros');
         
     } else if (subSectionType === 'sobre-500-uf') {
         document.getElementById('sobre-500-uf-page').classList.add('active');
-        
-        // Para Sobre 500 UF, tomar registros alternos (simulando criterio de monto)
-        const sobre500Data = database.medidas.filter((medida, index) => {
-            // Simular que algunos registros son "sobre 500 UF" basado en:
-            // - Índice par
-            // - O si la categoría incluye términos que sugieren mayor valor
-            const categoria = medida.categoria ? medida.categoria.toLowerCase() : '';
-            const esMayorValor = categoria.includes('financier') || 
-                               categoria.includes('banco') || 
-                               categoria.includes('industrial') ||
-                               categoria.includes('corporativ');
-            return (index % 2 === 0) || esMayorValor;
-        });
-        
-        // Asegurar que siempre haya al menos algunos registros
-        const finalSobre500Data = sobre500Data.length > 0 ? sobre500Data : database.medidas.slice(Math.ceil(database.medidas.length / 2));
-        
-        database['sobre-500-uf'] = finalSobre500Data.map(medida => ({
-            id: medida.codigo,
-            tipo: medida.categoria,
-            fechaAprobacion: medida.fechaAprobacion,
-            vigencia: medida.vigencia,
-            estadoVigencia: medida.estadoVigencia,
-            rut: medida.rut,
-            direccion: medida.direccion,
-            comuna: medida.comuna,
-            alcance: medida.alcance || `Medidas sobre 500 UF para ${medida.categoria}`,
-            monto: `${500 + Math.floor(Math.random() * 1000)} UF` // Simular monto
-        }));
-        
         console.log(`💰 Medidas Sobre 500 UF cargadas: ${database['sobre-500-uf'].length} registros`);
         loadData('sobre-500-uf');
     }
@@ -1098,9 +1106,9 @@ function createTable(section, data) {
     } else if (section === 'medidas') {
         headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna'];
     } else if (section === 'servicentros') {
-        headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        headers = ['codigo', 'nombreServicentro', 'propietario', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'maximoDinero'];
     } else if (section === 'sobre-500-uf') {
-        headers = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'monto', 'rut', 'direccion', 'comuna'];
+        headers = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
     } else if (section === 'empresas-rrhh') {
         headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
@@ -1200,7 +1208,16 @@ function formatHeader(header) {
         id: 'Código',
         monto: 'Monto (UF)',
         estadoVigencia: 'Estado de Vigencia',
-        comuna: 'Comuna'
+        comuna: 'Comuna',
+        // Campos específicos de Servicentros
+        nombreServicentro: 'Nombre Servicentro',
+        propietario: 'Propietario/Concesionario',
+        maximoDinero: 'Máximo de Dinero',
+        ubicacion: 'Ubicación',
+        // Campos específicos de Sobre 500 UF
+        entidad: 'Entidad',
+        instalacion: 'Instalación',
+        encargado: 'Encargado'
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
@@ -1240,9 +1257,9 @@ function showDetails(section, index) {
     } else if (section === 'medidas') {
         detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna'];
     } else if (section === 'servicentros') {
-        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        detailKeys = ['codigo', 'nombreServicentro', 'propietario', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'maximoDinero'];
     } else if (section === 'sobre-500-uf') {
-        detailKeys = ['id', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'monto', 'rut', 'direccion', 'comuna'];
+        detailKeys = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
     } else if (section === 'empresas-rrhh') {
         detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
     } else if (section === 'guardias-propios') { 
@@ -1296,9 +1313,9 @@ function updateCounts() {
     // Verificar cada sección individualmente y usar valores seguros
     const estudiosCount = (database.estudios && Array.isArray(database.estudios)) ? database.estudios.length : 0;
     const planesCount = (database.planes && Array.isArray(database.planes)) ? database.planes.length : 0;
-    const medidasCount = (database.medidas && Array.isArray(database.medidas)) ? database.medidas.length : 0;
     const servicentrosCount = (database.servicentros && Array.isArray(database.servicentros)) ? database.servicentros.length : 0;
     const sobre500Count = (database['sobre-500-uf'] && Array.isArray(database['sobre-500-uf'])) ? database['sobre-500-uf'].length : 0;
+    const medidasTotalCount = servicentrosCount + sobre500Count; // Total de medidas = servicentros + sobre 500 UF
     const empresasRRHHCount = (database['empresas-rrhh'] && Array.isArray(database['empresas-rrhh'])) ? database['empresas-rrhh'].length : 0;
     const guardiasPropiosCount = (database['guardias-propios'] && Array.isArray(database['guardias-propios'])) ? database['guardias-propios'].length : 0;
     const eventosMasivosCount = (database['eventos-masivos'] && Array.isArray(database['eventos-masivos'])) ? database['eventos-masivos'].length : 0;
@@ -1311,7 +1328,7 @@ function updateCounts() {
     
     if (estudiosElement) estudiosElement.textContent = `${estudiosCount} registros`;
     if (planesElement) planesElement.textContent = `${planesCount} registros`;
-    if (medidasElement) medidasElement.textContent = `${medidasCount} registros`;
+    if (medidasElement) medidasElement.textContent = `${medidasTotalCount} registros`;
     
     const totalDirectivas = empresasRRHHCount + guardiasPropiosCount + eventosMasivosCount;
     if (directivasElement) directivasElement.textContent = `${totalDirectivas} registros`;
@@ -1321,52 +1338,21 @@ function updateCounts() {
 
 // Función para actualizar los contadores en los cuadros de "Medidas de Seguridad"
 function updateMedidasSubSectionCounts() {
-    // Verificar que tenemos datos de medidas
-    if (!database.medidas || database.medidas.length === 0) {
-        console.log('⚠️ No hay datos de medidas para calcular contadores');
-        return;
-    }
-
-    // Calcular datos para servicentros (con filtros más amplios)
-    const servicentrosData = database.medidas.filter(medida => {
-        if (!medida.categoria) return false;
-        const categoria = medida.categoria.toLowerCase();
-        return categoria.includes('comercial') || 
-               categoria.includes('servicio') || 
-               categoria.includes('centro') ||
-               categoria.includes('empresa') ||
-               categoria.includes('negocio') ||
-               categoria.includes('retail') ||
-               categoria.includes('tienda');
-    });
-    
-    // Si no hay datos con filtros específicos, tomar la mitad de las medidas
-    const finalServicentrosCount = servicentrosData.length > 0 ? servicentrosData.length : Math.ceil(database.medidas.length / 2);
-    
-    // Calcular datos para sobre 500 UF (registros alternos + categorías de mayor valor)
-    const sobre500Data = database.medidas.filter((medida, index) => {
-        const categoria = medida.categoria ? medida.categoria.toLowerCase() : '';
-        const esMayorValor = categoria.includes('financier') || 
-                           categoria.includes('banco') || 
-                           categoria.includes('industrial') ||
-                           categoria.includes('corporativ');
-        return (index % 2 === 0) || esMayorValor;
-    });
-    
-    // Asegurar que siempre haya al menos algunos registros
-    const finalSobre500Count = sobre500Data.length > 0 ? sobre500Data.length : Math.ceil(database.medidas.length / 2);
+    // Usar directamente los datos de las bases de datos específicas
+    const servicentrosCount = (database.servicentros && Array.isArray(database.servicentros)) ? database.servicentros.length : 0;
+    const sobre500Count = (database['sobre-500-uf'] && Array.isArray(database['sobre-500-uf'])) ? database['sobre-500-uf'].length : 0;
     
     // Actualizar contadores en la UI
     const servicentrosCountElement = document.getElementById('servicentros-count-display');
     const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-display');
 
     if (servicentrosCountElement) {
-        servicentrosCountElement.textContent = `(${finalServicentrosCount} registros)`;
-        console.log(`📊 Contador Servicentros actualizado: ${finalServicentrosCount}`);
+        servicentrosCountElement.textContent = `(${servicentrosCount} registros)`;
+        console.log(`📊 Contador Servicentros actualizado: ${servicentrosCount}`);
     }
     if (sobre500UFCountElement) {
-        sobre500UFCountElement.textContent = `(${finalSobre500Count} registros)`;
-        console.log(`📊 Contador Sobre 500 UF actualizado: ${finalSobre500Count}`);
+        sobre500UFCountElement.textContent = `(${sobre500Count} registros)`;
+        console.log(`📊 Contador Sobre 500 UF actualizado: ${sobre500Count}`);
     }
 }
 
@@ -1423,7 +1409,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('✅ Sistema iniciado correctamente:', {
         'Estudios de Seguridad': database.estudios ? database.estudios.length : 0,
         'Planes de Seguridad': database.planes ? database.planes.length : 0, 
-        'Medidas de Seguridad': database.medidas ? database.medidas.length : 0,
+        'Servicentros': database.servicentros ? database.servicentros.length : 0,
+        'Medidas Sobre 500 UF': database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0,
         'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
         'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
     });
