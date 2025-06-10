@@ -1,4 +1,72 @@
-// Variables globales para la navegación jerárquica de directivas
+});
+
+// Función de prueba para debug desde consola
+window.testMedidas = function() {
+    console.log('🧪 PRUEBA DE MEDIDAS - Estado actual:');
+    console.log('📊 Servicentros:', database.servicentros ? database.servicentros.length : 'NO EXISTE');
+    console.log('📊 Sobre 500 UF:', database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'NO EXISTE');
+    
+    if (database.servicentros && database.servicentros.length > 0) {
+        console.log('✅ Ejemplo servicentro:', database.servicentros[0]);
+    }
+    
+    if (database['sobre-500-uf'] && database['sobre-500-uf'].length > 0) {
+        console.log('✅ Ejemplo sobre 500 UF:', database['sobre-500-uf'][0]);
+    }
+    
+    // Probar mostrar servicentros
+    console.log('🧪 Probando mostrar servicentros...');
+    showSubMedidaPage('servicentros');
+    
+    setTimeout(() => {
+        console.log('🧪 Probando mostrar sobre 500 UF...');
+        showSubMedidaPage('sobre-500-uf');
+    }, 2000);
+};
+
+// Inicializa la aplicación - CORREGIDA
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Iniciando sistema...');
+    
+    // Verificar interfaz primero
+    const interfazOK = verificarInterfaz();
+    if (!interfazOK) {
+        console.error('❌ Error en la verificación de interfaz, abortando inicialización');
+        return;
+    }
+    
+    // Intentar cargar datos desde Excel automáticamente
+    await loadDataFromExcel();
+    
+    // Debug: Verificar estado de la base de datos después de la carga
+    console.log('🔍 Estado de la base de datos después de la carga:');
+    console.log('- Estudios:', database.estudios ? database.estudios.length : 'undefined');
+    console.log('- Planes:', database.planes ? database.planes.length : 'undefined');
+    console.log('- Servicentros:', database.servicentros ? database.servicentros.length : 'undefined');
+    console.log('- Sobre 500 UF:', database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined');
+    console.log('- Directivas:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'undefined');
+    
+    // Actualizar contadores de forma segura
+    updateCounts();
+    
+    // Verificar interfaz nuevamente después de cargar datos
+    setTimeout(() => {
+        console.log('🔍 Verificación final de interfaz...');
+        verificarInterfaz();
+        
+        // Mostrar función de prueba disponible
+        console.log('🧪 Para probar las medidas, ejecuta: testMedidas()');
+    }, 1000);
+    
+    console.log('✅ Sistema iniciado correctamente:', {
+        'Estudios de Seguridad': database.estudios ? database.estudios.length : 0,
+        'Planes de Seguridad': database.planes ? database.planes.length : 0, 
+        'Servicentros': database.servicentros ? database.servicentros.length : 0,
+        'Medidas Sobre 500 UF': database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0,
+        'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
+        'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
+    });
+});// Variables globales para la navegación jerárquica de directivas
 let empresasRRHHList = [];
 let currentDirectivasSubSectionType = ''; 
 let currentEmpresaSelected = ''; 
@@ -268,8 +336,8 @@ async function loadMedidasSobre500UF(workbook) {
         if (!row || !row[1] || row[1] === null) continue; // NRO está en índice 1
         
         try {
-            // Usar fecha más simple para evitar errores
-            const fechaVigencia = row[11] ? parseFechaSimple(row[11]) : new Date();
+            // Usar función segura para fechas
+            const fechaVigencia = parseFechaSimple(row[11]); // FECHA DE VIGENCIA MEDIDAS DE SEGURIDAD
             const fechaAprobacion = new Date(fechaVigencia.getTime() - (3 * 365 * 24 * 60 * 60 * 1000)); // 3 años antes
             
             const registro = {
@@ -282,8 +350,8 @@ async function loadMedidasSobre500UF(workbook) {
                 telefono: row[8] || '', // TELEFONO
                 correo: row[9] || '', // CORREO ELECTRONICO
                 resolucion: row[10] || '', // RESOLUCION APROB. MEDIDAS DE SEGURIDAD
-                fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-                vigencia: fechaVigencia.toISOString().split('T')[0],
+                fechaAprobacion: fechaToSafeString(fechaAprobacion),
+                vigencia: fechaToSafeString(fechaVigencia),
                 estadoTramitacion: row[12] || 'VIGENTE', // ESTADO DE TRAMITACIÓN
                 estadoVigencia: fechaVigencia > new Date() ? 'Vigente' : 'Vencido',
                 tipo: row[2] || 'Entidad Comercial',
@@ -296,7 +364,8 @@ async function loadMedidasSobre500UF(workbook) {
             registrosCargados++;
             
         } catch (error) {
-            console.warn(`⚠️ Error procesando fila ${i} de SOBRE 500 UF:`, error);
+            console.warn(`⚠️ Error procesando fila ${i} de SOBRE 500 UF:`, error.message);
+            console.warn(`Datos de la fila:`, row);
         }
     }
     
@@ -323,8 +392,8 @@ async function loadMedidasServicentros(workbook) {
         if (!row || !row[0] || row[0] === null) continue; // NRO está en índice 0
         
         try {
-            // Usar fecha más simple para evitar errores
-            const fechaAprobacion = row[7] ? parseFechaSimple(row[7]) : new Date();
+            // Usar función segura para fechas
+            const fechaAprobacion = parseFechaSimple(row[7]); // FECHA DE APROBACIÓN
             const vigencia = new Date(fechaAprobacion.getTime() + (3 * 365 * 24 * 60 * 60 * 1000)); // 3 años después
             
             const registro = {
@@ -335,8 +404,8 @@ async function loadMedidasServicentros(workbook) {
                 ubicacion: row[4] || '', // UBICACION
                 comuna: row[5] || extraerComuna(row[4] || ''), // COMUNA
                 maximoDinero: row[6] || 'No especificado', // MAXIMO DE DINERO
-                fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-                vigencia: vigencia.toISOString().split('T')[0],
+                fechaAprobacion: fechaToSafeString(fechaAprobacion),
+                vigencia: fechaToSafeString(vigencia),
                 estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
                 tipo: row[1] || 'Servicentro',
                 direccion: row[4] || '',
@@ -347,33 +416,109 @@ async function loadMedidasServicentros(workbook) {
             registrosCargados++;
             
         } catch (error) {
-            console.warn(`⚠️ Error procesando fila ${i} de SERVICENTROS:`, error);
+            console.warn(`⚠️ Error procesando fila ${i} de SERVICENTROS:`, error.message);
+            console.warn(`Datos de la fila:`, row);
         }
     }
     
     console.log(`✅ Medidas SERVICENTROS cargadas: ${registrosCargados} registros`);
 }
 
-// Función auxiliar para parsear fechas de manera más simple
+// Función auxiliar para parsear fechas de manera más simple y segura
 function parseFechaSimple(fechaStr) {
-    if (!fechaStr) return new Date();
+    if (!fechaStr || fechaStr === null || fechaStr === undefined) {
+        console.log('📅 Fecha vacía, usando fecha actual');
+        return new Date();
+    }
     
     // Si es un número (fecha de Excel)
-    if (typeof fechaStr === 'number') {
-        return new Date((fechaStr - 25569) * 86400 * 1000);
+    if (typeof fechaStr === 'number' && !isNaN(fechaStr)) {
+        try {
+            const excelDate = new Date((fechaStr - 25569) * 86400 * 1000);
+            if (isNaN(excelDate.getTime())) {
+                console.log('📅 Fecha de Excel inválida, usando fecha actual');
+                return new Date();
+            }
+            return excelDate;
+        } catch (error) {
+            console.log('📅 Error procesando fecha de Excel, usando fecha actual');
+            return new Date();
+        }
     }
     
     // Si es una fecha en formato DD.MM.YYYY
     if (typeof fechaStr === 'string' && fechaStr.includes('.')) {
-        const parts = fechaStr.split('.');
-        if (parts.length === 3) {
-            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        try {
+            const parts = fechaStr.split('.');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // Meses en JS van de 0-11
+                const year = parseInt(parts[2]);
+                
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    const date = new Date(year, month, day);
+                    if (isNaN(date.getTime())) {
+                        console.log('📅 Fecha DD.MM.YYYY inválida, usando fecha actual');
+                        return new Date();
+                    }
+                    return date;
+                }
+            }
+        } catch (error) {
+            console.log('📅 Error procesando fecha DD.MM.YYYY, usando fecha actual');
+            return new Date();
         }
     }
     
-    // Si es una fecha en formato YYYY-MM-DD o similar
-    const fecha = new Date(fechaStr);
-    return isNaN(fecha.getTime()) ? new Date() : fecha;
+    // Si es una fecha en formato DD/MM/YYYY
+    if (typeof fechaStr === 'string' && fechaStr.includes('/')) {
+        try {
+            const parts = fechaStr.split('/');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const year = parseInt(parts[2]);
+                
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    const date = new Date(year, month, day);
+                    if (isNaN(date.getTime())) {
+                        console.log('📅 Fecha DD/MM/YYYY inválida, usando fecha actual');
+                        return new Date();
+                    }
+                    return date;
+                }
+            }
+        } catch (error) {
+            console.log('📅 Error procesando fecha DD/MM/YYYY, usando fecha actual');
+            return new Date();
+        }
+    }
+    
+    // Intentar parsear como fecha normal
+    try {
+        const fecha = new Date(fechaStr);
+        if (isNaN(fecha.getTime())) {
+            console.log('📅 Fecha genérica inválida, usando fecha actual');
+            return new Date();
+        }
+        return fecha;
+    } catch (error) {
+        console.log('📅 Error procesando fecha genérica, usando fecha actual');
+        return new Date();
+    }
+}
+
+// Función auxiliar para convertir fecha a string seguro
+function fechaToSafeString(fecha) {
+    try {
+        if (!fecha || isNaN(fecha.getTime())) {
+            return new Date().toISOString().split('T')[0];
+        }
+        return fecha.toISOString().split('T')[0];
+    } catch (error) {
+        console.log('📅 Error convirtiendo fecha a string, usando fecha actual');
+        return new Date().toISOString().split('T')[0];
+    }
 }
 
 // Función para cargar directivas desde el Excel
@@ -756,12 +901,39 @@ function showHome() {
 }
 
 function showSection(sectionName) {
+    console.log(`🔄 Mostrando sección: ${sectionName}`);
+    
     document.getElementById('home').style.display = 'none';
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
-    document.getElementById(sectionName).classList.add('active');
-    showTab(sectionName, 'consultar');
+    
+    const targetSection = document.getElementById(sectionName);
+    if (!targetSection) {
+        console.error(`❌ ERROR: No se encontró la sección ${sectionName}`);
+        return;
+    }
+    
+    targetSection.classList.add('active');
+    console.log(`✅ Sección ${sectionName} activada`);
+    
+    // Para medidas, forzar mostrar la vista principal con los cuadros
+    if (sectionName === 'medidas') {
+        console.log(`🔧 Configurando vista especial para medidas...`);
+        showTab(sectionName, 'consultar');
+        
+        // Asegurar que los cuadros estén visibles
+        setTimeout(() => {
+            const medidasConsultar = document.getElementById('medidas-consultar');
+            if (medidasConsultar) {
+                medidasConsultar.style.display = 'block';
+                medidasConsultar.classList.add('active');
+                console.log(`✅ Vista principal de medidas forzada a visible`);
+            }
+        }, 100);
+    } else {
+        showTab(sectionName, 'consultar');
+    }
 }
 
 function showTab(section, tab) {
@@ -807,30 +979,62 @@ function showTab(section, tab) {
 function showSubMedidaPage(subSectionType) {
     console.log(`🔄 Mostrando subsección de medidas: ${subSectionType}`);
     
+    // Verificar que los elementos existen
+    const medidasConsultar = document.getElementById('medidas-consultar');
+    const servicentrosPage = document.getElementById('servicentros-page');
+    const sobre500Page = document.getElementById('sobre-500-uf-page');
+    
+    console.log('🔍 Verificando elementos HTML:');
+    console.log('- medidas-consultar:', medidasConsultar ? 'EXISTE' : 'NO EXISTE');
+    console.log('- servicentros-page:', servicentrosPage ? 'EXISTE' : 'NO EXISTE');
+    console.log('- sobre-500-uf-page:', sobre500Page ? 'EXISTE' : 'NO EXISTE');
+    
+    if (!servicentrosPage || !sobre500Page) {
+        console.error('❌ ERROR: Elementos HTML necesarios no encontrados');
+        alert('Error: No se encontraron los elementos HTML necesarios para mostrar las medidas');
+        return;
+    }
+    
+    // Ocultar todas las secciones de medidas
     document.querySelectorAll('#medidas .tab-content').forEach(content => {
         content.classList.remove('active');
+        content.style.display = 'none'; // Forzar ocultar
     });
 
     if (subSectionType === 'servicentros') {
-        document.getElementById('servicentros-page').classList.add('active');
+        console.log(`📋 Activando página de servicentros...`);
+        servicentrosPage.classList.add('active');
+        servicentrosPage.style.display = 'block'; // Forzar mostrar
+        
         console.log(`📋 Datos de servicentros disponibles: ${database.servicentros ? database.servicentros.length : 'undefined'}`);
         
         if (!database.servicentros || database.servicentros.length === 0) {
             console.warn('⚠️ No hay datos de servicentros para mostrar');
+            servicentrosPage.innerHTML = '<div class="no-data">No hay datos de servicentros disponibles</div>';
+            return;
         }
         
+        console.log(`📋 Cargando datos de servicentros...`);
         loadData('servicentros');
         
     } else if (subSectionType === 'sobre-500-uf') {
-        document.getElementById('sobre-500-uf-page').classList.add('active');
+        console.log(`💰 Activando página de sobre 500 UF...`);
+        sobre500Page.classList.add('active');
+        sobre500Page.style.display = 'block'; // Forzar mostrar
+        
         console.log(`💰 Datos de sobre 500 UF disponibles: ${database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined'}`);
         
         if (!database['sobre-500-uf'] || database['sobre-500-uf'].length === 0) {
             console.warn('⚠️ No hay datos de sobre 500 UF para mostrar');
+            sobre500Page.innerHTML = '<div class="no-data">No hay datos de medidas sobre 500 UF disponibles</div>';
+            return;
         }
         
+        console.log(`💰 Cargando datos de sobre 500 UF...`);
         loadData('sobre-500-uf');
     }
+    
+    console.log(`✅ Subsección ${subSectionType} activada correctamente`);
 }
 
 // Función genérica para mostrar las subsecciones de directivas
@@ -1151,26 +1355,65 @@ function loadData(section) {
 
     if (!resultsContainer) {
         console.error(`❌ No se encontró el contenedor: ${resultsContainerId}`);
+        
+        // Intentar encontrar contenedores alternativos
+        const alternativeContainers = document.querySelectorAll(`[id*="${section}"]`);
+        console.log('🔍 Contenedores alternativos encontrados:', alternativeContainers.length);
+        alternativeContainers.forEach((container, index) => {
+            console.log(`  ${index + 1}. ${container.id}`);
+        });
+        
         return;
     }
 
+    console.log(`✅ Contenedor encontrado: ${resultsContainerId}`);
+    
     const data = database[section];
     console.log(`📊 Datos disponibles para ${section}:`, data ? data.length : 'undefined');
     
-    if (!data || data.length === 0) {
+    if (!data || !Array.isArray(data)) {
+        console.warn(`⚠️ Datos inválidos para la sección: ${section}`);
+        resultsContainer.innerHTML = '<div class="no-data">Error: Datos no válidos</div>';
+        return;
+    }
+    
+    if (data.length === 0) {
         console.warn(`⚠️ No hay datos para la sección: ${section}`);
         resultsContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
         return;
     }
 
     console.log(`✅ Creando tabla para ${section} con ${data.length} registros`);
+    console.log(`📋 Primer registro de ejemplo:`, data[0]);
+    
     const table = createTable(section, data);
+    
+    if (!table || table.trim() === '') {
+        console.error(`❌ Error: La tabla generada está vacía para ${section}`);
+        resultsContainer.innerHTML = '<div class="no-data">Error generando la tabla</div>';
+        return;
+    }
+    
+    console.log(`📝 Tabla generada (primeros 200 caracteres):`, table.substring(0, 200) + '...');
+    
     resultsContainer.innerHTML = table;
+    
+    // Verificar que la tabla se insertó correctamente
+    const tableElement = resultsContainer.querySelector('table');
+    if (tableElement) {
+        const rows = tableElement.querySelectorAll('tbody tr');
+        console.log(`✅ Tabla insertada correctamente con ${rows.length} filas de datos`);
+    } else {
+        console.error(`❌ Error: No se pudo insertar la tabla en ${resultsContainerId}`);
+    }
 }
 
 // Crea una tabla HTML a partir de un array de objetos
 function createTable(section, data) {
-    if (data.length === 0) {
+    console.log(`🏗️ Creando tabla para sección: ${section} con ${data.length} registros`);
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        console.warn(`⚠️ No hay datos válidos para crear tabla de ${section}`);
         return '<div class="no-data">No se encontraron resultados</div>';
     }
 
@@ -1193,7 +1436,12 @@ function createTable(section, data) {
         headers = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
     } else if (section === 'directivas') {
         headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
+    } else {
+        console.warn(`⚠️ Sección desconocida: ${section}, usando headers del primer objeto`);
+        headers = Object.keys(data[0] || {});
     }
+
+    console.log(`📋 Headers para ${section}:`, headers);
 
     let tableHTML = '<table class="data-table';
     if (section === 'eventos-masivos') {
@@ -1206,15 +1454,30 @@ function createTable(section, data) {
     });
     tableHTML += '</tr></thead><tbody>';
 
+    let validRows = 0;
     data.forEach((row, index) => {
+        if (!row || typeof row !== 'object') {
+            console.warn(`⚠️ Fila inválida en índice ${index}:`, row);
+            return;
+        }
+        
         const originalIndex = database[section].indexOf(row);
         const detailIndex = originalIndex !== -1 ? originalIndex : index; 
 
         tableHTML += `<tr onclick="showDetails('${section}', ${detailIndex})">`;
 
         headers.forEach(header => {
-            let value = row[header] || '-';
-            if (dateHeaders.includes(header)) {
+            let value = row[header];
+            
+            // Manejar valores undefined/null
+            if (value === undefined || value === null) {
+                value = '-';
+            } else if (typeof value === 'string' && value.trim() === '') {
+                value = '-';
+            }
+            
+            // Formatear fechas
+            if (dateHeaders.includes(header) && value !== '-') {
                 value = formatDateForDisplay(value);
             }
 
@@ -1227,12 +1490,21 @@ function createTable(section, data) {
                 }
             }
             
+            // Escapar HTML para seguridad
+            if (typeof value === 'string') {
+                value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+            
             tableHTML += `<td class="${cellClass}">${value}</td>`;
         });
         tableHTML += '</tr>';
+        validRows++;
     });
 
     tableHTML += '</tbody></table>';
+    
+    console.log(`✅ Tabla creada con ${validRows} filas válidas de ${data.length} registros`);
+    
     return tableHTML;
 }
 
@@ -1472,30 +1744,53 @@ window.onclick = function(event) {
     }
 }
 
-// Inicializa la aplicación - CORREGIDA
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🚀 Iniciando sistema...');
+// Función para verificar la integridad de la interfaz
+function verificarInterfaz() {
+    console.log('🔍 Verificando integridad de la interfaz...');
     
-    // Intentar cargar datos desde Excel automáticamente
-    await loadDataFromExcel();
+    // Verificar elementos principales de medidas
+    const medidasSection = document.getElementById('medidas');
+    const medidasConsultar = document.getElementById('medidas-consultar');
+    const servicentrosPage = document.getElementById('servicentros-page');
+    const sobre500Page = document.getElementById('sobre-500-uf-page');
+    const servicentrosResults = document.getElementById('servicentros-results');
+    const sobre500Results = document.getElementById('sobre-500-uf-results');
     
-    // Debug: Verificar estado de la base de datos después de la carga
-    console.log('🔍 Estado de la base de datos después de la carga:');
-    console.log('- Estudios:', database.estudios ? database.estudios.length : 'undefined');
-    console.log('- Planes:', database.planes ? database.planes.length : 'undefined');
-    console.log('- Servicentros:', database.servicentros ? database.servicentros.length : 'undefined');
-    console.log('- Sobre 500 UF:', database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined');
-    console.log('- Directivas:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'undefined');
+    console.log('📋 Estado de elementos HTML:');
+    console.log('- medidas section:', medidasSection ? '✅ EXISTE' : '❌ NO EXISTE');
+    console.log('- medidas-consultar:', medidasConsultar ? '✅ EXISTE' : '❌ NO EXISTE');
+    console.log('- servicentros-page:', servicentrosPage ? '✅ EXISTE' : '❌ NO EXISTE');
+    console.log('- sobre-500-uf-page:', sobre500Page ? '✅ EXISTE' : '❌ NO EXISTE');
+    console.log('- servicentros-results:', servicentrosResults ? '✅ EXISTE' : '❌ NO EXISTE');
+    console.log('- sobre-500-uf-results:', sobre500Results ? '✅ EXISTE' : '❌ NO EXISTE');
     
-    // Actualizar contadores de forma segura
-    updateCounts();
+    // Verificar datos
+    console.log('📊 Estado de datos:');
+    console.log('- database.servicentros:', database.servicentros ? `✅ ${database.servicentros.length} registros` : '❌ NO EXISTE');
+    console.log('- database["sobre-500-uf"]:', database['sobre-500-uf'] ? `✅ ${database['sobre-500-uf'].length} registros` : '❌ NO EXISTE');
     
-    console.log('✅ Sistema iniciado correctamente:', {
-        'Estudios de Seguridad': database.estudios ? database.estudios.length : 0,
-        'Planes de Seguridad': database.planes ? database.planes.length : 0, 
-        'Servicentros': database.servicentros ? database.servicentros.length : 0,
-        'Medidas Sobre 500 UF': database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0,
-        'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
-        'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
-    });
-});
+    // Verificar contadores
+    const servicentrosCountDisplay = document.getElementById('servicentros-count-display');
+    const sobre500CountDisplay = document.getElementById('sobre-500-uf-count-display');
+    
+    console.log('🔢 Estado de contadores:');
+    console.log('- servicentros-count-display:', servicentrosCountDisplay ? `✅ "${servicentrosCountDisplay.textContent}"` : '❌ NO EXISTE');
+    console.log('- sobre-500-uf-count-display:', sobre500CountDisplay ? `✅ "${sobre500CountDisplay.textContent}"` : '❌ NO EXISTE');
+    
+    // Verificar que los elementos críticos existan
+    const elementosFaltantes = [];
+    if (!medidasSection) elementosFaltantes.push('medidas section');
+    if (!servicentrosPage) elementosFaltantes.push('servicentros-page');
+    if (!sobre500Page) elementosFaltantes.push('sobre-500-uf-page');
+    if (!servicentrosResults) elementosFaltantes.push('servicentros-results');
+    if (!sobre500Results) elementosFaltantes.push('sobre-500-uf-results');
+    
+    if (elementosFaltantes.length > 0) {
+        console.error('❌ ELEMENTOS CRÍTICOS FALTANTES:', elementosFaltantes);
+        alert(`Error: Elementos HTML faltantes: ${elementosFaltantes.join(', ')}`);
+        return false;
+    }
+    
+    console.log('✅ Verificación de interfaz completada - Todo OK');
+    return true;
+}
