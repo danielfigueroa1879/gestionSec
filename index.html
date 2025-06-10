@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -177,22 +178,43 @@
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON DATOS DESDE EXCEL -->
+            <!-- SECCIÓN PRINCIPAL CON DOS CUADROS DE MEDIDAS -->
             <div id="medidas-consultar" class="tab-content active">
                 <div style="margin-bottom: 30px; padding: 20px; background-color: #f0f8f0; border-radius: 10px; border-left: 4px solid #27ae60;">
                     <h3 style="color: #27ae60; margin-bottom: 10px;">📋 Medidas de Seguridad Ley 19.303</h3>
                     <p style="margin: 0; color: #2c5530;">
-                        Datos cargados desde el Excel: <strong>MEDIDAS DE SEGURIDAD LEY 19.303</strong>
+                        Datos cargados desde el Excel: <strong>BASE DE DATOS</strong>
                     </p>
                 </div>
                 
-                <div class="search-container">
-                    <input type="text" id="medidas-search" class="search-input" placeholder="🔍 Buscar medida por código, entidad, instalación..." onkeyup="searchData('medidas', this.value)">
+                <div class="medidas-container">
+                    
+                    <!-- Cuadro 1: Medidas Sobre 500 UF -->
+                    <div class="medida-box sobre-500-uf-box">
+                        <h3 class="medida-box-title">💰 MEDIDAS SOBRE 500 UF</h3>
+                        <p class="medida-box-count" id="sobre-500-uf-count-display">(0 registros)</p>
+                        <div class="medida-box-content">
+                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('sobre-500-uf')">
+                                📋 Ver Medidas Sobre 500 UF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro 2: Servicentros -->
+                    <div class="medida-box servicentros-box">
+                        <h3 class="medida-box-title">🏪 SERVICENTROS</h3>
+                        <p class="medida-box-count" id="servicentros-count-display">(0 registros)</p>
+                        <div class="medida-box-content">
+                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('servicentros')">
+                                📋 Ver Lista de Servicentros
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
-                <div id="medidas-results"></div>
             </div>
             
-            <!-- ANTIGUAS SUBSECCIONES - Ahora ocultas por defecto -->
+            <!-- SUBSECCIONES PARA CADA TIPO DE MEDIDA -->
             <div id="servicentros-page" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
@@ -206,11 +228,11 @@
 
             <div id="sobre-500-uf-page" class="tab-content" style="display: none;">
                 <div class="section-header">
-                    <h3 class="section-title medidas">💰 Lista de Registros Sobre 500 UF</h3>
+                    <h3 class="section-title medidas">💰 Lista de Medidas Sobre 500 UF</h3>
                     <button class="btn btn-secondary" onclick="showTab('medidas', 'consultar')">⬅️ Volver</button>
                 </div>
                 <div class="search-container">
-                    <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="🔍 Buscar registro..." onkeyup="searchData('sobre-500-uf', this.value)">
+                    <input type="text" id="sobre-500-uf-search" class="search-input" placeholder="🔍 Buscar medida..." onkeyup="searchData('sobre-500-uf', this.value)">
                 </div>
                 <div id="sobre-500-uf-results"></div>
             </div>
@@ -403,8 +425,3 @@
             </div>
         </div>
     </div>
-
-    <!-- Enlaza el archivo JavaScript adaptado -->
-    <script src="script.js"></script>
-</body>
-</html>
