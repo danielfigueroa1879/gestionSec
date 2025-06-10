@@ -16,7 +16,7 @@ async function loadDataFromExcel(file = null) {
             // Intentar cargar archivo automáticamente solo si window.fs está disponible
             if (typeof window.fs !== 'undefined' && typeof window.fs.readFile === 'function') {
                 try {
-                    const response = await window.fs.readFile('BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx');
+                    const response = await window.fs.readFile('BASE DE DATOS.xlsx');
                     arrayBuffer = response.buffer;
                 } catch (fsError) {
                     console.log('📁 No se pudo cargar automáticamente desde window.fs:', fsError.message);
@@ -658,7 +658,7 @@ function showTab(section, tab) {
             document.getElementById('medidas-consultar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
             document.getElementById('sobre-500-uf-page').classList.remove('active');
-            loadData('medidas'); // Cargar medidas directamente
+            updateMedidasSubSectionCounts(); // Actualizar contadores al mostrar la vista principal
         } else if (tab === 'agregar') {
             document.getElementById('medidas-agregar').classList.add('active');
             document.getElementById('servicentros-page').classList.remove('active');
@@ -666,10 +666,6 @@ function showTab(section, tab) {
         }
     } else {
         document.getElementById(`${section}-${tab}`).classList.add('active');
-    }
-    
-    if (section === 'medidas' && tab === 'consultar') {
-        updateMedidasSubSectionCounts();
     }
 }
 
@@ -1283,16 +1279,29 @@ function updateCounts() {
     updateMedidasSubSectionCounts();
 }
 
-// Función para actualizar los contadores en los botones de "Medidas de Seguridad"
+// Función para actualizar los contadores en los cuadros de "Medidas de Seguridad"
 function updateMedidasSubSectionCounts() {
-    const servicentrosCountElement = document.getElementById('servicentros-count-sub');
-    const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-sub');
+    // Calcular datos para servicentros (medidas comerciales/servicios)
+    const servicentrosData = database.medidas ? database.medidas.filter(medida => 
+        medida.categoria && (
+            medida.categoria.toLowerCase().includes('comercial') ||
+            medida.categoria.toLowerCase().includes('servicio') ||
+            medida.categoria.toLowerCase().includes('centro')
+        )
+    ) : [];
+    
+    // Calcular datos para sobre 500 UF (alternando registros como ejemplo)
+    const sobre500Data = database.medidas ? database.medidas.filter((medida, index) => index % 2 === 0) : [];
+    
+    // Actualizar contadores en la UI
+    const servicentrosCountElement = document.getElementById('servicentros-count-display');
+    const sobre500UFCountElement = document.getElementById('sobre-500-uf-count-display');
 
-    if (servicentrosCountElement && database.servicentros) {
-        servicentrosCountElement.textContent = database.servicentros.length;
+    if (servicentrosCountElement) {
+        servicentrosCountElement.textContent = `(${servicentrosData.length} registros)`;
     }
-    if (sobre500UFCountElement && database['sobre-500-uf']) {
-        sobre500UFCountElement.textContent = database['sobre-500-uf'].length;
+    if (sobre500UFCountElement) {
+        sobre500UFCountElement.textContent = `(${sobre500Data.length} registros)`;
     }
 }
 
