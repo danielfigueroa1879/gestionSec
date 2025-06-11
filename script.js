@@ -881,6 +881,7 @@ function generateSampleData() {
     }
 
     // Generar 10 servicentros de ejemplo
+    const servicentroBrands = ['Copec', 'Petrobras', 'Aramco', 'Shell'];
     for (let i = 1; i <= 10; i++) {
         const fechaAprobacion = `2024-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const approvalDateObj = new Date(fechaAprobacion);
@@ -890,10 +891,11 @@ function generateSampleData() {
 
         const today = new Date();
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
+        const brand = servicentroBrands[Math.floor(Math.random() * servicentroBrands.length)];
 
         database.servicentros.push({
             codigo: `SER-${String(i).padStart(3, '0')}`,
-            nombreServicentro: `Servicentro ${i}`,
+            nombreServicentro: `${brand} - Servicentro ${i}`, // Added brand to name
             propietario: `Propietario Ejemplo ${i}`,
             rut: `${Math.floor(Math.random() * 20) + 70}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
             ubicacion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
@@ -1572,6 +1574,7 @@ function createTable(section, data) {
 
         headers.forEach(header => {
             let value = row[header];
+            let cellClass = '';
             
             // Manejar valores undefined/null
             if (value === undefined || value === null) {
@@ -1585,8 +1588,17 @@ function createTable(section, data) {
                 value = formatDateForDisplay(value);
             }
 
-            let cellClass = '';
-            if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
+            // Aplicar estilos de marca para servicentros
+            if (section === 'servicentros' && header === 'nombreServicentro') {
+                const lowerCaseName = value.toLowerCase();
+                if (lowerCaseName.includes('copec')) {
+                    cellClass = 'brand-copec';
+                } else if (lowerCaseName.includes('petrobras') || lowerCaseName.includes('aramco')) {
+                    cellClass = 'brand-petrobras'; // Usamos la misma clase para Petrobras y Aramco
+                } else if (lowerCaseName.includes('shell')) {
+                    cellClass = 'brand-shell';
+                }
+            } else if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
                 if (value === 'Vigente' || value === 'APROBADO') {
                     cellClass = 'status-vigente';
                 } else if (value === 'Vencido' || value === 'RECHAZADO') {
