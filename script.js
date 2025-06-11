@@ -2003,3 +2003,38 @@ function verificarInterfaz() {
     console.log('✅ Verificación de interfaz completada - Todo OK');
     return true;
 }
+// Variables para guardar posición original
+let directivasOriginalParent = null;
+let directivasOriginalNextSibling = null;
+
+// Mover directivas fuera del container (solo en PC)
+function moveDirectivasToFullscreen() {
+    if (window.innerWidth <= 768) return; // Solo PC
+    
+    const directivasSection = document.getElementById('directivas');
+    const container = document.querySelector('.container');
+    
+    if (!directivasSection || !container) return;
+    
+    // Guardar posición original
+    directivasOriginalParent = directivasSection.parentNode;
+    directivasOriginalNextSibling = directivasSection.nextSibling;
+    
+    // Mover al body (fuera del container)
+    document.body.appendChild(directivasSection);
+    console.log('✅ Directivas movido fuera del container');
+}
+
+// Restaurar directivas a su posición original
+function restoreDirectivasPosition() {
+    const directivasSection = document.getElementById('directivas');
+    
+    if (!directivasSection || !directivasOriginalParent) return;
+    
+    if (directivasOriginalNextSibling) {
+        directivasOriginalParent.insertBefore(directivasSection, directivasOriginalNextSibling);
+    } else {
+        directivasOriginalParent.appendChild(directivasSection);
+    }
+    console.log('✅ Directivas restaurado a posición original');
+}
