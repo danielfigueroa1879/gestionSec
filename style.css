@@ -131,22 +131,23 @@ body {
 /* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
 .section.directivas.active { /* Solo cuando la sección está activa */
     display: block; /* Asegura que se muestre */
-    position: absolute; /* Usamos absolute para sacarlo del flujo del container */
-    top: 0; /* Lo posicionamos al inicio del container */
-    left: 0; /* Lo posicionamos al inicio del container */
-    width: 100vw; /* 100% del ancho del viewport */
-    height: 100vh; /* 100% del alto del viewport */
-    z-index: 10; /* Asegura que esté por encima del contenido principal, pero debajo del modal */
+    position: absolute; /* Posicionamiento absoluto */
+    top: 0;
+    left: 0;
+    right: 0; /* Se estira de izquierda a derecha */
+    width: auto; /* Permite que right: 0; haga su trabajo */
+    min-height: 100vh; /* Asegura que ocupe al menos la altura del viewport */
+    height: auto; /* Permite que el contenido se extienda si es más largo que la pantalla */
+    z-index: 9999; /* Asegura que esté por encima de otros elementos, pero debajo del modal (z-index 10000) */
     border-radius: 0; /* Elimina los bordes redondeados */
     padding: 30px 40px; /* Mantiene un padding interno para el contenido */
     box-sizing: border-box; /* Incluye el padding en el cálculo del ancho/alto */
     background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); /* Fondo */
     border-top: 8px solid #f39c12; /* Borde superior */
-
-    /* Para que ocupe todo el ancho de la pantalla, compensando el padding del body */
-    margin-left: calc(-1 * (100vw - 100%) / 2); /* Ajusta a la izquierda para cubrir todo el ancho */
-    margin-right: calc(-1 * (100vw - 100%) / 2); /* Ajusta a la derecha */
+    margin: 0; /* Asegurar que no haya márgenes externos */
+    overflow-y: auto; /* Permite desplazamiento vertical si el contenido es demasiado largo */
 }
+
 
 /* Muestra la sección activa (para otras secciones que no usan fixed) */
 .section.active {
