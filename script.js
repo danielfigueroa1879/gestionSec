@@ -22,12 +22,13 @@ window.testMedidas = function() {
     }, 2000);
 };
 
-// Función para verificar qué archivos están disponibles
+// Función para verificar qué archivos están disponibles y el estado de window.fs
 window.verificarArchivos = async function() {
     console.log('🔍 Verificando archivos disponibles...');
+    console.log('Tipo de window.fs:', typeof window.fs); // Added to check window.fs availability
     
     if (typeof window.fs === 'undefined') {
-        console.log('❌ window.fs no está disponible');
+        console.log('❌ window.fs no está disponible, no se pueden verificar los archivos directamente.');
         return;
     }
     
@@ -38,7 +39,12 @@ window.verificarArchivos = async function() {
         'BASE_DE_DATOS.xlsx',
         'base_de_datos.xlsx',
         'BaseDeDatos.xlsx',
-        'BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx'
+        'BASE DE DATOS.xls', // Added .xls extension
+        'base de datos.xls', // Added .xls extension
+        'BASE_DE_DATOS.xls', // Added .xls extension
+        'base_de_datos.xls', // Added .xls extension
+        'BaseDeDatos.xls', // Added .xls extension
+        'BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx' // Original long name
     ];
     
     console.log('📁 Probando nombres de archivo...');
@@ -48,7 +54,7 @@ window.verificarArchivos = async function() {
             const response = await window.fs.readFile(nombre);
             console.log(`✅ ENCONTRADO: "${nombre}" (${response.length} bytes)`);
         } catch (error) {
-            console.log(`❌ NO ENCONTRADO: "${nombre}"`);
+            console.log(`❌ NO ENCONTRADO: "${nombre}" (Error: ${error.message})`); // Added error message
         }
     }
     
@@ -108,7 +114,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
         'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
     });
-});// Variables globales para la navegación jerárquica de directivas
+});
+// Variables globales para la navegación jerárquica de directivas
 let empresasRRHHList = [];
 let currentDirectivasSubSectionType = ''; 
 let currentEmpresaSelected = ''; 
@@ -126,43 +133,42 @@ async function loadDataFromExcel(file = null) {
         } else {
             // Intentar cargar archivo automáticamente solo si window.fs está disponible
             if (typeof window.fs !== 'undefined' && typeof window.fs.readFile === 'function') {
-                try {
-                    console.log('📁 Intentando cargar "BASE DE DATOS.xlsx" automáticamente...');
-                    const response = await window.fs.readFile('BASE DE DATOS.xlsx');
-                    arrayBuffer = response.buffer;
-                    console.log('✅ Archivo "BASE DE DATOS.xlsx" cargado exitosamente');
-                } catch (fsError) {
-                    console.log('📁 No se pudo cargar "BASE DE DATOS.xlsx" automáticamente:', fsError.message);
-                    // Intentar nombres alternativos
-                    const nombresAlternativos = [
-                        'base de datos.xlsx',
-                        'BASE_DE_DATOS.xlsx',
-                        'base_de_datos.xlsx',
-                        'BaseDeDatos.xlsx'
-                    ];
-                    
-                    let archivoEncontrado = false;
-                    for (const nombre of nombresAlternativos) {
-                        try {
-                            console.log(`📁 Probando nombre alternativo: ${nombre}`);
-                            const response = await window.fs.readFile(nombre);
-                            arrayBuffer = response.buffer;
-                            console.log(`✅ Archivo encontrado con nombre: ${nombre}`);
-                            archivoEncontrado = true;
-                            break;
-                        } catch (error) {
-                            console.log(`❌ No encontrado: ${nombre}`);
-                        }
+                console.log('📁 window.fs está disponible, intentando cargar automáticamente...');
+                const nombresAlternativos = [
+                    'BASE DE DATOS.xlsx',
+                    'base de datos.xlsx',
+                    'BASE_DE_DATOS.xlsx',
+                    'base_de_datos.xlsx',
+                    'BaseDeDatos.xlsx',
+                    'BASE DE DATOS.xls', // Added .xls extension
+                    'base de datos.xls', // Added .xls extension
+                    'BASE_DE_DATOS.xls', // Added .xls extension
+                    'base_de_datos.xls', // Added .xls extension
+                    'BaseDeDatos.xls', // Added .xls extension
+                    'BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx'
+                ];
+                
+                let archivoEncontrado = false;
+                for (const nombre of nombresAlternativos) {
+                    try {
+                        console.log(`📁 Probando nombre de archivo: "${nombre}"`);
+                        const response = await window.fs.readFile(nombre);
+                        arrayBuffer = response.buffer;
+                        console.log(`✅ Archivo encontrado y cargado con nombre: "${nombre}"`);
+                        archivoEncontrado = true;
+                        break;
+                    } catch (error) {
+                        console.log(`❌ No encontrado: "${nombre}" (Error: ${error.message})`);
                     }
-                    
-                    if (!archivoEncontrado) {
-                        throw new Error('Archivo no encontrado con ninguno de los nombres probados');
-                    }
+                }
+                
+                if (!archivoEncontrado) {
+                    throw new Error('Archivo "BASE DE DATOS.xlsx" o similar no encontrado en el proyecto.');
                 }
             } else {
                 // Si window.fs no está disponible, usar datos de ejemplo directamente
                 console.log('📁 window.fs no disponible, usando datos de ejemplo');
-                throw new Error('window.fs no disponible - usando datos de ejemplo');
+                throw new Error('window.fs no disponible o no tiene la función readFile - usando datos de ejemplo');
             }
         }
 
@@ -223,7 +229,7 @@ async function loadDataFromExcel(file = null) {
         console.log('📝 Cargando datos de ejemplo debido a:', error.message);
         // Si hay error, generar datos de ejemplo como fallback
         generateSampleData();
-        showExcelLoadError();
+        showExcelLoadError(error.message); // Pass the error message
     }
 }
 
@@ -247,7 +253,7 @@ function showExcelLoadSuccess() {
 }
 
 // Función para mostrar mensaje de error y opciones
-function showExcelLoadError() {
+function showExcelLoadError(errorMessage = 'No se pudo cargar el archivo Excel automáticamente.') {
     // Buscar y actualizar el mensaje de estado en el home
     const homeSection = document.getElementById('home');
     if (homeSection) {
@@ -256,6 +262,9 @@ function showExcelLoadError() {
             statusDiv.innerHTML = `
                 <p style="margin: 0; color: #8b4513; font-weight: bold;">
                     📝 Archivo Excel no encontrado - Usando datos de ejemplo
+                </p>
+                <p style="margin: 5px 0 0 0; color: #8b4513; font-size: 0.9em;">
+                    ${errorMessage} Por favor, verifique el nombre y la extensión del archivo (ej: "BASE DE DATOS.xlsx").
                 </p>
                 <p style="margin: 5px 0 0 0; color: #8b4513; font-size: 0.9em;">
                     ${database.estudios.length} estudios, ${database.planes.length} planes, ${database.servicentros.length} servicentros, ${database['sobre-500-uf'].length} medidas +500UF de ejemplo.
@@ -275,7 +284,8 @@ function showExcelLoadError() {
 window.mostrarInstrucciones = function() {
     alert(`📋 INSTRUCCIONES PARA CARGAR TU EXCEL:
 
-1. ✅ Asegúrate de que tu archivo se llame exactamente: "BASE DE DATOS.xlsx"
+1. ✅ Asegúrate de que tu archivo se llame exactamente: "BASE DE DATOS.xlsx" o una de sus variantes comunes como "base de datos.xlsx".
+   Verifica las mayúsculas/minúsculas y la extensión (.xlsx o .xls).
 
 2. 📁 Haz click en "📁 Cargar BASE DE DATOS.xlsx"
 
@@ -284,7 +294,7 @@ window.mostrarInstrucciones = function() {
 4. ⏳ Espera a que se carguen los datos
 
 ❗ IMPORTANTE:
-- El archivo debe estar en formato .xlsx
+- El archivo debe estar en formato .xlsx o .xls
 - Debe tener las hojas: "MEDIDAS SERVICENTRO" y "MEDIDAS SOBRE 500 UF"
 - Verifica que los datos estén en las hojas correctas
 
@@ -333,7 +343,7 @@ function showFileSelector() {
             } catch (loadError) {
                 console.error('Error cargando archivo:', loadError);
                 alert('Error al cargar el archivo Excel. Verifique que sea el archivo correcto.');
-                showExcelLoadError();
+                showExcelLoadError(loadError.message); // Pass the error message
             }
         }
     };
