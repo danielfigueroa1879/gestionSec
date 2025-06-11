@@ -138,25 +138,12 @@ body.body-directivas-active {
 .section.planes { border-top-color: #3498db; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); }
 .section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
 
-/* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
-..section.directivas.active {
+/* Estilos básicos para directivas - se sobrescriben con media queries */
+.section.directivas.active {
     display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 999 !important;
-    border-radius: 0 !important;
-    padding: 20px 30px !important;
-    box-sizing: border-box !important;
-    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
-    border-top: 8px solid #f39c12 !important;
-    margin: 0 !important;
-    overflow-y: auto !important;
-    max-width: none !important;
+    border-top-color: #f39c12;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
 }
-
 
 /* Muestra la sección activa (para otras secciones que no usan fixed) */
 .section.active {
@@ -354,13 +341,6 @@ body.body-directivas-active {
     writing-mode: horizontal-tb;
 }
 
-/* Ajuste de tamaño de fuente para las tablas dentro de la sección de directivas */
-.section.directivas .data-table th,
-.section.directivas .data-table td {
-    font-size: 0.8em !important; /* Un poco más pequeña para las directivas, aplica a th y td */
-}
-
-
 /* Estilos para la primera columna (códigos/IDs/números) */
 .data-table th:first-child,
 .data-table td:first-child {
@@ -427,7 +407,7 @@ body.body-directivas-active {
 .modal {
     display: none; /* Oculto por defecto */
     position: fixed;
-    z-index: 1000 !important; /* Asegura que esté por encima de otros elementos */
+    z-index: 1000 !important; /* Base para modal */
     left: 0;
     top: 0;
     width: 100%;
@@ -760,6 +740,137 @@ body.body-directivas-active {
     background: #f39c12;
 }
 
+/* ======================================
+   BOTONES DE ESTADO UNIFORMES
+   ====================================== */
+
+.status-vigente,
+.status-vencido,
+.status-aprobado,
+.status-rechazado {
+    display: inline-block !important;
+    font-size: 0.75rem !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    min-width: 90px !important;
+    line-height: 1.4 !important;
+    color: white !important;
+}
+
+/* Colores individuales para cada estado */
+.status-vigente {
+    background-color: #28a745 !important; /* Verde - Vigente */
+}
+
+.status-vencido {
+    background-color: #dc3545 !important; /* Rojo - Vencido */
+}
+
+.status-aprobado {
+    background-color: #007bff !important; /* Azul - Aprobado */
+}
+
+.status-rechazado {
+    background-color: #6c757d !important; /* Gris oscuro - Rechazado */
+}
+
+/* Nuevas clases para los colores de servicentros */
+.brand-copec {
+    background-color: #0862F5 !important; /* Azul Copec */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+}
+
+.brand-petrobras, .brand-aramco {
+    background-color: #007a33 !important; /* Verde Petrobras/Aramco */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+}
+
+.brand-shell {
+    background-color: #ffcc00 !important; /* Amarillo Shell */
+    color: #333 !important; /* Letras oscuras para contraste */
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+}
+
+/* Clase para marcas adicionales: fondo rojo, letras blancas */
+.brand-red-bg {
+    background-color: #dc3545 !important; /* Rojo */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+}
+
+/* Clase para otras marcas (por defecto, solo negrita y rojo de texto) */
+.brand-other {
+    color: red !important;
+    font-weight: bold !important;
+}
+
+/* =====================================================
+   ESTILOS ESPECÍFICOS PARA DIRECTIVAS FULLSCREEN EN PC
+   ===================================================== */
+
+/* SOLO EN PC: Directivas ocupa toda la pantalla */
+@media (min-width: 769px) {
+    .section.directivas.active {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        border-radius: 0 !important;
+        padding: 20px 30px !important;
+        box-sizing: border-box !important;
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+        border-top: 8px solid #f39c12 !important;
+        margin: 0 !important;
+        overflow-y: auto !important;
+        max-width: none !important;
+    }
+
+    /* Fuente más pequeña para directivas en PC */
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.75em !important;
+        padding: 10px !important;
+    }
+
+    /* Contenedor sin restricciones en PC */
+    .section.directivas.active .directivas-container,
+    .section.directivas.active .tab-content {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Tablas a ancho completo en PC */
+    .section.directivas.active .data-table {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    /* Bloquear scroll del body solo en PC */
+    body.body-directivas-active {
+        overflow: hidden !important;
+    }
+
+    /* Modal por encima de directivas en PC */
+    .modal {
+        z-index: 1001 !important;
+    }
+}
+
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
     /* Asegurarse de que el body no tenga padding o margin extra */
@@ -767,6 +878,35 @@ body.body-directivas-active {
         padding: 0 !important;
         margin: 0 !important;
         overflow-x: hidden; /* Evita el scroll horizontal en el body */
+    }
+
+    /* EN MÓVIL: Directivas se comporta normalmente (NO fullscreen) */
+    .section.directivas.active {
+        position: relative !important;
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+        border-radius: 15px !important;
+        padding: 30px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        border-top: 8px solid #f39c12 !important;
+        width: auto !important;
+        height: auto !important;
+        top: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        margin: 0 auto !important;
+        max-width: 1200px !important;
+    }
+
+    /* NO bloquear scroll del body en móvil */
+    body.body-directivas-active {
+        overflow: visible !important;
+    }
+
+    /* Mantener tamaño de fuente original en móvil para directivas */
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.8em !important;
+        padding: 8px !important;
     }
 
     /* Ajustes para el contenedor principal de la aplicación en móvil */
@@ -943,10 +1083,6 @@ body.body-directivas-active {
     /* Sección directivas sin padding extra */
     .section.directivas {
         padding: 5px !important;
-        /* Los siguientes ya no deberían ser necesarios con position:fixed, pero los mantengo comentados por si acaso
-           margin-left: 0 !important;
-           margin-right: 0 !important;
-        */
     }
 
     /* ========================================
@@ -976,7 +1112,7 @@ body.body-directivas-active {
         margin-bottom: 15px !important;
     }
     
-.medida-box-btn {
+    .medida-box-btn {
         padding: 10px 20px !important;
         font-size: 0.85rem !important;
         width: auto !important;
@@ -1000,290 +1136,4 @@ body.body-directivas-active {
         word-break: break-word !important;
         writing-mode: horizontal-tb !important;
     }
-}
-/* ======================================
-   BOTONES DE ESTADO UNIFORMES
-   ====================================== */
-
-.status-vigente,
-.status-vencido,
-.status-aprobado,
-.status-rechazado {
-    display: inline-block !important;
-    font-size: 0.75rem !important;
-    padding: 6px 12px !important;
-    border-radius: 20px !important;
-    font-weight: bold !important;
-    text-align: center !important;
-    min-width: 90px !important;
-    line-height: 1.4 !important;
-    color: white !important;
-}
-
-/* Colores individuales para cada estado */
-.status-vigente {
-    background-color: #28a745 !important; /* Verde - Vigente */
-}
-
-.status-vencido {
-    background-color: #dc3545 !important; /* Rojo - Vencido */
-}
-
-.status-aprobado {
-    background-color: #007bff !important; /* Azul - Aprobado */
-}
-
-.status-rechazado {
-    background-color: #6c757d !important; /* Gris oscuro - Rechazado */
-}
-
-/* Nuevas clases para los colores de servicentros */
-.brand-copec {
-    background-color: #0862F5 !important; /* Azul Copec */
-    color: white !important;
-    padding: 5px 10px !important;
-    border-radius: 5px !important;
-    font-weight: bold !important;
-}
-
-.brand-petrobras, .brand-aramco {
-    background-color: #007a33 !important; /* Verde Petrobras/Aramco */
-    color: white !important;
-    padding: 5px 10px !important;
-    border-radius: 5px !important;
-    font-weight: bold !important;
-}
-
-.brand-shell {
-    background-color: #ffcc00 !important; /* Amarillo Shell */
-    color: #333 !important; /* Letras oscuras para contraste */
-    padding: 5px 10px !important;
-    border-radius: 5px !important;
-    font-weight: bold !important;
-}
-
-/* Clase para marcas adicionales: fondo rojo, letras blancas */
-.brand-red-bg {
-    background-color: #dc3545 !important; /* Rojo */
-    color: white !important;
-    padding: 5px 10px !important;
-    border-radius: 5px !important;
-    font-weight: bold !important;
-}
-
-/* Clase para otras marcas (por defecto, solo negrita y rojo de texto) */
-.brand-other {
-    color: red !important;
-    font-weight: bold !important;
-}
-/* ==========================================
-   ESTILOS MEJORADOS PARA DIRECTIVAS EN PC
-   ========================================== */
-
-/* Clase para controlar el overflow del body cuando directivas está activa */
-body.body-directivas-active {
-    overflow: hidden !important;
-}
-
-/* Estilos para que la sección de directivas ocupe toda la pantalla en PC */
-.section.directivas.active {
-    display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 999 !important;
-    border-radius: 0 !important;
-    padding: 30px 40px !important;
-    box-sizing: border-box !important;
-    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
-    border-top: 8px solid #f39c12 !important;
-    margin: 0 !important;
-    overflow-y: auto !important;
-}
-
-/* Reducir tamaño de fuente específicamente para directivas en PC */
-.section.directivas .data-table th,
-.section.directivas .data-table td {
-    font-size: 0.75em !important; /* Reducido de 0.8em a 0.75em */
-    padding: 12px !important; /* Ajustar padding proporcionalmente */
-}
-
-/* Ajustar el contenedor de directivas para aprovechar todo el espacio */
-.section.directivas .directivas-container {
-    max-width: none !important; /* Eliminar restricción de ancho */
-    width: 100% !important;
-    padding: 15px !important;
-}
-
-/* Ajustar los elementos dentro de directivas para mejor distribución */
-.section.directivas .section-header {
-    margin-bottom: 25px !important;
-}
-
-.section.directivas .section-title {
-    font-size: 2.2rem !important; /* Título un poco más grande para compensar */
-}
-
-/* Mejorar el spacing de los cuadros de directivas en fullscreen */
-.section.directivas .directiva-box {
-    margin-bottom: 20px !important;
-}
-
-/* Ajustar las tablas para que aprovechen mejor el espacio en pantalla completa */
-.section.directivas .data-table {
-    width: 100% !important;
-    max-width: none !important;
-}
-
-/* Optimización para el campo de búsqueda en directivas fullscreen */
-.section.directivas .search-container {
-    margin-bottom: 25px !important;
-}
-
-.section.directivas .search-input {
-    max-width: 600px !important; /* Limitar ancho del campo de búsqueda */
-}
-
-/* Estilo específico para el botón "Volver al Inicio" en directivas */
-.section.directivas .btn-secondary {
-    background: #6c757d !important;
-    padding: 10px 20px !important;
-    font-size: 0.9rem !important;
-}
-
-/* Asegurar que el texto se mantenga legible con el tamaño reducido */
-.section.directivas .data-table th {
-    font-weight: bold !important;
-    background: #f8f9fa !important;
-}
-
-/* Ajustar el modal para que funcione bien con directivas en fullscreen */
-.modal {
-    z-index: 1001 !important; /* Mayor que directivas (999) */
-}
-
-/* ==========================================
-   RESPONSIVE: MANTENER COMPORTAMIENTO EN MÓVIL
-   ========================================== */
-
-@media (max-width: 768px) {
-    /* En móvil, mantener el comportamiento actual */
-    .section.directivas.active {
-        position: relative !important; /* Cambiar a relative en móvil */
-        width: 100% !important;
-        height: auto !important;
-        padding: 5px !important;
-    }
-    
-    /* En móvil, mantener el tamaño de fuente móvil */
-    .section.directivas .data-table th,
-    .section.directivas .data-table td {
-        font-size: 0.8em !important; /* Tamaño móvil estándar */
-        padding: 8px !important;
-    }
-    
-    /* En móvil, el body no necesita overflow hidden */
-    body.body-directivas-active {
-        overflow: visible !important;
-    }
-}
-/* Fuente más pequeña para directivas */
-.section.directivas.active .data-table th,
-.section.directivas.active .data-table td {
-    font-size: 0.75em !important;
-    padding: 10px !important;
-}
-
-/* Contenedor sin restricciones */
-.section.directivas.active .directivas-container,
-.section.directivas.active .tab-content {
-    max-width: none !important;
-    width: 100% !important;
-    margin: 0 !important;
-}
-
-/* Tablas a ancho completo */
-.section.directivas.active .data-table {
-    width: 100% !important;
-    max-width: none !important;
-}
-
-/* Modal por encima */
-.modal {
-    z-index: 1001 !important;
-}
-
-/* Responsive móvil */
-@media (max-width: 768px) {
-    .section.directivas.active {
-        position: relative !important;
-        width: 100% !important;
-        height: auto !important;
-        padding: 5px !important;
-    }
-    
-    .section.directivas.active .data-table th,
-    .section.directivas.active .data-table td {
-        font-size: 0.8em !important;
-        padding: 8px !important;
-    }
-}
-/* ESTILOS SOLO PARA PC (pantallas grandes) */
-@media (min-width: 769px) {
-    /* Fuente más pequeña para directivas en PC únicamente */
-    .section.directivas.active .data-table th,
-    .section.directivas.active .data-table td {
-        font-size: 0.75em !important;
-        padding: 10px !important;
-    }
-
-    /* Contenedor sin restricciones en PC */
-    .section.directivas.active .directivas-container,
-    .section.directivas.active .tab-content {
-        max-width: none !important;
-        width: 100% !important;
-        margin: 0 !important;
-    }
-
-    /* Tablas a ancho completo en PC */
-    .section.directivas.active .data-table {
-        width: 100% !important;
-        max-width: none !important;
-    }
-
-    /* Bloquear scroll del body solo en PC */
-    body.body-directivas-active {
-        overflow: hidden !important;
-    }
-}
-
-/* MÓVIL: Anular el comportamiento fullscreen */
-@media (max-width: 768px) {
-    .section.directivas.active {
-        position: relative !important;
-        width: auto !important;
-        height: auto !important;
-        padding: 5px !important;
-        top: auto !important;
-        left: auto !important;
-        z-index: auto !important;
-        border-radius: 15px !important;
-    }
-    
-    body.body-directivas-active {
-        overflow: visible !important;
-    }
-    
-    .section.directivas.active .data-table th,
-    .section.directivas.active .data-table td {
-        font-size: 0.8em !important;
-        padding: 8px !important;
-    }
-}
-
-/* Modal por encima */
-.modal {
-    z-index: 1001 !important;
 }
