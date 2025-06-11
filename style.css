@@ -139,21 +139,22 @@ body.body-directivas-active {
 .section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
 
 /* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
-.section.directivas.active { /* Solo cuando la sección está activa */
-    display: block !important; /* Asegura que se muestre */
-    position: fixed !important; /* Posicionamiento fijo relativo al viewport */
+..section.directivas.active {
+    display: block !important;
+    position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important; /* 100% del ancho del viewport */
-    height: 100vh !important; /* 100% del alto del viewport */
-    z-index: 999 !important; /* Asegura que esté por encima de otros elementos (modal es 1000) */
-    border-radius: 0 !important; /* Elimina los bordes redondeados */
-    padding: 30px 40px !important; /* Mantiene un padding interno para el contenido */
-    box-sizing: border-box !important; /* Incluye el padding en el cálculo del ancho/alto */
-    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important; /* Fondo */
-    border-top: 8px solid #f39c12 !important; /* Borde superior */
-    margin: 0 !important; /* Asegurar que no haya márgenes externos */
-    overflow-y: auto !important; /* Permite desplazamiento vertical si el contenido es demasiado largo */
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999 !important;
+    border-radius: 0 !important;
+    padding: 20px 30px !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+    border-top: 8px solid #f39c12 !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    max-width: none !important;
 }
 
 
@@ -1186,5 +1187,46 @@ body.body-directivas-active {
     /* En móvil, el body no necesita overflow hidden */
     body.body-directivas-active {
         overflow: visible !important;
+    }
+}
+/* Fuente más pequeña para directivas */
+.section.directivas.active .data-table th,
+.section.directivas.active .data-table td {
+    font-size: 0.75em !important;
+    padding: 10px !important;
+}
+
+/* Contenedor sin restricciones */
+.section.directivas.active .directivas-container,
+.section.directivas.active .tab-content {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Tablas a ancho completo */
+.section.directivas.active .data-table {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Modal por encima */
+.modal {
+    z-index: 1001 !important;
+}
+
+/* Responsive móvil */
+@media (max-width: 768px) {
+    .section.directivas.active {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 5px !important;
+    }
+    
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.8em !important;
+        padding: 8px !important;
     }
 }
