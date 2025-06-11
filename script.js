@@ -1021,13 +1021,10 @@ const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', '
 
 // Funciones de navegación principal
 function showHome() {
-    // Remove body-directivas-active class from body when returning home
-    document.body.classList.remove('body-directivas-active');
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
-    document.getElementById('home').style.display = 'block';
-    updateCounts();
+    // Restaurar directivas a su posición original si estaba en fullscreen
+    if (document.body.classList.contains('body-directivas-active')) {
+        restoreDirectivasPosition();
+    }
 }
 
 function showSection(sectionName) {
@@ -2044,3 +2041,15 @@ function restoreDirectivasPosition() {
     }
     console.log('✅ Directivas restaurado a posición original');
 }
+window.addEventListener('resize', function() {
+    const directivasSection = document.getElementById('directivas');
+    const isDirectivasActive = directivasSection && directivasSection.classList.contains('active');
+    
+    if (isDirectivasActive) {
+        if (window.innerWidth <= 768) {
+            restoreDirectivasPosition();
+        } else if (window.innerWidth > 768 && directivasSection.parentNode.classList.contains('container')) {
+            moveDirectivasToFullscreen();
+        }
+    }
+});
