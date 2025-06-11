@@ -820,7 +820,13 @@ body.body-directivas-active {
    ESTILOS ESPECÍFICOS PARA DIRECTIVAS FULLSCREEN EN PC
    ===================================================== */
 
-/* SOLO EN PC: Directivas ocupa toda la pantalla */
+/* =====================================================
+   CSS CORREGIDO - SOLO TABLAS FULLSCREEN EN DIRECTIVAS
+   ===================================================== */
+
+/* REEMPLAZAR la sección de directivas en PC en tu style.css */
+
+/* SOLO EN PC: Directivas con layout controlado */
 @media (min-width: 769px) {
     .section.directivas.active {
         position: fixed !important;
@@ -830,13 +836,64 @@ body.body-directivas-active {
         height: 100vh !important;
         z-index: 999 !important;
         border-radius: 0 !important;
-        padding: 20px 30px !important;
+        padding: 0 !important; /* Sin padding para controlar mejor el layout */
         box-sizing: border-box !important;
         background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
         border-top: 8px solid #f39c12 !important;
         margin: 0 !important;
         overflow-y: auto !important;
         max-width: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Header de directivas: tamaño fijo, no expandido */
+    .section.directivas.active .section-header {
+        flex-shrink: 0 !important; /* No se encoge */
+        padding: 20px 30px !important;
+        margin-bottom: 0 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-bottom: 2px solid #eee !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Navegación de pestañas: tamaño normal */
+    .section.directivas.active .section-nav {
+        flex-shrink: 0 !important;
+        padding: 15px 30px !important;
+        margin-bottom: 0 !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+
+    /* Contenido principal: ocupa el resto del espacio */
+    .section.directivas.active .tab-content {
+        flex: 1 !important; /* Ocupa todo el espacio restante */
+        padding: 20px 30px !important;
+        overflow-y: auto !important;
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Los cuadros de directivas mantienen tamaño normal */
+    .section.directivas.active .directivas-container {
+        max-width: 900px !important; /* Mantener ancho limitado */
+        margin: 0 auto !important; /* Centrado */
+        width: 100% !important;
+    }
+
+    /* Contenedor de búsqueda: tamaño normal */
+    .section.directivas.active .search-container {
+        max-width: 600px !important;
+        margin: 0 auto 25px auto !important;
+    }
+
+    /* LAS TABLAS SÍ ocupan todo el ancho disponible */
+    .section.directivas.active .data-table {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 20px 0 !important;
     }
 
     /* Fuente más pequeña para directivas en PC */
@@ -846,18 +903,15 @@ body.body-directivas-active {
         padding: 10px !important;
     }
 
-    /* Contenedor sin restricciones en PC */
-    .section.directivas.active .directivas-container,
-    .section.directivas.active .tab-content {
-        max-width: none !important;
-        width: 100% !important;
-        margin: 0 !important;
+    /* Títulos mantienen tamaño normal */
+    .section.directivas.active .section-title {
+        font-size: 2rem !important;
     }
 
-    /* Tablas a ancho completo en PC */
-    .section.directivas.active .data-table {
-        width: 100% !important;
-        max-width: none !important;
+    /* Cuadros de directivas (empresas RRHH, etc.) mantienen diseño centrado */
+    .section.directivas.active .directiva-box {
+        max-width: 400px !important;
+        margin: 0 auto 20px auto !important;
     }
 
     /* Bloquear scroll del body solo en PC */
@@ -868,6 +922,38 @@ body.body-directivas-active {
     /* Modal por encima de directivas en PC */
     .modal {
         z-index: 1001 !important;
+    }
+}
+
+/* MÓVIL: Sin cambios - mantener comportamiento original */
+@media (max-width: 768px) {
+    .section.directivas.active {
+        position: relative !important;
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+        border-radius: 15px !important;
+        padding: 30px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        border-top: 8px solid #f39c12 !important;
+        width: auto !important;
+        height: auto !important;
+        top: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        margin: 0 auto !important;
+        max-width: 1200px !important;
+        display: block !important; /* Comportamiento normal en móvil */
+    }
+
+    /* NO bloquear scroll del body en móvil */
+    body.body-directivas-active {
+        overflow: visible !important;
+    }
+
+    /* Mantener tamaño de fuente original en móvil para directivas */
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.8em !important;
+        padding: 8px !important;
     }
 }
 
