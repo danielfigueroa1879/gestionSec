@@ -935,7 +935,7 @@ body {
         margin-bottom: 15px;
     }
     
-    .medida-box-btn {
+.medida-box-btn {
         padding: 10px 20px;
         font-size: 0.85rem;
         width: auto;
@@ -996,3 +996,4 @@ body {
     background-color: #6c757d; /* Gris oscuro - Rechazado */
 }
 
+/* Fix: Removed extra '}' from here */
