@@ -1,9 +1,14 @@
 /* Estilos generales para el reinicio y el cuerpo del documento */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-* {
+/* Reseteo universal para asegurar que 100vw/vh funcionen correctamente */
+html, body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden; /* Previene el scroll horizontal no deseado */
+}
+
+* {
     box-sizing: border-box;
 }
 
@@ -131,14 +136,12 @@ body {
 /* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
 .section.directivas.active { /* Solo cuando la sección está activa */
     display: block; /* Asegura que se muestre */
-    position: absolute; /* Posicionamiento absoluto */
+    position: fixed; /* Posicionamiento fijo relativo al viewport */
     top: 0;
     left: 0;
-    right: 0; /* Se estira de izquierda a derecha */
-    width: auto; /* Permite que right: 0; haga su trabajo */
-    min-height: 100vh; /* Asegura que ocupe al menos la altura del viewport */
-    height: auto; /* Permite que el contenido se extienda si es más largo que la pantalla */
-    z-index: 9999; /* Asegura que esté por encima de otros elementos, pero debajo del modal (z-index 10000) */
+    width: 100vw; /* 100% del ancho del viewport */
+    height: 100vh; /* 100% del alto del viewport */
+    z-index: 999; /* Asegura que esté por encima de otros elementos (modal es 1000) */
     border-radius: 0; /* Elimina los bordes redondeados */
     padding: 30px 40px; /* Mantiene un padding interno para el contenido */
     box-sizing: border-box; /* Incluye el padding en el cálculo del ancho/alto */
@@ -931,7 +934,7 @@ body {
         border-radius: 18px;
     }
     
-    /* Sección directivas sin padding extra (ya que ahora es fixed, estos no deberían ser tan necesarios) */
+    /* Sección directivas sin padding extra */
     .section.directivas {
         padding: 5px !important;
         /* Los siguientes ya no deberían ser necesarios con position:fixed, pero los mantengo comentados por si acaso
