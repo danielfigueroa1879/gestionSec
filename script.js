@@ -881,7 +881,7 @@ function generateSampleData() {
     }
 
     // Generar 10 servicentros de ejemplo
-    const servicentroBrands = ['Copec', 'Petrobras', 'Aramco', 'Shell', 'OtraMarca']; // Added 'OtraMarca' for testing
+    const servicentroBrands = ['Copec', 'Petrobras', 'Aramco', 'Shell', 'APM', 'Autogasco S.A.', 'Lincosur', 'Aronex', 'YPF', 'OtraMarca']; // Added all specified brands for testing
     for (let i = 1; i <= 10; i++) {
         const fechaAprobacion = `2024-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const approvalDateObj = new Date(fechaAprobacion);
@@ -1597,9 +1597,13 @@ function createTable(section, data) {
                     cellClass = 'brand-petrobras'; // Usamos la misma clase para Petrobras y Aramco
                 } else if (lowerCaseName.includes('shell')) {
                     cellClass = 'brand-shell';
+                } else if (lowerCaseName.includes('apm') || lowerCaseName.includes('autogasco') || 
+                           lowerCaseName.includes('lincosur') || lowerCaseName.includes('aronex') || 
+                           lowerCaseName.includes('ypf')) {
+                    cellClass = 'brand-red-bg'; // Fondo rojo para estas marcas
                 } else {
-                    // Para cualquier otra marca, aplicar la clase de "otros"
-                    cellClass = 'brand-other';
+                    // Para cualquier otra marca no especificada
+                    cellClass = 'brand-other'; // Letras rojas, negrita
                 }
             } else if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
                 if (value === 'Vigente' || value === 'APROBADO') {
