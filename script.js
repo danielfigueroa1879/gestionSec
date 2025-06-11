@@ -1,5 +1,3 @@
-});
-
 // Función de prueba para debug desde consola
 window.testMedidas = function() {
     console.log('🧪 PRUEBA DE MEDIDAS - Estado actual:');
