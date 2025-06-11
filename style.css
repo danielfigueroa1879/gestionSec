@@ -22,7 +22,7 @@ body {
     padding: 20px;
     background-color: #e6eadd; /* Verde oliva claro para el fondo del contêiner */
     min-height: 100vh;
-    border-radius: 15px; /* Manter o border-radius para o contêiner */
+    border-radius: 15px; /* Manter o border-radius para el contêiner */
 }
 
 /* Estilos para el encabezado de la página de inicio */
@@ -127,23 +127,25 @@ body {
 .section.estudios { border-top-color: #e74c3c; background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%); }
 .section.planes { border-top-color: #3498db; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); }
 .section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
-.section.directivas {
-    border-top-color: #f39c12;
-    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
-    /* Estilos para que la sección de directivas ocupe el ancho máximo de la pantalla */
-    max-width: none; /* Eliminar el ancho máximo del contenedor padre */
-    width: 100vw; /* Ocupar el 100% del ancho del viewport */
-    position: relative; /* Necesario para 'left' y 'transform' */
-    left: 50%; /* Mover el elemento a la mitad del viewport */
-    transform: translateX(-50%); /* Desplazar hacia la izquierda la mitad de su propio ancho para centrarlo */
-    border-radius: 0; /* Eliminar border-radius para que se extienda completamente */
-    padding: 30px 40px; /* Restablecer padding adecuado (vertical 30px, horizontal 40px) */
-    box-sizing: border-box; /* Asegurar que el padding no aumente el ancho total */
-    margin: 0; /* Eliminar cualquier margen que pueda interferir con el posicionamiento */
+
+/* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
+.section.directivas.active { /* Solo cuando la sección está activa */
+    display: block; /* Asegura que se muestre */
+    position: fixed; /* Posicionamiento fijo relativo al viewport */
+    top: 0;
+    left: 0;
+    width: 100vw; /* 100% del ancho del viewport */
+    height: 100vh; /* 100% del alto del viewport */
+    z-index: 999; /* Asegura que esté por encima de otros elementos */
+    border-radius: 0; /* Elimina los bordes redondeados */
+    padding: 30px 40px; /* Mantiene un padding interno para el contenido */
+    box-sizing: border-box; /* Incluye el padding en el cálculo del ancho/alto */
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); /* Fondo */
+    border-top: 8px solid #f39c12; /* Borde superior */
 }
 
 
-/* Muestra la sección activa */
+/* Muestra la sección activa (para otras secciones que no usan fixed) */
 .section.active {
     display: block;
 }
@@ -925,11 +927,13 @@ body {
         border-radius: 18px;
     }
     
-    /* Sección directivas sin padding extra */
+    /* Sección directivas sin padding extra (ya que ahora es fixed, estos no deberían ser tan necesarios) */
     .section.directivas {
         padding: 5px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        /* Los siguientes ya no deberían ser necesarios con position:fixed, pero los mantengo comentados por si acaso
+           margin-left: 0 !important;
+           margin-right: 0 !important;
+        */
     }
 
     /* ========================================
