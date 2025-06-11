@@ -20,6 +20,11 @@ body {
     writing-mode: horizontal-tb; /* Asegura que el texto se vea horizontal en todos los navegadores */
 }
 
+/* Clase para controlar el overflow del body cuando una sección fixed está activa */
+body.body-directivas-active {
+    overflow: hidden !important;
+}
+
 /* Estilos para el contenedor principal de la aplicación */
 .container {
     max-width: 1200px;
@@ -532,28 +537,28 @@ body {
 
 /* Estilos para el estado de vigencia y aprobación */
 .status-vigente {
-    background-color: #28a745; /* Verde */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    display: inline-block; /* Para que el padding y background funcionen correctamente */
+    background-color: #28a745 !important; /* Verde */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    display: inline-block !important; /* Para que el padding y background funcionen correctamente */
 }
 
 .status-vencido {
-    background-color: #dc3545; /* Rojo */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    display: inline-block; /* Para que el padding y background funcionen correctamente */
+    background-color: #dc3545 !important; /* Rojo */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    display: inline-block !important; /* Para que el padding y background funcionen correctamente */
 }
 
 /* Estilo específico para el texto "Aprobado" y "Rechazado" en la tabla de Eventos Masivos */
 .eventos-masivos-table .status-vigente,
 .eventos-masivos-table .status-vencido {
-    font-size: 0.7em; /* Tamaño de letra más pequeño */
-    padding: 3px 8px; /* Ajustar padding para el tamaño más pequeño */
+    font-size: 0.7em !important; /* Tamaño de letra más pequeño */
+    padding: 3px 8px !important; /* Ajustar padding para el tamaño más pequeño */
 }
 
 /* ========================================
