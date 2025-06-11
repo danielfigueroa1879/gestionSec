@@ -635,6 +635,11 @@ async function loadDirectivas(workbook) {
     
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
     
+    // NRO (0) - EMPRESA RR.HH. (1) - RUT EMPRESA RR.HH. (2) - NOMBRE INSTALACIÓN (3)
+    // ENTIDAD MANDANTE (CONTRATANTE) (4) - RUT ENTIDAD MANDANTE (CONTRATANTE) (5)
+    // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE) (6) - TELEFONO (7)
+    // CORREO ELECTRONICO (8) - RESOLUCION APROB. DD.FF.. (9) - ESTADO DE TRAMITACIÓN (10)
+
     for (let i = 3; i < jsonData.length; i++) {
         const row = jsonData[i];
         if (!row || !row[0]) continue;
@@ -646,24 +651,32 @@ async function loadDirectivas(workbook) {
         vigencia.setFullYear(vigencia.getFullYear() + 3);
         
         database['empresas-rrhh'].push({
-            numero: `RRHH-${String(row[0]).padStart(4, '0')}`,
+            numero: `RRHH-${String(row[0]).padStart(4, '0')}`, // NRO
             empresa: row[1] || 'Empresa no especificada', // EMPRESA RR.HH.
             rut: row[2] || '', // RUT EMPRESA RR.HH.
-            tipoDirectiva: determinarTipoDirectiva(row[3] || ''), // NOMBRE INSTALACIÓN
             lugarInstalacion: row[3] || '', // NOMBRE INSTALACIÓN
-            direccion: row[4] ? `${row[4]} - Contratante` : '', // ENTIDAD MANDANTE
+            entidadMandante: row[4] || '', // ENTIDAD MANDANTE (CONTRATANTE)
+            rutEntidadMandante: row[5] || '', // RUT ENTIDAD MANDANTE (CONTRATANTE)
+            representanteLegalMandante: row[6] || 'No especificado', // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)
+            telefonoMandante: row[7] || '', // TELEFONO
+            correoElectronicoMandante: row[8] || '', // CORREO ELECTRONICO
+            resolucion: resolucion, // RESOLUCION APROB. DD.FF..
+            estadoTramitacion: row[10] || 'Vigente', // ESTADO DE TRAMITACIÓN
+
+            // Campos adicionales para compatibilidad o display
+            tipoDirectiva: determinarTipoDirectiva(row[3] || ''), 
             fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-            cantidadGuardias: 'No especificado',
-            area: 'Recursos Humanos',
-            version: '1.0',
-            titulo: `Directiva de funcionamiento - ${row[3]}`,
-            contenido: `Directiva para la instalación: ${row[3]}, contratada por ${row[4]}`,
-            responsable: row[6] || 'No especificado', // REPRESENTANTE LEGAL
-            estado: row[10] || 'Vigente', // ESTADO DE TRAMITACIÓN
             vigencia: vigencia.toISOString().split('T')[0],
             estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
-            comuna: extraerComuna(row[4] || ''),
-            alcance: `Directiva aplicable a ${row[3]}`
+            comuna: extraerComuna(row[4] || ''), // Extraer comuna de la entidad mandante
+            direccion: row[4] ? `${row[4]}` : '', // Usar entidad mandante como dirección para consistencia
+            cantidadGuardias: 'No especificado', // No hay columna en el excel para esto
+            area: 'Recursos Humanos', // Asignación por defecto
+            version: '1.0', // Asignación por defecto
+            titulo: `Directiva de funcionamiento - ${row[3]}`, // Título dinámico
+            contenido: `Directiva para la instalación: ${row[3]}, contratada por ${row[4]}`, // Contenido dinámico
+            responsable: row[6] || 'No especificado', // Usar Representante Legal como responsable
+            alcance: `Directiva aplicable a ${row[3]}` // Alcance dinámico
         });
     }
 }
@@ -959,6 +972,15 @@ function generateSampleData() {
             numero: `RRHH-${String(i).padStart(4, '0')}`,
             empresa: empresaAsignada.nombre,
             rut: empresaAsignada.rut,
+            lugarInstalacion: `Instalación de ejemplo ${i}`, // Nombre de instalación de ejemplo
+            entidadMandante: `Entidad Mandante Ejemplo ${i}`, // Entidad mandante de ejemplo
+            rutEntidadMandante: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            representanteLegalMandante: `Representante Legal ${i}`,
+            telefonoMandante: `+569${Math.floor(10000000 + Math.random() * 90000000)}`,
+            correoElectronicoMandante: `contacto${i}@ejemplo.com`,
+            resolucion: `Res. ${Math.floor(Math.random() * 1000)} de ${approvalDay}.${approvalMonth}.${approvalYear}`,
+            estadoTramitacion: Math.random() > 0.5 ? 'Vigente' : 'Rechazado',
+
             tipoDirectiva: tiposDirectiva[Math.floor(Math.random() * tiposDirectiva.length)],
             direccion: empresaAsignada.direccion,
             fechaAprobacion: fechaAprobacion,
@@ -1194,7 +1216,7 @@ function renderEmpresasRRHHList() {
     }
 
     let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>Nombre Empresa</th><th>RUT</th><th>Dirección</th></tr></thead><tbody>';
+    tableHTML += '<th>Nombre Empresa</th><th>RUT Empresa</th><th>Dirección</th></tr></thead><tbody>';
 
     empresasRRHHList.forEach(empresa => {
         tableHTML += `
@@ -1232,8 +1254,18 @@ function loadCompanySpecificDirectivas(empresaNombre) {
         return;
     }
 
+    // Definir los encabezados de la tabla con los nombres exactos solicitados
     const headers = [
-        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'
+        'numero', // NRO
+        'empresa', // EMPRESA RR.HH.
+        'rut', // RUT EMPRESA RR.HH.
+        'lugarInstalacion', // NOMBRE INSTALACIÓN
+        'entidadMandante', // ENTIDAD MANDANTE (CONTRATANTE)
+        'rutEntidadMandante', // RUT ENTIDAD MANDANTE (CONTRATANTE)
+        'representanteLegalMandante', // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)
+        'telefonoMandante', // TELEFONO
+        'correoElectronicoMandante', // CORREO ELECTRONICO
+        'resolucion' // RESOLUCION APROB. DD.FF.
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -1250,7 +1282,7 @@ function loadCompanySpecificDirectivas(empresaNombre) {
                 value = formatDateForDisplay(value);
             }
             let cellClass = '';
-            if (header === 'estadoVigencia') {
+            if (header === 'estadoVigencia') { // Aunque no se muestra, mantener la lógica si se añade en el futuro
                 if (value === 'Vigente') {
                     cellClass = 'status-vigente';
                 } else if (value === 'Vencido') {
@@ -1269,13 +1301,15 @@ function loadCompanySpecificDirectivas(empresaNombre) {
 function searchCompanySpecificDirectivas(searchTerm) {
     const filteredDirectivas = database['empresas-rrhh'].filter(directiva => 
         directiva.empresa === currentEmpresaSelected &&
-        (directiva.lugarInstalacion && directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.direccion && directiva.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.fechaAprobacion && directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.numero && directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         directiva.tipoDirectiva && directiva.tipoDirectiva.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         (directiva.rut && directiva.rut.toLowerCase().includes(searchTerm.toLowerCase())) ||
-         (directiva.comuna && directiva.comuna.toLowerCase().includes(searchTerm.toLowerCase())))
+        (directiva.numero && directiva.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.lugarInstalacion && directiva.lugarInstalacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.entidadMandante && directiva.entidadMandante.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.rutEntidadMandante && directiva.rutEntidadMandante.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.representanteLegalMandante && directiva.representanteLegalMandante.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.telefonoMandante && directiva.telefonoMandante.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.correoElectronicoMandante && directiva.correoElectronicoMandante.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.resolucion && directiva.resolucion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         directiva.fechaAprobacion && directiva.fechaAprobacion.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const resultsContainer = document.getElementById('empresa-specific-details-results');
@@ -1290,8 +1324,18 @@ function searchCompanySpecificDirectivas(searchTerm) {
 
 // Helper para crear tabla específica para directivas de instalaciones
 function createTableForCompanySpecificDirectivas(data) {
+    // Definir los encabezados de la tabla con los nombres exactos solicitados
     const headers = [
-        'numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'
+        'numero', // NRO
+        'empresa', // EMPRESA RR.HH.
+        'rut', // RUT EMPRESA RR.HH.
+        'lugarInstalacion', // NOMBRE INSTALACIÓN
+        'entidadMandante', // ENTIDAD MANDANTE (CONTRATANTE)
+        'rutEntidadMandante', // RUT ENTIDAD MANDANTE (CONTRATANTE)
+        'representanteLegalMandante', // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)
+        'telefonoMandante', // TELEFONO
+        'correoElectronicoMandante', // CORREO ELECTRONICO
+        'resolucion' // RESOLUCION APROB. DD.FF.
     ];
 
     let tableHTML = '<table class="data-table"><thead><tr>';
@@ -1341,7 +1385,7 @@ function searchEmpresasRRHH(searchTerm) {
     const resultsContainer = document.getElementById('empresas-rrhh-results');
     
     let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>Nombre Empresa</th><th>RUT</th><th>Dirección</th></tr></thead><tbody>';
+    tableHTML += '<th>Nombre Empresa</th><th>RUT Empresa</th><th>Dirección</th></tr></thead><tbody>';
 
     if (filteredEmpresas.length === 0) {
         resultsContainer.innerHTML = '<div class="no-data">No se encontraron empresas con ese criterio.</div>';
@@ -1535,7 +1579,8 @@ function createTable(section, data) {
     } else if (section === 'sobre-500-uf') {
         headers = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
     } else if (section === 'empresas-rrhh') {
-        headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
+         // Headers para la tabla principal de empresas RRHH (no las directivas específicas)
+        headers = ['nombre', 'rut', 'direccion']; 
     } else if (section === 'guardias-propios') { 
         headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') { 
@@ -1634,6 +1679,20 @@ function createTable(section, data) {
 // Formatea los nombres de las claves para la interfaz
 function formatHeader(header) {
     const headerMap = {
+        // Directivas de Funcionamiento (nuevos campos y mapeos)
+        numero: 'NRO',
+        empresa: 'EMPRESA RR.HH.',
+        rut: 'RUT EMPRESA RR.HH.',
+        lugarInstalacion: 'NOMBRE INSTALACIÓN',
+        entidadMandante: 'ENTIDAD MANDANTE (CONTRATANTE)',
+        rutEntidadMandante: 'RUT ENTIDAD MANDANTE (CONTRATANTE)',
+        representanteLegalMandante: 'REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)',
+        telefonoMandante: 'TELEFONO',
+        correoElectronicoMandante: 'CORREO ELECTRONICO',
+        resolucion: 'RESOLUCION APROB. DD.FF.', // Resolucion completa
+        estadoTramitacion: 'ESTADO TRAMITACIÓN', // Nuevo
+
+        // Existentes (mantener por compatibilidad)
         codigo: 'Código',
         categoria: 'Entidad',
         prioridad: 'Prioridad',
@@ -1645,7 +1704,6 @@ function formatHeader(header) {
         revision: 'Dirección',
         objetivo: 'Objetivo',
         alcance: 'Alcance',
-        numero: 'Código',
         area: 'Entidad',
         version: 'Versión',
         fecha: 'Fecha de Aprobación',
@@ -1661,19 +1719,15 @@ function formatHeader(header) {
         telefono: 'Teléfono',
         horario: 'Horario',
         capacidad: 'Capacidad',
-        empresa: 'Nombre Empresa',
-        tipoDirectiva: 'Entidad',
+        tipoDirectiva: 'Tipo Directiva', // El que se determina automáticamente
         tipoServicio: 'Entidad',
         numeroGuardias: 'Número Guardias',
         turno: 'Turno',
         tipoEvento: 'Entidad',
         nombreEvento: 'Nombre del Evento',
         duracion: 'Duración',
-        lugarInstalacion: 'Lugar de Instalación',
-        fechaAprobacion: 'Fecha de Aprobación', 
         cantidadGuardias: 'Cantidad de Guardias',
         nombreEmpresa: 'Nombre Empresa',
-        rut: 'R.U.T',
         fechaEvento: 'Fecha de Aprobación',
         estadoAprobacion: 'Estado de Aprobación',
         id: 'Código',
@@ -1684,7 +1738,6 @@ function formatHeader(header) {
         nombreServicentro: 'Nombre Servicentro',
         propietario: 'Propietario/Concesionario',
         maximoDinero: 'Máximo de Dinero',
-        ubicacion: 'Ubicación',
         // Campos específicos de Sobre 500 UF
         entidad: 'Entidad',
         instalacion: 'Instalación',
@@ -1732,7 +1785,26 @@ function showDetails(section, index) {
     } else if (section === 'sobre-500-uf') {
         detailKeys = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
     } else if (section === 'empresas-rrhh') {
-        detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoDirectiva', 'rut', 'direccion', 'comuna'];
+        // Campos específicos para Directivas de Funcionamiento
+        detailKeys = [
+            'numero',
+            'empresa',
+            'rut',
+            'lugarInstalacion',
+            'entidadMandante',
+            'rutEntidadMandante',
+            'representanteLegalMandante',
+            'telefonoMandante',
+            'correoElectronicoMandante',
+            'resolucion',
+            'fechaAprobacion',
+            'vigencia',
+            'estadoVigencia',
+            'estadoTramitacion', // Nuevo campo
+            'tipoDirectiva', // Determinado por la función
+            'comuna',
+            'direccion' // Usado como entidad mandante para la tabla
+        ];
     } else if (section === 'guardias-propios') { 
         detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') { 
@@ -1748,7 +1820,7 @@ function showDetails(section, index) {
         }
 
         let detailClass = '';
-        if (key === 'estadoVigencia' || key === 'estadoAprobacion') { 
+        if (key === 'estadoVigencia' || key === 'estadoAprobacion' || key === 'estadoTramitacion') { 
             if (value === 'Vigente' || value === 'APROBADO') {
                 detailClass = 'status-vigente';
             } else if (value === 'Vencido' || value === 'RECHAZADO') {
