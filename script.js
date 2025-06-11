@@ -49,7 +49,7 @@ window.verificarArchivos = async function() {
     
     console.log('📁 Probando nombres de archivo...');
     
-    for (const nombre of posiblesNombres) {
+    for (const nombre /* Nombre de archivo que se está probando */ of posiblesNombres) {
         try {
             const response = await window.fs.readFile(nombre);
             console.log(`✅ ENCONTRADO: "${nombre}" (${response.length} bytes)`);
@@ -149,7 +149,7 @@ async function loadDataFromExcel(file = null) {
                 ];
                 
                 let archivoEncontrado = false;
-                for (const nombre of nombresAlternativos) {
+                for (const nombre /* Nombre de archivo que se está probando */ of nombresAlternativos) {
                     try {
                         console.log(`📁 Probando nombre de archivo: "${nombre}"`);
                         const response = await window.fs.readFile(nombre);
@@ -881,7 +881,7 @@ function generateSampleData() {
     }
 
     // Generar 10 servicentros de ejemplo
-    const servicentroBrands = ['Copec', 'Petrobras', 'Aramco', 'Shell'];
+    const servicentroBrands = ['Copec', 'Petrobras', 'Aramco', 'Shell', 'OtraMarca']; // Added 'OtraMarca' for testing
     for (let i = 1; i <= 10; i++) {
         const fechaAprobacion = `2024-0${Math.floor(Math.random() * 6) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
         const approvalDateObj = new Date(fechaAprobacion);
@@ -1597,6 +1597,9 @@ function createTable(section, data) {
                     cellClass = 'brand-petrobras'; // Usamos la misma clase para Petrobras y Aramco
                 } else if (lowerCaseName.includes('shell')) {
                     cellClass = 'brand-shell';
+                } else {
+                    // Para cualquier otra marca, aplicar la clase de "otros"
+                    cellClass = 'brand-other';
                 }
             } else if (header === 'estadoVigencia' || header === 'estadoAprobacion') { 
                 if (value === 'Vigente' || value === 'APROBADO') {
