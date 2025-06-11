@@ -127,7 +127,18 @@ body {
 .section.estudios { border-top-color: #e74c3c; background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%); }
 .section.planes { border-top-color: #3498db; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); }
 .section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
-.section.directivas { border-top-color: #f39c12; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); }
+.section.directivas {
+    border-top-color: #f39c12;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+    /* Estilos para que la sección de directivas ocupe el ancho máximo de la pantalla */
+    max-width: none; /* Eliminar el ancho máximo del contenedor padre */
+    border-radius: 0; /* Eliminar border-radius para que se extienda completamente */
+    margin-left: -20px; /* Compensa el padding del .container */
+    margin-right: -20px; /* Compensa el padding del .container */
+    padding-left: 40px; /* Asegura un padding adecuado para el contenido */
+    padding-right: 40px; /* Asegura un padding adecuado para el contenido */
+}
+
 
 /* Muestra la sección activa */
 .section.active {
@@ -324,6 +335,12 @@ body {
     word-wrap: break-word;
     writing-mode: horizontal-tb;
 }
+
+/* Ajuste de tamaño de fuente para las tablas dentro de la sección de directivas */
+.section.directivas .data-table td {
+    font-size: 0.8em; /* Un poco más pequeña para las directivas */
+}
+
 
 /* Estilos para la primera columna (códigos/IDs/números) */
 .data-table th:first-child,
@@ -907,6 +924,8 @@ body {
     /* Sección directivas sin padding extra */
     .section.directivas {
         padding: 5px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 
     /* ========================================
