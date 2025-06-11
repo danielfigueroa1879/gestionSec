@@ -132,11 +132,14 @@ body {
     background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
     /* Estilos para que la sección de directivas ocupe el ancho máximo de la pantalla */
     max-width: none; /* Eliminar el ancho máximo del contenedor padre */
+    width: 100vw; /* Ocupar el 100% del ancho del viewport */
+    position: relative; /* Necesario para 'left' y 'transform' */
+    left: 50%; /* Mover el elemento a la mitad del viewport */
+    transform: translateX(-50%); /* Desplazar hacia la izquierda la mitad de su propio ancho para centrarlo */
     border-radius: 0; /* Eliminar border-radius para que se extienda completamente */
-    margin-left: -20px; /* Compensa el padding del .container */
-    margin-right: -20px; /* Compensa el padding del .container */
-    padding-left: 40px; /* Asegura un padding adecuado para el contenido */
-    padding-right: 40px; /* Asegura un padding adecuado para el contenido */
+    padding: 30px 40px; /* Restablecer padding adecuado (vertical 30px, horizontal 40px) */
+    box-sizing: border-box; /* Asegurar que el padding no aumente el ancho total */
+    margin: 0; /* Eliminar cualquier margen que pueda interferir con el posicionamiento */
 }
 
 
@@ -337,8 +340,9 @@ body {
 }
 
 /* Ajuste de tamaño de fuente para las tablas dentro de la sección de directivas */
+.section.directivas .data-table th,
 .section.directivas .data-table td {
-    font-size: 0.8em; /* Un poco más pequeña para las directivas */
+    font-size: 0.8em; /* Un poco más pequeña para las directivas, aplica a th y td */
 }
 
 
