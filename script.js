@@ -1053,11 +1053,17 @@ function showSection(sectionName) {
     targetSection.classList.add('active');
     console.log(`✅ Sección ${sectionName} activada`);
 
-    // Add body-directivas-active class if the current section is 'directivas'
-    if (sectionName === 'directivas') {
-        bodyElement.classList.add('body-directivas-active');
-        console.log(`✅ Añadida clase 'body-directivas-active' al body`);
+    // Lógica especial para directivas: mover fuera del container en PC
+if (sectionName === 'directivas') {
+    bodyElement.classList.add('body-directivas-active');
+    
+    // Solo en PC: mover directivas fuera del container
+    if (window.innerWidth > 768) {
+        moveDirectivasToFullscreen();
     }
+    
+    console.log(`✅ Directivas configurado para fullscreen en PC`);
+}
 
     // For measures, force display of the main view with the squares
     if (sectionName === 'medidas') {
