@@ -1075,3 +1075,116 @@ body.body-directivas-active {
     color: red !important;
     font-weight: bold !important;
 }
+/* ==========================================
+   ESTILOS MEJORADOS PARA DIRECTIVAS EN PC
+   ========================================== */
+
+/* Clase para controlar el overflow del body cuando directivas está activa */
+body.body-directivas-active {
+    overflow: hidden !important;
+}
+
+/* Estilos para que la sección de directivas ocupe toda la pantalla en PC */
+.section.directivas.active {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999 !important;
+    border-radius: 0 !important;
+    padding: 30px 40px !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+    border-top: 8px solid #f39c12 !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+}
+
+/* Reducir tamaño de fuente específicamente para directivas en PC */
+.section.directivas .data-table th,
+.section.directivas .data-table td {
+    font-size: 0.75em !important; /* Reducido de 0.8em a 0.75em */
+    padding: 12px !important; /* Ajustar padding proporcionalmente */
+}
+
+/* Ajustar el contenedor de directivas para aprovechar todo el espacio */
+.section.directivas .directivas-container {
+    max-width: none !important; /* Eliminar restricción de ancho */
+    width: 100% !important;
+    padding: 15px !important;
+}
+
+/* Ajustar los elementos dentro de directivas para mejor distribución */
+.section.directivas .section-header {
+    margin-bottom: 25px !important;
+}
+
+.section.directivas .section-title {
+    font-size: 2.2rem !important; /* Título un poco más grande para compensar */
+}
+
+/* Mejorar el spacing de los cuadros de directivas en fullscreen */
+.section.directivas .directiva-box {
+    margin-bottom: 20px !important;
+}
+
+/* Ajustar las tablas para que aprovechen mejor el espacio en pantalla completa */
+.section.directivas .data-table {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Optimización para el campo de búsqueda en directivas fullscreen */
+.section.directivas .search-container {
+    margin-bottom: 25px !important;
+}
+
+.section.directivas .search-input {
+    max-width: 600px !important; /* Limitar ancho del campo de búsqueda */
+}
+
+/* Estilo específico para el botón "Volver al Inicio" en directivas */
+.section.directivas .btn-secondary {
+    background: #6c757d !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+}
+
+/* Asegurar que el texto se mantenga legible con el tamaño reducido */
+.section.directivas .data-table th {
+    font-weight: bold !important;
+    background: #f8f9fa !important;
+}
+
+/* Ajustar el modal para que funcione bien con directivas en fullscreen */
+.modal {
+    z-index: 1001 !important; /* Mayor que directivas (999) */
+}
+
+/* ==========================================
+   RESPONSIVE: MANTENER COMPORTAMIENTO EN MÓVIL
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* En móvil, mantener el comportamiento actual */
+    .section.directivas.active {
+        position: relative !important; /* Cambiar a relative en móvil */
+        width: 100% !important;
+        height: auto !important;
+        padding: 5px !important;
+    }
+    
+    /* En móvil, mantener el tamaño de fuente móvil */
+    .section.directivas .data-table th,
+    .section.directivas .data-table td {
+        font-size: 0.8em !important; /* Tamaño móvil estándar */
+        padding: 8px !important;
+    }
+    
+    /* En móvil, el body no necesita overflow hidden */
+    body.body-directivas-active {
+        overflow: visible !important;
+    }
+}
