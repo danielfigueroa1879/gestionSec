@@ -998,7 +998,7 @@ body {
 
 /* Nuevas clases para los colores de servicentros */
 .brand-copec {
-    background-color: #0033a0; /* Azul Copec */
+    background-color: #0862F5; /* Azul Copec */
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -1021,6 +1021,16 @@ body {
     font-weight: bold;
 }
 
+/* Clase para marcas adicionales: fondo rojo, letras blancas */
+.brand-red-bg {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Clase para otras marcas (por defecto, solo negrita y rojo de texto) */
 .brand-other {
     color: red;
     font-weight: bold;
