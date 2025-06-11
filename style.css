@@ -1230,3 +1230,60 @@ body.body-directivas-active {
         padding: 8px !important;
     }
 }
+/* ESTILOS SOLO PARA PC (pantallas grandes) */
+@media (min-width: 769px) {
+    /* Fuente más pequeña para directivas en PC únicamente */
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.75em !important;
+        padding: 10px !important;
+    }
+
+    /* Contenedor sin restricciones en PC */
+    .section.directivas.active .directivas-container,
+    .section.directivas.active .tab-content {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Tablas a ancho completo en PC */
+    .section.directivas.active .data-table {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    /* Bloquear scroll del body solo en PC */
+    body.body-directivas-active {
+        overflow: hidden !important;
+    }
+}
+
+/* MÓVIL: Anular el comportamiento fullscreen */
+@media (max-width: 768px) {
+    .section.directivas.active {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 5px !important;
+        top: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        border-radius: 15px !important;
+    }
+    
+    body.body-directivas-active {
+        overflow: visible !important;
+    }
+    
+    .section.directivas.active .data-table th,
+    .section.directivas.active .data-table td {
+        font-size: 0.8em !important;
+        padding: 8px !important;
+    }
+}
+
+/* Modal por encima */
+.modal {
+    z-index: 1001 !important;
+}
