@@ -847,7 +847,7 @@ body {
         white-space: nowrap; /* Impide que el texto se envuelva */
         overflow: hidden; /* Oculta el texto que se desborda */
         text-overflow: ellipsis; /* Muestra puntos suspensivos */
-        word-break: normal; /* Desactiva la rotura de palabras si el texto no se envuelve */
+        word-break: normal; /* Desactivar la rotura de palabras si el texto no se envuelve */
         writing-mode: horizontal-tb !important; /* Fuerza que el texto en las celdas se vea horizontal */
     }
 
@@ -996,4 +996,27 @@ body {
     background-color: #6c757d; /* Gris oscuro - Rechazado */
 }
 
-/* Fix: Removed extra '}' from here */
+/* Nuevas clases para los colores de servicentros */
+.brand-copec {
+    background-color: #0033a0; /* Azul Copec */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.brand-petrobras, .brand-aramco {
+    background-color: #007a33; /* Verde Petrobras/Aramco */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.brand-shell {
+    background-color: #ffcc00; /* Amarillo Shell */
+    color: #333; /* Letras oscuras para contraste */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
