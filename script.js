@@ -1021,6 +1021,8 @@ const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', '
 
 // Funciones de navegación principal
 function showHome() {
+    // Remove body-directivas-active class from body when returning home
+    document.body.classList.remove('body-directivas-active');
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
@@ -1030,27 +1032,39 @@ function showHome() {
 
 function showSection(sectionName) {
     console.log(`🔄 Mostrando sección: ${sectionName}`);
-    
+
+    // Get body element
+    const bodyElement = document.body;
+
+    // Remove body-directivas-active class from body if it exists
+    bodyElement.classList.remove('body-directivas-active');
+
     document.getElementById('home').style.display = 'none';
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     const targetSection = document.getElementById(sectionName);
     if (!targetSection) {
         console.error(`❌ ERROR: No se encontró la sección ${sectionName}`);
         return;
     }
-    
+
     targetSection.classList.add('active');
     console.log(`✅ Sección ${sectionName} activada`);
-    
-    // Para medidas, forzar mostrar la vista principal con los cuadros
+
+    // Add body-directivas-active class if the current section is 'directivas'
+    if (sectionName === 'directivas') {
+        bodyElement.classList.add('body-directivas-active');
+        console.log(`✅ Añadida clase 'body-directivas-active' al body`);
+    }
+
+    // For measures, force display of the main view with the squares
     if (sectionName === 'medidas') {
         console.log(`🔧 Configurando vista especial para medidas...`);
         showTab(sectionName, 'consultar');
-        
-        // Asegurar que los cuadros estén visibles
+
+        // Ensure squares are visible
         setTimeout(() => {
             const medidasConsultar = document.getElementById('medidas-consultar');
             if (medidasConsultar) {
