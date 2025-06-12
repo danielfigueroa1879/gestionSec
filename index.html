@@ -177,7 +177,6 @@
                 <button class="btn tab-btn medidas" onclick="showTab('medidas', 'agregar')">Agregar Medida</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON DOS CUADROS DE MEDIDAS -->
             <div id="medidas-consultar" class="tab-content active">
                 <div style="margin-bottom: 30px; padding: 20px; background-color: #f0f8f0; border-radius: 10px; border-left: 4px solid #27ae60;">
                     <h3 style="color: #27ae60; margin-bottom: 10px;">📋 Medidas de Seguridad Ley 19.303</h3>
@@ -187,19 +186,6 @@
                 </div>
                 
                 <div class="medidas-container">
-                    
-                    <!-- Cuadro 1: Medidas Sobre 500 UF -->
-                    <div class="medida-box sobre-500-uf-box">
-                        <h3 class="medida-box-title">💰 MEDIDAS SOBRE 500 UF</h3>
-                        <p class="medida-box-count" id="sobre-500-uf-count-display">(0 registros)</p>
-                        <div class="medida-box-content">
-                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('sobre-500-uf')">
-                                📋 Ver Medidas Sobre 500 UF
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Cuadro 2: Servicentros -->
                     <div class="medida-box servicentros-box">
                         <h3 class="medida-box-title">🏪 SERVICENTROS</h3>
                         <p class="medida-box-count" id="servicentros-count-display">(0 registros)</p>
@@ -210,10 +196,18 @@
                         </div>
                     </div>
 
+                    <div class="medida-box sobre-500-uf-box">
+                        <h3 class="medida-box-title">💰 MEDIDAS SOBRE 500 UF</h3>
+                        <p class="medida-box-count" id="sobre-500-uf-count-display">(0 registros)</p>
+                        <div class="medida-box-content">
+                            <button class="btn medidas medida-box-btn" onclick="showSubMedidaPage('sobre-500-uf')">
+                                📋 Ver Medidas Sobre 500 UF
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- SUBSECCIONES PARA CADA TIPO DE MEDIDA -->
             <div id="servicentros-page" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title medidas">🏪 Lista de Servicentros de Seguridad</h3>
@@ -281,93 +275,20 @@
                 <button class="btn tab-btn directivas" onclick="showTab('directivas', 'agregar')">Agregar Directiva</button>
             </nav>
 
-            <!-- SECCIÓN PRINCIPAL CON DATOS DESDE EXCEL -->
+            <!-- SECCIÓN PRINCIPAL - MUESTRA DIRECTAMENTE LA TABLA -->
             <div id="directivas-consultar" class="tab-content active">
-                <div class="directivas-container">
-                    
-                    <!-- Cuadro único: DIRECTIVAS DE FUNCIONAMIENTOS desde Excel -->
-                    <div class="directiva-box empresas-rrhh-box">
-                        <h3 class="directiva-box-title">📋 DIRECTIVAS DE FUNCIONAMIENTOS</h3>
-                        <p class="directiva-box-count">(Datos desde Excel)</p>
-                        <div class="directiva-box-content">
-                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('empresas-rrhh')">
-                                📋 Ver Empresas de RRHH
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Cuadros adicionales disponibles pero ocultos por defecto -->
-                    <div class="directiva-box guardias-propios-box" style="display: none;">
-                        <h3 class="directiva-box-title">🛡️ GUARDIAS PROPIOS</h3>
-                        <p class="directiva-box-count">(0 registros)</p>
-                        <div class="directiva-box-content">
-                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('guardias-propios')">
-                                📋 Ver Todos los Registros
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="directiva-box eventos-masivos-box" style="display: none;">
-                        <h3 class="directiva-box-title">🎉 EVENTOS MASIVOS</h3>
-                        <p class="directiva-box-count">(0 registros)</p>
-                        <div class="directiva-box-content">
-                            <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('eventos-masivos')">
-                                📋 Ver Todos los Registros
-                            </button>
-                        </div>
-                    </div>
-
+                <div style="margin-bottom: 30px; padding: 20px; background-color: #fff8e1; border-radius: 10px; border-left: 4px solid #f39c12;">
+                    <h3 style="color: #f39c12; margin-bottom: 10px;">📋 Directivas de Funcionamiento</h3>
+                    <p style="margin: 0; color: #8b4513;">
+                        Datos cargados desde Excel: <strong>DIRECTIVAS DE FUNCIONAMIENTOS</strong>
+                    </p>
                 </div>
-            </div>
-
-            <!-- Listado de Empresas de Recursos Humanos -->
-            <div id="directivas-empresas-rrhh-list" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title directivas" id="empresas-rrhh-list-title">👥 Lista de Empresas de Recursos Humanos</h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
-                </div>
+                
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar empresas..." onkeyup="searchEmpresasRRHH(this.value)">
+                    <input type="text" id="directivas-search" class="search-input" placeholder="🔍 Buscar directiva..." onkeyup="searchData('directivas-funcionamiento', this.value)">
+                    <button class="btn directivas" onclick="loadData('directivas-funcionamiento')">Mostrar Todos</button>
                 </div>
-                <div id="empresas-rrhh-results"></div>
-            </div>
-
-            <!-- Listado de Guardias Propios -->
-            <div id="directivas-guardias-propios-list" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title directivas" id="guardias-propios-list-title">🛡️ Lista de Guardias Propios</h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar guardias propios..." onkeyup="searchData('guardias-propios', this.value)">
-                </div>
-                <div id="guardias-propios-results"></div>
-            </div>
-
-            <!-- Listado de Eventos Masivos -->
-            <div id="directivas-eventos-masivos-list" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title directivas" id="eventos-masivos-list-title">🎉 Lista de Eventos Masivos</h3>
-                    <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar eventos masivos..." onkeyup="searchData('eventos-masivos', this.value)">
-                </div>
-                <div id="eventos-masivos-results"></div>
-            </div>
-
-            <!-- Nueva sección para el detalle de directivas de una empresa específica -->
-            <div id="directivas-empresa-specific-details" class="tab-content">
-                <div class="section-header">
-                    <h3 class="section-title directivas" id="empresa-specific-details-title"></h3>
-                    <button class="btn btn-secondary" onclick="backToEmpresasList()">⬅️ Volver a Empresas RRHH</button>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar directivas de esta empresa..." onkeyup="searchCompanySpecificDirectivas(this.value)">
-                </div>
-                <div id="empresa-specific-details-results">
-                    <!-- Los detalles de las directivas se cargarán aquí -->
-                </div>
+                <div id="directivas-results"></div>
             </div>
 
             <!-- Formulario para agregar nuevas directivas -->
@@ -379,34 +300,27 @@
                             <input type="text" id="directiva-numero" required>
                         </div>
                         <div class="form-group">
-                            <label for="directiva-area">Área</label>
-                            <select id="directiva-area" required>
-                                <option value="">Seleccionar área</option>
-                                <option value="Operaciones">Operaciones</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                                <option value="Seguridad">Seguridad</option>
-                                <option value="Calidad">Calidad</option>
-                                <option value="Recursos Humanos">Recursos Humanos</option>
-                            </select>
+                            <label for="directiva-empresa">Empresa RR.HH.</label>
+                            <input type="text" id="directiva-empresa" required>
                         </div>
                         <div class="form-group">
-                            <label for="directiva-version">Versión</label>
-                            <input type="text" id="directiva-version" placeholder="ej: 1.0" required>
+                            <label for="directiva-rut">RUT Empresa RR.HH.</label>
+                            <input type="text" id="directiva-rut" placeholder="99.999.999-9" required>
                         </div>
                         <div class="form-group">
-                            <label for="directiva-fecha">Fecha de Emisión</label>
+                            <label for="directiva-instalacion">Nombre Instalación</label>
+                            <input type="text" id="directiva-instalacion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="directiva-mandante">Entidad Mandante (Contratante)</label>
+                            <input type="text" id="directiva-mandante" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="directiva-fecha">Fecha de Aprobación</label>
                             <input type="date" id="directiva-fecha" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="directiva-titulo">Título</label>
-                        <input type="text" id="directiva-titulo" placeholder="Título de la directiva" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="directiva-contenido">Contenido</label>
-                        <textarea id="directiva-contenido" placeholder="Contenido de la directiva..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success">💾 Guardar Directiva</button>
+                    <button type="submit" class="btn directivas">💾 Guardar Directiva</button>
                 </form>
             </div>
         </section>
@@ -425,7 +339,7 @@
         </div>
     </div>
 
-    <!-- Enlaza el archivo JavaScript adaptado -->
+    <!-- Enlaza el archivo JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
