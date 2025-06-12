@@ -288,10 +288,10 @@
                     <!-- Cuadro único: DIRECTIVAS DE FUNCIONAMIENTOS desde Excel -->
                     <div class="directiva-box empresas-rrhh-box">
                         <h3 class="directiva-box-title">📋 DIRECTIVAS DE FUNCIONAMIENTOS</h3>
-                        <p class="directiva-box-count">(Datos desde Excel)</p>
+                        <p class="directiva-box-count" id="empresas-rrhh-count-display">(0 registros)</p>
                         <div class="directiva-box-content">
                             <button class="btn directivas directiva-box-btn" onclick="showDirectivasSubSection('empresas-rrhh')">
-                                📋 Ver Empresas de RRHH
+                                📋 Ver Todas las Directivas
                             </button>
                         </div>
                     </div>
@@ -320,16 +320,22 @@
                 </div>
             </div>
 
-            <!-- Listado de Empresas de Recursos Humanos -->
+            <!-- Listado de Empresas de Recursos Humanos (Ahora muestra todas las directivas con paginación) -->
             <div id="directivas-empresas-rrhh-list" class="tab-content">
                 <div class="section-header">
-                    <h3 class="section-title directivas" id="empresas-rrhh-list-title">👥 Lista de Empresas de Recursos Humanos</h3>
+                    <h3 class="section-title directivas" id="empresas-rrhh-list-title">👥 Lista de Directivas de Funcionamiento</h3>
                     <button class="btn btn-secondary" onclick="backToDirectivasMain()">⬅️ Volver a Directivas</button>
                 </div>
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar empresas..." onkeyup="searchEmpresasRRHH(this.value)">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar directiva por empresa, RUT, instalación..." onkeyup="searchEmpresasRRHH(this.value)">
                 </div>
                 <div id="empresas-rrhh-results"></div>
+                <!-- Pagination Controls -->
+                <div class="pagination-controls" style="text-align: center; margin-top: 20px;">
+                    <button class="btn directivas" onclick="changeDirectivasPage(-1)" id="directivas-prev-btn">Anterior</button>
+                    <span id="directivas-page-info" style="margin: 0 15px; font-weight: bold;">Página 1 de 1</span>
+                    <button class="btn directivas" onclick="changeDirectivasPage(1)" id="directivas-next-btn">Siguiente</button>
+                </div>
             </div>
 
             <!-- Listado de Guardias Propios -->
@@ -356,7 +362,7 @@
                 <div id="eventos-masivos-results"></div>
             </div>
 
-            <!-- Nueva sección para el detalle de directivas de una empresa específica -->
+            <!-- Nueva sección para el detalle de directivas de una empresa específica (kept for future use if needed, but not used in current directivas list) -->
             <div id="directivas-empresa-specific-details" class="tab-content">
                 <div class="section-header">
                     <h3 class="section-title directivas" id="empresa-specific-details-title"></h3>
