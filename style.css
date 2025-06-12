@@ -1075,13 +1075,13 @@ body {
 @media (min-width: 769px) {
     .section.active:not(#home) { /* Apply to all active sections except home */
         max-width: none !important; /* Override container's max-width */
-        width: calc(100vw - 40px) !important; /* Take full viewport width minus total margin (0px + 40px = 40px) */
+        width: calc(100vw - 50px) !important; /* Total margin (0px + 50px = 50px) */
         position: relative !important; /* For centering */
         left: 50% !important; /* Center the section */
         transform: translateX(-50%) !important; /* Pull back by half its width */
         border-radius: 15px !important; /* Restore border-radius for the section */
-        margin-left: 0px !important; /* Even smaller left margin */
-        margin-right: 40px !important; /* Larger right margin */
+        margin-left: 0px !important; /* Left margin set to 0 */
+        margin-right: 50px !important; /* Right margin set to 50px */
         /* Re-add padding to the section itself for inner content spacing */
         padding-left: 30px !important;
         padding-right: 30px !important;
@@ -1101,5 +1101,23 @@ body {
     .data-table th,
     .data-table td {
         padding: 15px !important; /* Keep original padding or adjust as needed */
+    }
+
+    /* Specific width adjustments for EMPRESA RR.HH. column on desktop */
+    #empresas-rrhh-results .data-table th:nth-child(2),
+    #empresas-rrhh-results .data-table td:nth-child(2),
+    #empresa-specific-details-results .data-table th:nth-child(2),
+    #empresa-specific-details-results .data-table td:nth-child(2) {
+        width: 300px !important; /* Increased width for 'EMPRESA RR.HH.' column */
+        min-width: 250px !important; /* Ensure it doesn't shrink too much */
+    }
+
+    /* Make the first column slightly smaller to compensate */
+    #empresas-rrhh-results .data-table th:first-child,
+    #empresas-rrhh-results .data-table td:first-child,
+    #empresa-specific-details-results .data-table th:first-child,
+    #empresa-specific-details-results .data-table td:first-child {
+        width: 80px !important; /* Slightly reduced width for the first column */
+        min-width: 60px !important;
     }
 }
