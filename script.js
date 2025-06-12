@@ -42,7 +42,7 @@ window.verificarArchivos = async function() {
         'BASE DE DATOS.xls', // Added .xls extension
         'base de datos.xls', // Added .xls extension
         'BASE_DE_DATOS.xls', // Added .xls extension
-        'base_de_datos.xls', // Added .xls extension
+        'base de datos.xls', // Added .xls extension
         'BaseDeDatos.xls', // Added .xls extension
         'BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx' // Original long name
     ];
@@ -148,7 +148,7 @@ async function loadDataFromExcel(file = null) {
                     'BASE DE DATOS.xls', // Added .xls extension
                     'base de datos.xls', // Added .xls extension
                     'BASE_DE_DATOS.xls', // Added .xls extension
-                    'base_de_datos.xls', // Added .xls extension
+                    'base de datos.xls', // Added .xls extension
                     'BaseDeDatos.xls', // Added .xls extension
                     'BASE  DE DATOS COMPONENTES SISTEMA SEGURIDAD PRIVADA TOTAL OS10 COQUIMBO 22 04 25.xlsx'
                 ];
@@ -1062,6 +1062,8 @@ const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', '
 function showHome() {
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
+        // Asegúrate de que todas las secciones estén ocultas
+        section.style.display = 'none';
     });
     document.getElementById('home').style.display = 'block';
     updateCounts();
