@@ -2175,3 +2175,38 @@ window.onclick = function(event) {
 }
 
 console.log('✅ Script.js cargado completamente - Parte 3 de 3');
+
+// Variables para tabla fullscreen
+let tableOriginalParent = null;
+let tableOriginalNext = null;
+let isTableExpanded = false;
+
+function expandTableToFullscreen() {
+    if (window.innerWidth <= 768) return;
+    
+    const table = document.getElementById('directivas-empresas-rrhh-list');
+    if (!table) return;
+    
+    tableOriginalParent = table.parentNode;
+    tableOriginalNext = table.nextSibling;
+    
+    document.body.appendChild(table);
+    table.classList.add('fullscreen-table');
+    document.body.classList.add('body-table-fullscreen');
+    isTableExpanded = true;
+}
+
+function restoreTable() {
+    const table = document.getElementById('directivas-empresas-rrhh-list');
+    if (!table || !tableOriginalParent || !isTableExpanded) return;
+    
+    if (tableOriginalNext) {
+        tableOriginalParent.insertBefore(table, tableOriginalNext);
+    } else {
+        tableOriginalParent.appendChild(table);
+    }
+    
+    table.classList.remove('fullscreen-table');
+    document.body.classList.remove('body-table-fullscreen');
+    isTableExpanded = false;
+}
