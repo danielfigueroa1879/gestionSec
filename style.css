@@ -1075,13 +1075,13 @@ body {
 @media (min-width: 769px) {
     .section.active:not(#home) { /* Apply to all active sections except home */
         max-width: none !important; /* Override container's max-width */
-        width: calc(100vw - 40px) !important; /* Take full viewport width minus total margin (10px + 30px = 40px) */
+        width: calc(100vw - 40px) !important; /* Take full viewport width minus total margin (5px + 35px = 40px) */
         position: relative !important; /* For centering */
         left: 50% !important; /* Center the section */
         transform: translateX(-50%) !important; /* Pull back by half its width */
         border-radius: 15px !important; /* Restore border-radius for the section */
-        margin-left: 10px !important; /* Smaller left margin */
-        margin-right: 30px !important; /* Larger right margin */
+        margin-left: 5px !important; /* Smaller left margin */
+        margin-right: 35px !important; /* Larger right margin */
         /* Re-add padding to the section itself for inner content spacing */
         padding-left: 30px !important;
         padding-right: 30px !important;
