@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('- Planes:', database.planes ? database.planes.length : 'undefined');
     console.log('- Servicentros:', database.servicentros ? database.servicentros.length : 'undefined');
     console.log('- Sobre 500 UF:', database['sobre-500-uf'] ? database['sobre-500-uf'].length : 'undefined');
-    console.log('- Directivas:', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'undefined');
+    console.log('- Directivas (Empresas RRHH):', database['empresas-rrhh'] ? database['empresas-rrhh'].length : 'undefined'); // Renamed for clarity
 
     // Actualizar contadores de forma segura
     updateCounts();
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.log('- Para verificar archivos: verificarArchivos()');
 
         // Si no hay datos reales, mostrar instrucciones
-        if (database.servicentros.length === 10 && database['sobre-500-uf'].length === 8) {
+        if (database.servicentros.length === 10 && database['sobre-500-uf'].length === 8) { // Assuming sample data has these fixed counts
             console.log('📝 Se están usando datos de ejemplo.');
             console.log('💡 Para cargar tu Excel "BASE DE DATOS.xlsx":');
             console.log('   1. Haz click en "📁 Cargar BASE DE DATOS.xlsx"');
@@ -111,15 +111,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         'Planes de Seguridad': database.planes ? database.planes.length : 0,
         'Servicentros': database.servicentros ? database.servicentros.length : 0,
         'Medidas Sobre 500 UF': database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0,
-        'Empresas RRHH': empresasRRHHList ? empresasRRHHList.length : 0,
-        'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0
+        'Empresas RRHH (Directivas)': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0,
+        'Directivas totales': database['empresas-rrhh'] ? database['empresas-rrhh'].length : 0 // Assuming this is the total for directivas section
     });
 });
 // Variables globales para la navegación jerárquica de directivas
-let empresasRRHHList = [];
+let empresasRRHHList = []; // This holds the list of unique company names from 'EMPRESAS RECURSOS HUMANOS' sheet
 let currentDirectivasSubSectionType = '';
 let currentEmpresaSelected = '';
 let database = {}; // Se llenará con datos del Excel o ejemplos
+
+// Pagination variables for Empresas RRHH (Directivas)
+let directivasItemsPerPage = 50;
+let currentDirectivasPage = 1;
+let filteredDirectivasData = []; // Stores filtered data for pagination
 
 // Función para cargar datos desde el Excel (versión corregida para navegadores normales)
 async function loadDataFromExcel(file = null) {
@@ -189,8 +194,8 @@ async function loadDataFromExcel(file = null) {
             medidas: [], // Array general para compatibilidad
             servicentros: [], // MEDIDAS SERVICENTRO
             'sobre-500-uf': [], // MEDIDAS SOBRE 500 UF
-            directivas: [],
-            'empresas-rrhh': [], // Corresponde a DIRECTIVAS DE FUNCIONAMIENTOS
+            directivas: [], // This will be the main directivas list, but 'empresas-rrhh' currently holds the data from 'DIRECTIVAS DE FUNCIONAMIENTOS'
+            'empresas-rrhh': [], // Corresponds to DIRECTIVAS DE FUNCIONAMIENTOS sheet records
             'guardias-propios': [],
             'eventos-masivos': []
         };
@@ -207,19 +212,23 @@ async function loadDataFromExcel(file = null) {
         // Cargar MEDIDAS SERVICENTROS
         await loadMedidasServicentros(workbook);
 
-        // Cargar DIRECTIVAS DE FUNCIONAMIENTOS (como empresas-rrhh)
+        // Cargar DIRECTIVAS DE FUNCIONAMIENTOS (populates database['empresas-rrhh'])
         await loadDirectivas(workbook);
 
-        // Cargar EMPRESAS RECURSOS HUMANOS (como lista de empresas)
+        // Cargar EMPRESAS RECURSOS HUMANOS (populates empresasRRHHList with unique company names)
         await loadEmpresasRRHH(workbook);
+
+        // Initialize filteredDirectivasData with all directivas (from 'empresas-rrhh' section)
+        filteredDirectivasData = [...database['empresas-rrhh']];
+
 
         console.log('✅ Datos cargados exitosamente desde Excel:', {
             estudios: database.estudios.length,
             planes: database.planes.length,
             servicentros: database.servicentros.length,
             'sobre-500-uf': database['sobre-500-uf'].length,
-            directivas: database['empresas-rrhh'].length,
-            empresas: empresasRRHHList.length
+            directivas_funcionamiento: database['empresas-rrhh'].length, // Corrected reference
+            empresas_recursos_humanos: empresasRRHHList.length // Corrected reference
         });
 
         // Actualizar UI para mostrar éxito
@@ -337,7 +346,13 @@ function showFileSelector() {
                 if (activeSection && activeSection.id !== 'home') {
                     const activeTab = activeSection.querySelector('.tab-content.active');
                     if (activeTab && activeTab.id.includes('consultar')) {
-                        loadData(activeSection.id);
+                        // For directivas, reload the specific Empresas RRHH list
+                        if (activeSection.id === 'directivas' && document.getElementById('directivas-empresas-rrhh-list').classList.contains('active')) {
+                            currentDirectivasPage = 1; // Reset page on reload
+                            renderEmpresasRRHHList(); // Re-render with new data
+                        } else {
+                            loadData(activeSection.id);
+                        }
                     }
                 }
             } catch (loadError) {
@@ -361,27 +376,37 @@ async function loadEstudios(workbook) {
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
 
     // Los encabezados están en la fila 1, datos empiezan en fila 2
-    const headers = jsonData[1];
-
+    // User-provided order: NRO, ENTIDAD, RUT ENTIDAD, UBICACIÓN (CASA MATRIZ), REPRESENTANTE LEGAL ENTIDAD, TELEFONO, CORREO ELECTRONICO, IDENTIFICACION JEFE DE SEGURIDAD, TELEFONO, CORREO ELECTRONICO, DECRETO N°, ESTADO DE TRAMITACIÓN, RESOLUCION APROB. EST., FECHA VIGENCIA
+    // Assuming mapping from Excel columns to object properties based on user's column names
+    // Note: Some fields like 'Representante Legal Entidad', 'Telefono', 'Correo Electronico', 'Decreto N°', 'Estado de Tramitación', 'Resolucion Aprob. Est.' might not be consistently present in the Excel sheet at these exact indices or might be empty.
     for (let i = 2; i < jsonData.length; i++) {
         const row = jsonData[i];
         if (!row || !row[0]) continue; // Saltar filas vacías
 
-        const fechaVigencia = parseFecha(row[12]); // FECHA VIGENCIA
-        const fechaInicio = new Date(); // Fecha actual como fecha de inicio
-        const fechaFin = new Date(fechaVigencia);
+        const fechaVigencia = parseFecha(row[13]); // FECHA VIGENCIA (Assuming this is row[13] based on user's 14-column list)
+        const fechaInicio = parseFecha(row[12]); // Assuming Fecha de Aprobación is row[12]
+        // If fechaInicio is not from the sheet, default to a date for consistency, or current date if needed
+        const actualFechaInicio = (fechaInicio && !isNaN(fechaInicio.getTime())) ? fechaInicio : new Date();
+
+        const endDateObj = new Date(fechaVigencia);
+        const today = new Date();
+        const estadoVigenciaText = endDateObj > today ? 'Vigente' : 'Vencido';
 
         database.estudios.push({
-            codigo: `EST-${String(row[0]).padStart(3, '0')}`,
+            codigo: `EST-${String(row[0]).padStart(3, '0')}`, // NRO
             tipo: row[1] || 'Entidad Obligada', // ENTIDAD
-            fechaInicio: fechaInicio.toISOString().split('T')[0],
-            fechaFin: fechaFin.toISOString().split('T')[0],
-            objeto: `Estudio de seguridad para ${row[1]}`,
-            metodologia: 'Metodología basada en Decreto Ley 3.607',
-            responsable: row[6] || 'No especificado', // IDENTIFICACION JEFE DE SEGURIDAD
-            estadoVigencia: fechaFin > new Date() ? 'Vigente' : 'Vencido',
             rut: row[2] || '', // RUT ENTIDAD
             direccion: row[3] || '', // UBICACIÓN (CASA MATRIZ)
+            representanteLegal: row[4] || '', // REPRESENTANTE LEGAL ENTIDAD
+            telefono: row[5] || '', // TELEFONO
+            correoElectronico: row[6] || '', // CORREO ELECTRONICO
+            responsable: row[7] || 'No especificado', // IDENTIFICACION JEFE DE SEGURIDAD
+            decretoNro: row[10] || '', // DECRETO N°
+            estadoTramitacion: row[11] || 'PENDIENTE', // ESTADO DE TRAMITACIÓN
+            resolucionAprobacionEst: row[12] || '', // RESOLUCION APROB. EST.
+            fechaVigencia: fechaVigencia.toISOString().split('T')[0], // FECHA VIGENCIA
+            fechaInicio: actualFechaInicio.toISOString().split('T')[0], // Using internal 'fechaInicio' for consistency
+            estadoVigencia: estadoVigenciaText, // This property is kept for consistency with other sections, but 'estadoTramitacion' is the user's specific request
             comuna: extraerComuna(row[3] || '') // Extraer comuna de la dirección
         });
     }
@@ -503,7 +528,7 @@ async function loadMedidasServicentros(workbook) {
             const registro = {
                 codigo: `SER-${String(row[0]).padStart(3, '0')}`, // NRO
                 nombreServicentro: row[1] || 'Servicentro', // NOMBRE SERVICENTRO
-                propietario: row[2] || 'Propietario no especificado', // PROPIETARIO O CONCESIONARIO
+                propietario: row[2] || 'Propietario o Concesionario no especificado', // PROPIETARIO O CONCESIONARIO
                 rut: row[3] || '', // RUT
                 ubicacion: row[4] || '', // UBICACION
                 comuna: row[5] || extraerComuna(row[4] || ''), // COMUNA
@@ -625,7 +650,7 @@ function fechaToSafeString(fecha) {
     }
 }
 
-// Función para cargar directivas desde el Excel
+// Función para cargar directivas desde el Excel (Populates database['empresas-rrhh'])
 async function loadDirectivas(workbook) {
     const worksheet = workbook.Sheets['DIRECTIVAS DE FUNCIONAMIENTOS '];
     if (!worksheet) {
@@ -649,7 +674,7 @@ async function loadDirectivas(workbook) {
             numero: `RRHH-${String(row[0]).padStart(4, '0')}`,
             empresa: row[1] || 'Empresa no especificada', // EMPRESA RR.HH.
             rut: row[2] || '', // RUT EMPRESA RR.HH.
-            tipoDirectiva: determinarTipoDirectiva(row[3] || ''), // NOMBRE INSTALACIÓN
+            tipoDirectiva: determinarTipoDirectiva(row[3] || ''), // NAME INSTALACION, used to determine type
             lugarInstalacion: row[3] || '', // NOMBRE INSTALACIÓN
             entidadMandante: row[4] || '', // ENTIDAD MANDANTE (CONTRATANTE)
             rutEntidadMandante: row[5] || '', // RUT ENTIDAD MANDANTE (CONTRATANTE)
@@ -667,7 +692,7 @@ async function loadDirectivas(workbook) {
     }
 }
 
-// Función para cargar empresas RRHH desde el Excel
+// Función para cargar empresas RRHH desde el Excel (Populates empresasRRHHList with unique company names)
 async function loadEmpresasRRHH(workbook) {
     const worksheet = workbook.Sheets['EMPRESAS RECURSOS HUMANOS '];
     if (!worksheet) {
@@ -692,7 +717,8 @@ async function loadEmpresasRRHH(workbook) {
         });
     }
 
-    // Calcular el conteo de directivas por empresa
+    // Calcular el conteo de directivas por empresa (already done when loading directivas)
+    // This part is for `empresasRRHHList` which holds unique company names, not directivas themselves.
     empresasRRHHList.forEach(empresa => {
         empresa.directivasCount = database['empresas-rrhh'].filter(
             directiva => directiva.empresa === empresa.nombre
@@ -797,12 +823,12 @@ function generateSampleData() {
         servicentros: [], // Array específico para servicentros
         'sobre-500-uf': [], // Array específico para medidas sobre 500 UF
         directivas: [],
-        'empresas-rrhh': [],
+        'empresas-rrhh': [], // This will hold the directiva records
         'guardias-propios': [],
         'eventos-masivos': []
     };
 
-    // Crear lista de empresas únicas de RRHH (30 empresas para ejemplo)
+    // Crear lista de empresas únicas de RRHH (30 companies for example)
     empresasRRHHList = [];
     const rutSuffixes = ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '-8', '-9', '-K'];
     const sampleAddresses = [
@@ -848,7 +874,15 @@ function generateSampleData() {
             estadoVigencia: estadoVigencia,
             rut: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
             direccion: sampleAddresses[Math.floor(Math.random() * sampleAddresses.length)],
-            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)]
+            comuna: comunasChile[Math.floor(Math.random() * comunasChile.length)],
+            // Adding mock data for new estudio fields to avoid N/A in sample
+            representanteLegal: `Rep. Legal ${i}`,
+            telefono: `+569${Math.floor(Math.random() * 900000000) + 100000000}`,
+            correoElectronico: `estudio${i}@ejemplo.com`,
+            responsable: `Jefe Seg. ${i}`,
+            decretoNro: `D.S. N° ${Math.floor(Math.random() * 1000) + 100}`,
+            estadoTramitacion: Math.random() > 0.5 ? 'APROBADO' : 'EN REVISION',
+            resolucionAprobacionEst: `RES. APROB. ${Math.floor(Math.random() * 500) + 10}`
         });
     }
 
@@ -935,10 +969,11 @@ function generateSampleData() {
         });
     }
 
-    // Generar 20 directivas de empresas RRHH
-    const tiposDirectiva = ['Contratación', 'Capacitación', 'Evaluación', 'Bienestar'];
+    // Generar 20 directivas de empresas RRHH (up to 514, so let's generate more than 50)
+    const totalSampleDirectivas = 150; // Generate more sample directivas for testing pagination
+    const tiposDirectiva = ['Contratación', 'Capacitación', 'Evaluación', 'Bienestar', 'Operaciones', 'Seguridad Física'];
 
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= totalSampleDirectivas; i++) {
         const empresaAsignada = empresasRRHHList[Math.floor(Math.random() * empresasRRHHList.length)];
 
         const approvalYear = 2024;
@@ -955,17 +990,17 @@ function generateSampleData() {
         const estadoVigencia = vigenciaDateObj > today ? 'Vigente' : 'Vencido';
 
         database['empresas-rrhh'].push({
-            numero: `RRHH-${String(i).padStart(4, '0')}`,
+            numero: `DIR-${String(i).padStart(4, '0')}`, // Changed to DIR- for general directivas
             empresa: empresaAsignada.nombre,
             rut: empresaAsignada.rut,
             tipoDirectiva: tiposDirectiva[Math.floor(Math.random() * tiposDirectiva.length)],
-            lugarInstalacion: `Instalación ${String(i).padStart(2, '0')}`, // Added for sample data consistency
-            entidadMandante: `Mandante Ejemplo ${String(i).padStart(2, '0')}`, // Added for sample data consistency
-            rutEntidadMandante: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`, // Added for sample data consistency
-            representanteLegal: `Representante ${String(i).padStart(2, '0')}`, // Added for sample data consistency
-            telefono: `+569${Math.floor(Math.random() * 900000000) + 100000000}`, // Added for sample data consistency
-            correo: `contacto${i}@ejemplo.com`, // Added for sample data consistency
-            resolucionAprobacion: `RES. APROB. N°${i}/${approvalYear}`, // Added for sample data consistency
+            lugarInstalacion: `Instalación ${String(i).padStart(2, '0')}`,
+            entidadMandante: `Mandante Ejemplo ${String(i).padStart(2, '0')}`,
+            rutEntidadMandante: `${Math.floor(Math.random() * 20) + 1}.${Math.floor(Math.random() * 999) + 100}.${Math.floor(Math.random() * 999) + 100}-${rutSuffixes[Math.floor(Math.random() * rutSuffixes.length)]}`,
+            representanteLegal: `Representante ${String(i).padStart(2, '0')}`,
+            telefono: `+569${Math.floor(Math.random() * 900000000) + 100000000}`,
+            correo: `contacto${i}@ejemplo.com`,
+            resolucionAprobacion: `RES. APROB. N°${i}/${approvalYear}`,
             fechaAprobacion: fechaAprobacion,
             vigencia: vigencia,
             estadoVigencia: estadoVigencia,
@@ -975,13 +1010,17 @@ function generateSampleData() {
         empresaAsignada.directivasCount++;
     }
 
+    // Initialize filteredDirectivasData with all directivas (from 'empresas-rrhh' section)
+    filteredDirectivasData = [...database['empresas-rrhh']];
+
+
     console.log('✅ Datos de ejemplo generados:');
     console.log('- Estudios:', database.estudios.length);
     console.log('- Planes:', database.planes.length);
     console.log('- Servicentros:', database.servicentros.length);
     console.log('- Sobre 500 UF:', database['sobre-500-uf'].length);
-    console.log('- Directivas:', database['empresas-rrhh'].length);
-    console.log('- Empresas RRHH:', empresasRRHHList.length);
+    console.log('- Directivas (Empresas RRHH):', database['empresas-rrhh'].length);
+    console.log('- Empresas RRHH (Unique):', empresasRRHHList.length);
 
     // Verificar que los arrays están correctamente poblados
     if (database.servicentros.length === 0) {
@@ -996,11 +1035,13 @@ function generateSampleData() {
 function formatDateForDisplay(dateString) {
     if (!dateString || dateString === '-') return '-';
     const date = new Date(dateString);
+    // Add 1 day to account for potential timezone issues if date was created from YYYY-MM-DD string
+    date.setDate(date.getDate() + 1);
     return date.toLocaleDateString('es-CL');
 }
 
 // Define date headers for formatting
-const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', 'fecha', 'fechaEvento'];
+const dateHeaders = ['fechaInicio', 'fechaFin', 'fechaAprobacion', 'vigencia', 'fecha', 'fechaEvento', 'fechaVigencia']; // Added fechaVigencia for estudios
 
 // Funciones de navegación principal
 function showHome() {
@@ -1017,6 +1058,7 @@ function showSection(sectionName) {
     document.getElementById('home').style.display = 'none';
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
+        section.style.display = 'none'; // Ensure sections are hidden
     });
 
     const targetSection = document.getElementById(sectionName);
@@ -1026,14 +1068,15 @@ function showSection(sectionName) {
     }
 
     targetSection.classList.add('active');
+    targetSection.style.display = 'block'; // Ensure the section is displayed
     console.log(`✅ Sección ${sectionName} activada`);
 
-    // Para medidas, forzar mostrar la vista principal con los cuadros
+    // For measures, force to show the main view with the boxes
     if (sectionName === 'medidas') {
         console.log(`🔧 Configurando vista especial para medidas...`);
         showTab(sectionName, 'consultar');
 
-        // Asegurar que los cuadros estén visibles
+        // Ensure the boxes are visible
         setTimeout(() => {
             const medidasConsultar = document.getElementById('medidas-consultar');
             if (medidasConsultar) {
@@ -1043,7 +1086,7 @@ function showSection(sectionName) {
             }
         }, 100);
     } else if (sectionName === 'directivas') {
-        // Al entrar a la sección de directivas, mostrar automáticamente la lista de empresas RRHH
+        // Upon entering the directivas section, show the Empresas RRHH list by default
         showDirectivasSubSection('empresas-rrhh');
     } else {
         showTab(sectionName, 'consultar');
@@ -1068,40 +1111,35 @@ function showTab(section, tab) {
     }
 
     const tabContents = document.querySelectorAll(`#${section} .tab-content`);
-    tabContents.forEach(content => content.classList.remove('active'));
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none'; // Force hide all tab contents
+    });
 
     if (section === 'medidas') {
         if (tab === 'consultar') {
             document.getElementById('medidas-consultar').classList.add('active');
-            document.getElementById('servicentros-page').classList.remove('active');
-            document.getElementById('sobre-500-uf-page').classList.remove('active');
-            updateMedidasSubSectionCounts(); // Actualizar contadores al mostrar la vista principal
+            document.getElementById('medidas-consultar').style.display = 'block';
+            updateMedidasSubSectionCounts(); // Update counters when showing the main view
             console.log(`📊 Vista principal de medidas mostrada`);
             console.log(`📊 Servicentros disponibles: ${database.servicentros ? database.servicentros.length : 0}`);
             console.log(`📊 Sobre 500 UF disponibles: ${database['sobre-500-uf'] ? database['sobre-500-uf'].length : 0}`);
         } else if (tab === 'agregar') {
             document.getElementById('medidas-agregar').classList.add('active');
-            document.getElementById('servicentros-page').classList.remove('active');
-            document.getElementById('sobre-500-uf-page').classList.remove('active');
+            document.getElementById('medidas-agregar').style.display = 'block';
         }
     } else if (section === 'directivas') {
-        // En la sección de directivas, si se va a "consultar", volver a la vista principal
+        // In the directivas section, if going to "consultar", go back to the main view
         if (tab === 'consultar') {
             document.getElementById('directivas-consultar').classList.add('active');
-            document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
-            document.getElementById('directivas-guardias-propios-list').classList.remove('active');
-            document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-            document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+            document.getElementById('directivas-consultar').style.display = 'block';
         } else if (tab === 'agregar') {
             document.getElementById('directivas-agregar').classList.add('active');
-            document.getElementById('directivas-consultar').classList.remove('active');
-            document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
-            document.getElementById('directivas-guardias-propios-list').classList.remove('active');
-            document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-            document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+            document.getElementById('directivas-agregar').style.display = 'block';
         }
     } else {
         document.getElementById(`${section}-${tab}`).classList.add('active');
+        document.getElementById(`${section}-${tab}`).style.display = 'block'; // Ensure the specific tab is displayed
     }
 }
 
@@ -1172,20 +1210,36 @@ function showDirectivasSubSection(subSectionType) {
     currentDirectivasSubSectionType = subSectionType;
 
     document.getElementById('directivas-consultar').classList.remove('active');
-    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
-    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
-    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
-    document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+    document.getElementById('directivas-consultar').style.display = 'none'; // Hide main consult tab
 
-    document.getElementById(`directivas-${subSectionType}-list`).classList.add('active');
+    document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    document.getElementById('directivas-empresas-rrhh-list').style.display = 'none';
+    document.getElementById('directivas-guardias-propios-list').classList.remove('active');
+    document.getElementById('directivas-guardias-propios-list').style.display = 'none';
+    document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
+    document.getElementById('directivas-eventos-masivos-list').style.display = 'none';
+    document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+    document.getElementById('directivas-empresa-specific-details').style.display = 'none';
+
+
+    const targetListElement = document.getElementById(`directivas-${subSectionType}-list`);
+    if (targetListElement) {
+        targetListElement.classList.add('active');
+        targetListElement.style.display = 'block';
+    } else {
+        console.error(`❌ ERROR: No se encontró el elemento de lista para la subsección ${subSectionType}`);
+        return;
+    }
+
 
     const titleElement = document.getElementById(`${subSectionType}-list-title`);
     if (titleElement) {
         let titleText = '';
         switch (subSectionType) {
             case 'empresas-rrhh':
-                titleText = '👥 Lista de Empresas de Recursos Humanos';
-                renderEmpresasRRHHList();
+                titleText = '👥 Lista de Directivas de Funcionamiento';
+                currentDirectivasPage = 1; // Reset page on showing this section
+                renderEmpresasRRHHList(); // Call the paginated renderer
                 break;
             case 'guardias-propios':
                 titleText = '🛡️ Lista de Guardias Propios';
@@ -1203,53 +1257,72 @@ function showDirectivasSubSection(subSectionType) {
 // Función para volver a la vista principal de Directivas
 function backToDirectivasMain() {
     document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    document.getElementById('directivas-empresas-rrhh-list').style.display = 'none';
     document.getElementById('directivas-guardias-propios-list').classList.remove('active');
+    document.getElementById('directivas-guardias-propios-list').style.display = 'none';
     document.getElementById('directivas-eventos-masivos-list').classList.remove('active');
+    document.getElementById('directivas-eventos-masivos-list').style.display = 'none';
     document.getElementById('directivas-consultar').classList.add('active');
+    document.getElementById('directivas-consultar').style.display = 'block';
 }
 
-// Función específica para renderizar la lista de Empresas RRHH
+// Función específica para renderizar la lista de Empresas RRHH (now paginated)
 function renderEmpresasRRHHList() {
     const resultsContainer = document.getElementById('empresas-rrhh-results');
+    const pageInfoSpan = document.getElementById('directivas-page-info');
+    const prevBtn = document.getElementById('directivas-prev-btn');
+    const nextBtn = document.getElementById('directivas-next-btn');
 
-    if (empresasRRHHList.length === 0) {
-        resultsContainer.innerHTML = '<div class="no-data">No hay empresas de RRHH disponibles</div>';
+    if (!resultsContainer || !pageInfoSpan || !prevBtn || !nextBtn) {
+        console.error('❌ Elementos de paginación o contenedor de resultados de Directivas no encontrados.');
         return;
     }
 
-    let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>EMPRESA RR.HH.</th><th>RUT EMPRESA RR.HH.</th><th>NOMBRE INSTALACIÓN</th><th>ENTIDAD MANDANTE (CONTRATANTE)</th><th>RUT ENTIDAD MANDANTE (CONTRATANTE)</th><th>REPRESENTANTE LEGAL</th><th>TELEFONO</th><th>CORREO ELECTRONICO</th><th>RESOLUCION APROB. DD.FF.</th></tr></thead><tbody>';
+    if (filteredDirectivasData.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-data">No hay directivas de funcionamiento disponibles o no se encontraron resultados.</div>';
+        pageInfoSpan.textContent = 'Página 0 de 0';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+    }
 
-    empresasRRHHList.forEach(empresa => {
-        // Encontrar las directivas asociadas a esta empresa
-        const directivasDeEmpresa = database['empresas-rrhh'].filter(d => d.empresa === empresa.nombre);
-        directivasDeEmpresa.forEach(directiva => {
-            tableHTML += `
-                <tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">
-                    <td>${directiva.empresa || 'N/A'}</td>
-                    <td>${directiva.rut || 'N/A'}</td>
-                    <td>${directiva.lugarInstalacion || 'N/A'}</td>
-                    <td>${directiva.entidadMandante || 'N/A'}</td>
-                    <td>${directiva.rutEntidadMandante || 'N/A'}</td>
-                    <td>${directiva.representanteLegal || 'N/A'}</td>
-                    <td>${directiva.telefono || 'N/A'}</td>
-                    <td>${directiva.correo || 'N/A'}</td>
-                    <td>${directiva.resolucionAprobacion || 'N/A'}</td>
-                </tr>
-            `;
-        });
-    });
+    const totalPages = Math.ceil(filteredDirectivasData.length / directivasItemsPerPage);
+    const startIndex = (currentDirectivasPage - 1) * directivasItemsPerPage;
+    const endIndex = Math.min(startIndex + directivasItemsPerPage, filteredDirectivasData.length);
+    const paginatedData = filteredDirectivasData.slice(startIndex, endIndex);
 
-    tableHTML += '</tbody></table>';
+    // Create table using the paginated data
+    const tableHTML = createTable('empresas-rrhh', paginatedData);
     resultsContainer.innerHTML = tableHTML;
+
+    // Update pagination info and button states
+    pageInfoSpan.textContent = `Página ${currentDirectivasPage} de ${totalPages}`;
+    prevBtn.disabled = currentDirectivasPage === 1;
+    nextBtn.disabled = currentDirectivasPage === totalPages;
 }
+
+// Function to change page for Directivas
+function changeDirectivasPage(delta) {
+    const totalPages = Math.ceil(filteredDirectivasData.length / directivasItemsPerPage);
+    const newPage = currentDirectivasPage + delta;
+
+    if (newPage >= 1 && newPage <= totalPages) {
+        currentDirectivasPage = newPage;
+        renderEmpresasRRHHList();
+    } else {
+        console.log(`Intentó ir a la página ${newPage}, pero el total de páginas es ${totalPages}.`);
+    }
+}
+
 
 // Función para mostrar los detalles de directivas de una empresa RRHH específica
 function showEmpresaDirectivasDetails(empresaNombre) {
     currentEmpresaSelected = empresaNombre;
 
     document.getElementById('directivas-empresas-rrhh-list').classList.remove('active');
+    document.getElementById('directivas-empresas-rrhh-list').style.display = 'none';
     document.getElementById('directivas-empresa-specific-details').classList.add('active');
+    document.getElementById('directivas-empresa-specific-details').style.display = 'block';
 
     document.getElementById('empresa-specific-details-title').textContent = `Directivas de Funcionamiento e Instalaciones de ${empresaNombre}`;
 
@@ -1277,7 +1350,10 @@ function loadCompanySpecificDirectivas(empresaNombre) {
     tableHTML += '</tr></thead><tbody>';
 
     directivasEmpresa.forEach((directiva, index) => {
-        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
+        // Note: The index passed to showDetails here is the index within the *original* database['empresas-rrhh'] array
+        // to ensure the modal shows correct details.
+        const originalIndex = database['empresas-rrhh'].indexOf(directiva);
+        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${originalIndex})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
             if (dateHeaders.includes(header)) {
@@ -1334,7 +1410,8 @@ function createTableForCompanySpecificDirectivas(data) {
     tableHTML += '</tr></thead><tbody>';
 
     data.forEach((directiva, index) => {
-        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">`;
+        const originalIndex = database['empresas-rrhh'].indexOf(directiva); // Get original index for modal
+        tableHTML += `<tr onclick="showDetails('empresas-rrhh', ${originalIndex})">`;
         headers.forEach(header => {
             let value = directiva[header] || 'N/A';
             if (dateHeaders.includes(header)) {
@@ -1359,50 +1436,27 @@ function createTableForCompanySpecificDirectivas(data) {
 // Función para volver a la lista de Empresas RRHH desde los detalles específicos
 function backToEmpresasList() {
     document.getElementById('directivas-empresa-specific-details').classList.remove('active');
+    document.getElementById('directivas-empresa-specific-details').style.display = 'none';
     document.getElementById('directivas-empresas-rrhh-list').classList.add('active');
-    renderEmpresasRRHHList();
+    document.getElementById('directivas-empresas-rrhh-list').style.display = 'block';
+    renderEmpresasRRHHList(); // Re-render the paginated list
 }
 
-// Función para buscar en la lista de Empresas RRHH
+// Función para buscar en la lista de Empresas RRHH (now applies to all directivas, and resets pagination)
 function searchEmpresasRRHH(searchTerm) {
-    const filteredEmpresas = empresasRRHHList.filter(empresa =>
-        empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        empresa.rut.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        empresa.direccion.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const resultsContainer = document.getElementById('empresas-rrhh-results');
-
-    let tableHTML = '<table class="data-table"><thead><tr>';
-    tableHTML += '<th>EMPRESA RR.HH.</th><th>RUT EMPRESA RR.HH.</th><th>NOMBRE INSTALACIÓN</th><th>ENTIDAD MANDANTE (CONTRATANTE)</th><th>RUT ENTIDAD MANDANTE (CONTRATANTE)</th><th>REPRESENTANTE LEGAL</th><th>TELEFONO</th><th>CORREO ELECTRONICO</th><th>RESOLUCION APROB. DD.FF.</th></tr></thead><tbody>';
-
-    if (filteredEmpresas.length === 0) {
-        resultsContainer.innerHTML = '<div class="no-data">No se encontraron empresas con ese criterio.</div>';
-        return;
+    if (searchTerm === '') {
+        // If search term is empty, show all directivas
+        filteredDirectivasData = [...database['empresas-rrhh']];
+    } else {
+        // Filter directivas based on search term across relevant fields
+        filteredDirectivasData = database['empresas-rrhh'].filter(directiva =>
+            Object.values(directiva).some(value =>
+                value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        );
     }
-
-    filteredEmpresas.forEach(empresa => {
-        // Encontrar las directivas asociadas a esta empresa
-        const directivasDeEmpresa = database['empresas-rrhh'].filter(d => d.empresa === empresa.nombre);
-        directivasDeEmpresa.forEach(directiva => {
-            tableHTML += `
-                <tr onclick="showDetails('empresas-rrhh', ${database['empresas-rrhh'].indexOf(directiva)})">
-                    <td>${directiva.empresa || 'N/A'}</td>
-                    <td>${directiva.rut || 'N/A'}</td>
-                    <td>${directiva.lugarInstalacion || 'N/A'}</td>
-                    <td>${directiva.entidadMandante || 'N/A'}</td>
-                    <td>${directiva.rutEntidadMandante || 'N/A'}</td>
-                    <td>${directiva.representanteLegal || 'N/A'}</td>
-                    <td>${directiva.telefono || 'N/A'}</td>
-                    <td>${directiva.correo || 'N/A'}</td>
-                    <td>${directiva.resolucionAprobacion || 'N/A'}</td>
-                </tr>
-            `;
-        });
-    });
-
-    tableHTML += '</tbody></table>';
-    resultsContainer.innerHTML = tableHTML;
+    currentDirectivasPage = 1; // Reset to first page after search
+    renderEmpresasRRHHList(); // Render the filtered/paginated data
 }
 
 // Funciones para manejar datos (agregar, cargar, buscar, mostrar detalles)
@@ -1432,7 +1486,7 @@ function addRecord(section, event) {
     let targetArray = database[section];
 
     // Lógica para calcular la vigencia y el estado de vigencia
-    if (section === 'planes' || section === 'medidas' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'empresas-rrhh' || section === 'guardias-propios') {
+    if (section === 'planes' || section === 'medidas' || section === 'servicentros' || section === 'sobre-500-uf' || section === 'guardias-propios') {
         const fechaAprobacion = formData.fechaAprobacion || formData.fecha;
         if (fechaAprobacion) {
             const approvalDateObj = new Date(fechaAprobacion);
@@ -1451,9 +1505,10 @@ function addRecord(section, event) {
         if (fechaInicio) {
             const startDateObj = new Date(fechaInicio);
             const endDateObj = new Date(startDateObj);
-            endDateObj.setFullYear(endDateObj.getFullYear() + 2);
+            endDateObj.setFullYear(endDateObj.getFullYear() + 2); // Estudios are 2 years
             formData.fechaFin = endDateObj.toISOString().split('T')[0];
-
+            formData.fechaVigencia = endDateObj.toISOString().split('T')[0]; // Map to new key
+            
             const today = new Date();
             formData.estadoVigencia = endDateObj > today ? 'Vigente' : 'Vencido';
         } else {
@@ -1461,11 +1516,12 @@ function addRecord(section, event) {
             return;
         }
     } else if (section === 'directivas') {
+        // Directivas added via form will be stored in database.directivas
         const fechaEmision = formData.fecha;
         if (fechaEmision) {
             const emissionDateObj = new Date(fechaEmision);
             const vigenciaDateObj = new Date(emissionDateObj);
-            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3);
+            vigenciaDateObj.setFullYear(vigenciaDateObj.getFullYear() + 3); // Directivas are 3 years
             formData.vigencia = vigenciaDateObj.toISOString().split('T')[0];
 
             const today = new Date();
@@ -1474,8 +1530,15 @@ function addRecord(section, event) {
             showAlert(section, 'La fecha de emisión es requerida para una directiva.', 'error');
             return;
         }
-        targetArray = database.directivas;
+        targetArray = database.directivas; // Ensure form-added directivas go to separate array
+    } else if (section === 'empresas-rrhh') {
+        // This section is for Excel-loaded directivas, not form-added ones for now.
+        // If the form is to add a record to 'empresas-rrhh' (Excel sheet data), its logic needs to be updated.
+        // For now, form submissions to 'directivas' go to `database.directivas`.
+        showAlert(section, 'No se permite añadir registros directamente a esta sección desde el formulario. Use la sección "Directivas" general.', 'error');
+        return;
     }
+
 
     targetArray.push(formData);
 
@@ -1485,10 +1548,13 @@ function addRecord(section, event) {
 
     updateCounts();
 
+    // After adding, show the list view, and for directivas, update the paginated list
     if (section === 'medidas') {
         showTab('medidas', 'consultar');
     } else if (section === 'directivas') {
-        showTab('directivas', 'consultar');
+        // After adding a new directiva from the form, it goes to `database.directivas`
+        // The main list (`empresas-rrhh` section) should not be affected by `database.directivas` as they are separate.
+        showTab('directivas', 'consultar'); // Go back to the main directivas overview
     }
     else {
         showTab(section, 'consultar');
@@ -1568,7 +1634,20 @@ function createTable(section, data) {
 
     let headers = [];
     if (section === 'estudios') {
-        headers = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        headers = [
+            'codigo', // NRO
+            'tipo', // ENTIDAD
+            'rut', // RUT ENTIDAD
+            'direccion', // UBICACIÓN (CASA MATRIZ)
+            'representanteLegal', // REPRESENTANTE LEGAL ENTIDAD
+            'telefono', // TELEFONO
+            'correoElectronico', // CORREO ELECTRONICO
+            'responsable', // IDENTIFICACION JEFE DE SEGURIDAD
+            'decretoNro', // DECRETO N°
+            'estadoTramitacion', // ESTADO DE TRAMITACIÓN
+            'resolucionAprobacionEst', // RESOLUCION APROB. EST.
+            'fechaVigencia' // FECHA VIGENCIA
+        ];
     } else if (section === 'planes') {
         headers = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna'];
     } else if (section === 'medidas') {
@@ -1577,14 +1656,14 @@ function createTable(section, data) {
         headers = ['codigo', 'nombreServicentro', 'propietario', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'maximoDinero'];
     } else if (section === 'sobre-500-uf') {
         headers = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
-    } else if (section === 'empresas-rrhh') {
+    } else if (section === 'empresas-rrhh') { // This is for the directivas section displaying all directivas
         headers = ['numero', 'empresa', 'rut', 'lugarInstalacion', 'entidadMandante', 'rutEntidadMandante', 'representanteLegal', 'telefono', 'correo', 'resolucionAprobacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia'];
     } else if (section === 'guardias-propios') {
         headers = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') {
         headers = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
-    } else if (section === 'directivas') {
-        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
+    } else if (section === 'directivas') { // This is for form-added directivas, currently empty unless user adds.
+        headers = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'version', 'titulo']; // Displaying less columns for manually added directivas
     } else {
         console.warn(`⚠️ Sección desconocida: ${section}, usando headers del primer objeto`);
         headers = Object.keys(data[0] || {});
@@ -1611,7 +1690,7 @@ function createTable(section, data) {
         }
 
         const originalIndex = database[section].indexOf(row);
-        const detailIndex = originalIndex !== -1 ? originalIndex : index;
+        const detailIndex = originalIndex !== -1 ? originalIndex : index; // Use original index for showDetails
 
         tableHTML += `<tr onclick="showDetails('${section}', ${detailIndex})">`;
 
@@ -1621,13 +1700,13 @@ function createTable(section, data) {
 
             // Manejar valores undefined/null
             if (value === undefined || value === null) {
-                value = '-';
+                value = 'N/A'; // Changed from '-' to 'N/A' as per user request implicit in column list
             } else if (typeof value === 'string' && value.trim() === '') {
-                value = '-';
+                value = 'N/A'; // Changed from '-' to 'N/A'
             }
 
             // Formatear fechas
-            if (dateHeaders.includes(header) && value !== '-') {
+            if (dateHeaders.includes(header) && value !== 'N/A') {
                 value = formatDateForDisplay(value);
             }
 
@@ -1648,11 +1727,11 @@ function createTable(section, data) {
                     // Para cualquier otra marca no especificada
                     cellClass = 'brand-other'; // Letras rojas, negrita
                 }
-            } else if (header === 'estadoVigencia' || header === 'estadoAprobacion') {
-                if (value === 'Vigente' || value === 'APROBADO') {
-                    cellClass = 'status-vigente';
-                } else if (value === 'Vencido' || value === 'RECHAZADO') {
-                    cellClass = 'status-vencido';
+            } else if (header === 'estadoVigencia' || header === 'estadoAprobacion' || header === 'estadoTramitacion') { // Added estadoTramitacion
+                if (value === 'Vigente' || value === 'APROBADO' || value === 'FINALIZADO') {
+                    cellClass = 'status-vigente'; // Green for positive states
+                } else if (value === 'Vencido' || value === 'RECHAZADO' || value === 'EN REVISION' || value === 'PENDIENTE') {
+                    cellClass = 'status-vencido'; // Red/grey for negative/pending states
                 }
             }
 
@@ -1677,34 +1756,34 @@ function createTable(section, data) {
 // Formatea los nombres de las claves para la interfaz
 function formatHeader(header) {
     const headerMap = {
-        codigo: 'Código',
+        codigo: 'NRO', // Cambiado a NRO
         categoria: 'Entidad',
         prioridad: 'Prioridad',
         estado: 'Estado',
         descripcion: 'Descripción',
-        responsable: 'Responsable',
-        tipo: 'Entidad',
+        responsable: 'IDENTIFICACION JEFE DE SEGURIDAD', // Updated for Estudios
+        tipo: 'ENTIDAD', // Updated for Estudios
         vigencia: 'Fecha de Vigencia',
         revision: 'Dirección',
         objetivo: 'Objetivo',
         alcance: 'Alcance',
-        numero: 'NRO', // Cambiado a NRO
+        numero: 'NRO', // For directivas
         area: 'Área',
         version: 'Versión',
         fecha: 'Fecha de Emisión',
         titulo: 'Título',
         contenido: 'Contenido',
-        fechaInicio: 'Fecha de Aprobación',
-        fechaFin: 'Fecha Fin',
+        fechaInicio: 'Fecha de Aprobación', // For estudios
+        fechaFin: 'FECHA VIGENCIA', // For estudios
         objeto: 'Objeto',
         metodologia: 'Metodología',
         nombre: 'Nombre',
-        ubicacion: 'Ubicación',
-        direccion: 'Dirección',
-        telefono: 'TELEFONO', // Cambiado a TELEFONO
+        ubicacion: 'UBICACIÓN (CASA MATRIZ)', // Updated for Estudios
+        direccion: 'UBICACIÓN (CASA MATRIZ)', // Adjusted to map for both
+        telefono: 'TELEFONO', // Updated for Estudios
         horario: 'Horario',
         capacidad: 'Capacidad',
-        empresa: 'EMPRESA RR.HH.', // Cambiado a EMPRESA RR.HH.
+        empresa: 'EMPRESA RR.HH.', // For directivas
         tipoDirectiva: 'Tipo Directiva', // Nuevo campo para tipo de directiva
         tipoServicio: 'Tipo Servicio',
         numeroGuardias: 'Número Guardias',
@@ -1712,31 +1791,37 @@ function formatHeader(header) {
         tipoEvento: 'Tipo de Evento',
         nombreEvento: 'Nombre del Evento',
         duracion: 'Duración',
-        lugarInstalacion: 'NOMBRE INSTALACIÓN', // Cambiado a NOMBRE INSTALACIÓN
+        lugarInstalacion: 'NOMBRE INSTALACIÓN',
         fechaAprobacion: 'Fecha Aprob.',
         cantidadGuardias: 'Cantidad de Guardias',
         nombreEmpresa: 'Nombre Empresa',
-        rut: 'RUT EMPRESA RR.HH.', // Cambiado a RUT EMPRESA RR.HH.
+        rut: 'RUT ENTIDAD', // For estudios
         fechaEvento: 'Fecha Evento',
         estadoAprobacion: 'Estado de Aprobación',
-        id: 'NRO', // Cambiado a NRO
+        id: 'NRO', // For sobre-500-uf
         monto: 'Monto (UF)',
-        estadoVigencia: 'Estado de Vigencia',
+        estadoVigencia: 'Estado de Vigencia', // General status (Vigente/Vencido)
         comuna: 'Comuna',
         // Campos específicos de Servicentros
         nombreServicentro: 'Nombre Servicentro',
         propietario: 'Propietario/Concesionario',
         maximoDinero: 'Máximo de Dinero',
         // Campos específicos de Sobre 500 UF
-        entidad: 'Entidad',
-        instalacion: 'Instalación',
+        entidad: 'Entidad', // For sobre-500-uf
+        instalacion: 'Instalación', // For sobre-500-uf
         encargado: 'Encargado',
-        // Nuevos campos para Directivas de Funcionamiento
+        // Nuevos campos para Directivas de Funcionamiento (from Excel)
         entidadMandante: 'ENTIDAD MANDANTE (CONTRATANTE)',
         rutEntidadMandante: 'RUT ENTIDAD MANDANTE (CONTRATANTE)',
-        representanteLegal: 'REPRESENTANTE LEGAL',
-        correo: 'CORREO ELECTRONICO',
-        resolucionAprobacion: 'RESOLUCION APROB. DD.FF.'
+        representanteLegal: 'REPRESENTANTE LEGAL ENTIDAD', // Updated for directivas as well
+        correo: 'CORREO ELECTRONICO', // For directivas
+        resolucionAprobacion: 'RESOLUCION APROB. DD.FF.', // For directivas
+        // Specifically for Estudios, if they are separate from general 'telefono' etc.
+        correoElectronico: 'CORREO ELECTRONICO', // For Estudios
+        decretoNro: 'DECRETO N°', // For Estudios
+        estadoTramitacion: 'ESTADO DE TRAMITACIÓN', // For Estudios
+        resolucionAprobacionEst: 'RESOLUCION APROB. EST.', // For Estudios
+        fechaVigencia: 'FECHA VIGENCIA' // Specific for Estudios
     };
     return headerMap[header] || header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1');
 }
@@ -1764,43 +1849,43 @@ function showDetails(section, index) {
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
 
-    modalTitle.textContent = `Detalles - NRO: ${item.numero || item.id || 'N/A'}`;
+    modalTitle.textContent = `Detalles - NRO: ${item.numero || item.id || item.codigo || 'N/A'}`; // Added item.codigo for consistency
     modalTitle.className = `modal-title ${section}`;
 
     let detailKeys = [];
     if (section === 'estudios') {
-        detailKeys = ['codigo', 'fechaInicio', 'fechaFin', 'estadoVigencia', 'tipo', 'rut', 'direccion', 'comuna'];
+        detailKeys = ['codigo', 'tipo', 'rut', 'direccion', 'representanteLegal', 'telefono', 'correoElectronico', 'responsable', 'decretoNro', 'estadoTramitacion', 'resolucionAprobacionEst', 'fechaVigencia', 'objeto', 'metodologia', 'comuna'];
     } else if (section === 'planes') {
-        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna'];
+        detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipo', 'rut', 'revision', 'comuna', 'objetivo', 'alcance'];
     } else if (section === 'medidas') {
         detailKeys = ['codigo', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'categoria', 'rut', 'direccion', 'comuna'];
     } else if (section === 'servicentros') {
         detailKeys = ['codigo', 'nombreServicentro', 'propietario', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'maximoDinero'];
     } else if (section === 'sobre-500-uf') {
-        detailKeys = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto'];
-    } else if (section === 'empresas-rrhh') {
-        detailKeys = ['numero', 'empresa', 'rut', 'lugarInstalacion', 'entidadMandante', 'rutEntidadMandante', 'representanteLegal', 'telefono', 'correo', 'resolucionAprobacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia'];
+        detailKeys = ['id', 'entidad', 'instalacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'rut', 'ubicacion', 'comuna', 'monto', 'encargado', 'telefono', 'correo', 'resolucion'];
+    } else if (section === 'empresas-rrhh') { // Details for directivas (from Excel)
+        detailKeys = ['numero', 'empresa', 'rut', 'tipoDirectiva', 'lugarInstalacion', 'entidadMandante', 'rutEntidadMandante', 'representanteLegal', 'telefono', 'correo', 'resolucionAprobacion', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'estado', 'comuna', 'alcance'];
     } else if (section === 'guardias-propios') {
         detailKeys = ['numero', 'fechaAprobacion', 'vigencia', 'estadoVigencia', 'tipoServicio', 'rut', 'direccion', 'comuna'];
     } else if (section === 'eventos-masivos') {
         detailKeys = ['numero', 'fechaEvento', 'estadoAprobacion', 'tipoEvento', 'rut', 'direccion', 'comuna'];
-    } else if (section === 'directivas') {
-        detailKeys = ['numero', 'fecha', 'vigencia', 'estadoVigencia', 'area', 'rut', 'direccion', 'comuna'];
+    } else if (section === 'directivas') { // Details for form-added directivas
+        detailKeys = ['numero', 'area', 'version', 'fecha', 'titulo', 'contenido', 'vigencia', 'estadoVigencia'];
     }
 
-    detailsHTML = ''; // Clear detailsHTML for dynamic content
+    let detailsHTML = ''; // Clear detailsHTML for dynamic content
 
     detailKeys.forEach(key => {
-        let value = item[key] || 'No especificado';
+        let value = item[key] || 'N/A'; // Changed from 'No especificado' to 'N/A'
         if (dateHeaders.includes(key)) {
             value = formatDateForDisplay(value);
         }
 
         let detailClass = '';
-        if (key === 'estadoVigencia' || key === 'estadoAprobacion') {
-            if (value === 'Vigente' || value === 'APROBADO') {
+        if (key === 'estadoVigencia' || key === 'estadoAprobacion' || key === 'estadoTramitacion') { // Added estadoTramitacion
+            if (value === 'Vigente' || value === 'APROBADO' || value === 'FINALIZADO') {
                 detailClass = 'status-vigente';
-            } else if (value === 'Vencido' || value === 'RECHAZADO') {
+            } else if (value === 'Vencido' || value === 'RECHAZADO' || value === 'EN REVISION' || value === 'PENDIENTE') {
                 detailClass = 'status-vencido';
             }
         }
@@ -1836,22 +1921,28 @@ function updateCounts() {
     const servicentrosCount = (database.servicentros && Array.isArray(database.servicentros)) ? database.servicentros.length : 0;
     const sobre500Count = (database['sobre-500-uf'] && Array.isArray(database['sobre-500-uf'])) ? database['sobre-500-uf'].length : 0;
     const medidasTotalCount = servicentrosCount + sobre500Count; // Total de medidas = servicentros + sobre 500 UF
-    const empresasRRHHCount = (database['empresas-rrhh'] && Array.isArray(database['empresas-rrhh'])) ? database['empresas-rrhh'].length : 0;
+    const empresasRRHHCount = (database['empresas-rrhh'] && Array.isArray(database['empresas-rrhh'])) ? database['empresas-rrhh'].length : 0; // Excel loaded directivas
     const guardiasPropiosCount = (database['guardias-propios'] && Array.isArray(database['guardias-propios'])) ? database['guardias-propios'].length : 0;
     const eventosMasivosCount = (database['eventos-masivos'] && Array.isArray(database['eventos-masivos'])) ? database['eventos-masivos'].length : 0;
+    const formAddedDirectivasCount = (database.directivas && Array.isArray(database.directivas)) ? database.directivas.length : 0; // Manually added directivas
+
+    // Sum of all directivas from Excel sheets (empresas-rrhh, guardias-propios, eventos-masivos) plus manually added
+    const totalDirectivasSectionCount = empresasRRHHCount + guardiasPropiosCount + eventosMasivosCount + formAddedDirectivasCount;
+
 
     // Actualizar los elementos del DOM de forma segura
     const estudiosElement = document.getElementById('estudios-count');
     const planesElement = document.getElementById('planes-count');
     const medidasElement = document.getElementById('medidas-count');
     const directivasElement = document.getElementById('directivas-count');
+    const empresasRRHHDisplayElement = document.getElementById('empresas-rrhh-count-display'); // For the box count
+
 
     if (estudiosElement) estudiosElement.textContent = `${estudiosCount} registros`;
     if (planesElement) planesElement.textContent = `${planesCount} registros`;
     if (medidasElement) medidasElement.textContent = `${medidasTotalCount} registros`;
-
-    const totalDirectivas = empresasRRHHCount + guardiasPropiosCount + eventosMasivosCount;
-    if (directivasElement) directivasElement.textContent = `${totalDirectivas} registros`;
+    if (directivasElement) directivasElement.textContent = `${totalDirectivasSectionCount} registros`; // Total for Directivas menu card
+    if (empresasRRHHDisplayElement) empresasRRHHDisplayElement.textContent = `(${empresasRRHHCount} registros)`; // Count for the directivas box
 
     updateMedidasSubSectionCounts();
 }
@@ -1940,14 +2031,19 @@ function verificarInterfaz() {
     console.log('📊 Estado de datos:');
     console.log('- database.servicentros:', database.servicentros ? `✅ ${database.servicentros.length} registros` : '❌ NO EXISTE');
     console.log('- database["sobre-500-uf"]:', database['sobre-500-uf'] ? `✅ ${database['sobre-500-uf'].length} registros` : '❌ NO EXISTE');
+    console.log('- database["empresas-rrhh"] (Directivas):', database['empresas-rrhh'] ? `✅ ${database['empresas-rrhh'].length} registros` : '❌ NO EXISTE');
+
 
     // Verificar contadores
     const servicentrosCountDisplay = document.getElementById('servicentros-count-display');
     const sobre500CountDisplay = document.getElementById('sobre-500-uf-count-display');
+    const empresasRRHHCountDisplay = document.getElementById('empresas-rrhh-count-display'); // For the Directivas box
 
     console.log('🔢 Estado de contadores:');
     console.log('- servicentros-count-display:', servicentrosCountDisplay ? `✅ "${servicentrosCountDisplay.textContent}"` : '❌ NO EXISTE');
     console.log('- sobre-500-uf-count-display:', sobre500CountDisplay ? `✅ "${sobre500CountDisplay.textContent}"` : '❌ NO EXISTE');
+    console.log('- empresas-rrhh-count-display (Directivas Box):', empresasRRHHCountDisplay ? `✅ "${empresasRRHHCountDisplay.textContent}"` : '❌ NO EXISTE');
+
 
     // Verificar que los elementos críticos existan
     const elementosFaltantes = [];
@@ -1956,6 +2052,11 @@ function verificarInterfaz() {
     if (!sobre500Page) elementosFaltantes.push('sobre-500-uf-page');
     if (!servicentrosResults) elementosFaltantes.push('servicentros-results');
     if (!sobre500Results) elementosFaltantes.push('sobre-500-uf-results');
+    // Check directivas pagination elements
+    if (!document.getElementById('directivas-page-info')) elementosFaltantes.push('directivas-page-info');
+    if (!document.getElementById('directivas-prev-btn')) elementosFaltantes.push('directivas-prev-btn');
+    if (!document.getElementById('directivas-next-btn')) elementosFaltantes.push('directivas-next-btn');
+
 
     if (elementosFaltantes.length > 0) {
         console.error('❌ ELEMENTOS CRÍTICOS FALTANTES:', elementosFaltantes);
@@ -1966,4 +2067,3 @@ function verificarInterfaz() {
     console.log('✅ Verificación de interfaz completada - Todo OK');
     return true;
 }
-
