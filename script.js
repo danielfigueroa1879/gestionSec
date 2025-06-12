@@ -659,37 +659,52 @@ async function loadDirectivas(workbook) {
     }
 
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+    console.log(`📋 Filas totales encontradas en DIRECTIVAS DE FUNCIONAMIENTOS: ${jsonData.length}`);
 
+    // Limpiar el array antes de cargar para evitar duplicados si se llama varias veces
+    database['empresas-rrhh'] = [];
+
+    let recordsProcessed = 0;
     for (let i = 3; i < jsonData.length; i++) {
         const row = jsonData[i];
-        if (!row || !row[0]) continue;
+        if (!row || !row[0]) {
+            // console.log(`Skipping empty or invalid row at index ${i} in DIRECTIVAS DE FUNCIONAMIENTOS`); // Optional: log skipped rows
+            continue;
+        }
 
-        // Procesar fecha de resolución para obtener fecha de aprobación
-        const resolucion = row[9] || ''; // RESOLUCION APROB. DD.FF.
-        const fechaAprobacion = parseFechaResolucion(resolucion);
-        const vigencia = new Date(fechaAprobacion);
-        vigencia.setFullYear(vigencia.getFullYear() + 3);
+        try {
+            // Procesar fecha de resolución para obtener fecha de aprobación
+            const resolucion = row[9] || ''; // RESOLUCION APROB. DD.FF.
+            const fechaAprobacion = parseFechaResolucion(resolucion);
+            const vigencia = new Date(fechaAprobacion);
+            vigencia.setFullYear(vigencia.getFullYear() + 3);
 
-        database['empresas-rrhh'].push({
-            numero: `RRHH-${String(row[0]).padStart(4, '0')}`,
-            empresa: row[1] || 'Empresa no especificada', // EMPRESA RR.HH.
-            rut: row[2] || '', // RUT EMPRESA RR.HH.
-            tipoDirectiva: determinarTipoDirectiva(row[3] || ''), // NAME INSTALACION, used to determine type
-            lugarInstalacion: row[3] || '', // NOMBRE INSTALACIÓN
-            entidadMandante: row[4] || '', // ENTIDAD MANDANTE (CONTRATANTE)
-            rutEntidadMandante: row[5] || '', // RUT ENTIDAD MANDANTE (CONTRATANTE)
-            representanteLegal: row[6] || '', // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)
-            telefono: row[7] || '', // TELEFONO
-            correo: row[8] || '', // CORREO ELECTRONICO
-            resolucionAprobacion: row[9] || '', // RESOLUCION APROB. DD.FF.
-            fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
-            estado: row[10] || 'Vigente', // ESTADO DE TRAMITACIÓN
-            vigencia: vigencia.toISOString().split('T')[0],
-            estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
-            comuna: extraerComuna(row[4] || ''),
-            alcance: `Directiva aplicable a ${row[3]}`
-        });
+            database['empresas-rrhh'].push({
+                numero: `RRHH-${String(row[0]).padStart(4, '0')}`,
+                empresa: row[1] || 'Empresa no especificada', // EMPRESA RR.HH.
+                rut: row[2] || '', // RUT EMPRESA RR.HH.
+                tipoDirectiva: determinarTipoDirectiva(row[3] || ''), // NAME INSTALACION, used to determine type
+                lugarInstalacion: row[3] || '', // NOMBRE INSTALACIÓN
+                entidadMandante: row[4] || '', // ENTIDAD MANDANTE (CONTRATANTE)
+                rutEntidadMandante: row[5] || '', // RUT ENTIDAD MANDANTE (CONTRATANTE)
+                representanteLegal: row[6] || '', // REPRESENTANTE LEGAL ENTIDAD MANDANTE (CONTRATANTE)
+                telefono: row[7] || '', // TELEFONO
+                correo: row[8] || '', // CORREO ELECTRONICO
+                resolucionAprobacion: row[9] || '', // RESOLUCION APROB. DD.FF.
+                fechaAprobacion: fechaAprobacion.toISOString().split('T')[0],
+                estado: row[10] || 'Vigente', // ESTADO DE TRAMITACIÓN
+                vigencia: vigencia.toISOString().split('T')[0],
+                estadoVigencia: vigencia > new Date() ? 'Vigente' : 'Vencido',
+                comuna: extraerComuna(row[4] || ''),
+                alcance: `Directiva aplicable a ${row[3]}`
+            });
+            recordsProcessed++;
+        } catch (error) {
+            console.warn(`⚠️ Error procesando fila ${i} de DIRECTIVAS DE FUNCIONAMIENTOS:`, error.message);
+            console.warn(`Datos de la fila con error:`, row);
+        }
     }
+    console.log(`✅ Directivas de Funcionamiento cargadas: ${recordsProcessed} registros procesados.`);
 }
 
 // Función para cargar empresas RRHH desde el Excel (Populates empresasRRHHList with unique company names)
@@ -969,8 +984,8 @@ function generateSampleData() {
         });
     }
 
-    // Generar 20 directivas de empresas RRHH (up to 514, so let's generate more than 50)
-    const totalSampleDirectivas = 150; // Generate more sample directivas for testing pagination
+    // Generar 514 directivas de empresas RRHH (para simular el total esperado por el usuario)
+    const totalSampleDirectivas = 514;
     const tiposDirectiva = ['Contratación', 'Capacitación', 'Evaluación', 'Bienestar', 'Operaciones', 'Seguridad Física'];
 
     for (let i = 1; i <= totalSampleDirectivas; i++) {
@@ -1035,7 +1050,7 @@ function generateSampleData() {
 function formatDateForDisplay(dateString) {
     if (!dateString || dateString === '-') return '-';
     const date = new Date(dateString);
-    // Add 1 day to account for potential timezone issues if date was created from YYYY-MM-DD string
+    // Add 1 day to account for potential timezone issues if date was created fromYYYY-MM-DD string
     date.setDate(date.getDate() + 1);
     return date.toLocaleDateString('es-CL');
 }
