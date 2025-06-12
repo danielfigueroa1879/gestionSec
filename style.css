@@ -1108,7 +1108,7 @@ body {
     #empresas-rrhh-results .data-table td:nth-child(2),
     #empresa-specific-details-results .data-table th:nth-child(2),
     #empresa-specific-details-results .data-table td:nth-child(2) {
-        width: 350px !important; /* Increased width for 'EMPRESA RR.HH.' column */
+        width: 450px !important; /* Increased width for 'EMPRESA RR.HH.' column */
         min-width: 300px !important; /* Ensure it doesn't shrink too much */
     }
 
