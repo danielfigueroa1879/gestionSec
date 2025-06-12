@@ -1149,3 +1149,27 @@ body.body-table-fullscreen {
         writing-mode: horizontal-tb !important;
     }
 }
+/* Tabla RRHH fullscreen solo en PC */
+@media (min-width: 769px) {
+    #directivas-empresas-rrhh-list.fullscreen-table {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        background: white !important;
+        padding: 20px 30px !important;
+        overflow-y: auto !important;
+    }
+
+    #directivas-empresas-rrhh-list.fullscreen-table .data-table th,
+    #directivas-empresas-rrhh-list.fullscreen-table .data-table td {
+        font-size: 0.75em !important;
+        padding: 10px !important;
+    }
+}
+
+body.body-table-fullscreen {
+    overflow: hidden !important;
+}
