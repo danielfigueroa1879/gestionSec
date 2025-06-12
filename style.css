@@ -1070,3 +1070,35 @@ body {
     color: red !important;
     font-weight: bold !important;
 }
+
+/* Optimization specific for sections to span full width on larger screens */
+@media (min-width: 769px) {
+    .section.active:not(#home) { /* Apply to all active sections except home */
+        max-width: none !important; /* Override container's max-width */
+        width: 100vw !important; /* Take full viewport width */
+        position: relative !important; /* For centering */
+        left: 50% !important; /* Center the section */
+        transform: translateX(-50%) !important; /* Pull back by half its width */
+        border-radius: 0 !important; /* Remove section border-radius when full width */
+        margin: 0 !important; /* Remove any external margins */
+        /* IMPORTANT: Remove horizontal padding from the section to let the table span full width */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Within these full-width sections, the data-table should also span full width of its new parent */
+    .section.active .data-table {
+        width: 100% !important; /* Will fill the section's new 100vw width */
+        max-width: none !important; /* Ensure no max-width on table itself */
+        border-radius: 0 !important; /* Remove table border-radius */
+        /* Remove any horizontal margin on the table to ensure it's flush */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Adjust padding for table cells when full width for better spacing */
+    .data-table th,
+    .data-table td {
+        padding: 15px 20px !important; /* Adjust padding for better look */
+    }
+}
