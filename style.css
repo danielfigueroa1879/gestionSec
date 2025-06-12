@@ -1,9 +1,14 @@
 /* Estilos generales para el reinicio y el cuerpo del documento */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+/* Reseteo universal para asegurar que 100vw/vh funcionen correctamente */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important; /* Previene el scroll horizontal no deseado */
+}
+
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -13,7 +18,11 @@ body {
     min-height: 100vh;
     color: #333;
     writing-mode: horizontal-tb; /* Asegura que el texto se vea horizontal en todos los navegadores */
-    overflow-x: auto; /* Permitir desplazamiento horizontal en el cuerpo */
+}
+
+/* Clase para controlar el overflow del body cuando una sección fixed está activa */
+body.body-directivas-active {
+    overflow: hidden !important;
 }
 
 /* Estilos para el contenedor principal de la aplicación */
@@ -23,7 +32,7 @@ body {
     padding: 20px;
     background-color: #e6eadd; /* Verde oliva claro para el fondo del contêiner */
     min-height: 100vh;
-    border-radius: 15px; /* Manter o border-radius para o contêiner */
+    border-radius: 15px; /* Manter o border-radius para el contêiner */
 }
 
 /* Estilos para el encabezado de la página de inicio */
@@ -128,9 +137,28 @@ body {
 .section.estudios { border-top-color: #e74c3c; background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%); }
 .section.planes { border-top-color: #3498db; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); }
 .section.medidas { border-top-color: #27ae60; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); }
-.section.directivas { border-top-color: #f39c12; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); }
 
-/* Muestra la sección activa */
+/* Estilos para que la sección de directivas ocupe el ancho y alto máximo de la pantalla */
+.section.directivas.active { /* Solo cuando la sección está activa */
+    display: block !important; /* Asegura que se muestre */
+    position: fixed !important; /* Posicionamiento fijo relativo al viewport */
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important; /* Nuevo: Estira de izquierda a derecha */
+    /* width: 100vw !important;  Eliminado: Redundante con left/right 0 */
+    height: 100vh !important; /* 100% del alto del viewport */
+    z-index: 999 !important; /* Asegura que esté por encima de otros elementos (modal es 1000) */
+    border-radius: 0 !important; /* Elimina los bordes redondeados */
+    padding: 30px 40px !important; /* Mantiene un padding interno para el contenido */
+    box-sizing: border-box !important; /* Incluye el padding en el cálculo del ancho/alto */
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important; /* Fondo */
+    border-top: 8px solid #f39c12 !important; /* Borde superior */
+    margin: 0 !important; /* Asegurar que no haya márgenes externos */
+    overflow-y: auto !important; /* Permite desplazamiento vertical si el contenido es demasiado largo */
+}
+
+
+/* Muestra la sección activa (para otras secciones que no usan fixed) */
 .section.active {
     display: block;
 }
@@ -299,8 +327,7 @@ body {
 
 /* Estilos para las tablas de datos */
 .data-table {
-    width: auto; /* Permitir que la tabla sea más ancha que el 100% si el contenido lo demanda */
-    min-width: 100%; /* Pero asegurar que sea al menos el 100% de su padre */
+    width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     background: white;
@@ -309,7 +336,7 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto;
     margin-right: auto;
-    table-layout: auto; /* Permitir que el ancho de las columnas se ajuste dinámicamente */
+    table-layout: fixed; /* Por defecto, fijo para escritorio */
 }
 
 .data-table th,
@@ -319,19 +346,26 @@ body {
     border-bottom: 1px solid #eee;
     vertical-align: middle;
     font-size: 0.9em;
-    white-space: nowrap; /* Evitar que el texto se envuelva para mostrar el contenido completo */
-    overflow: visible; /* Asegurar que el texto no se recorte */
-    text-overflow: clip; /* Mantener clipping como 'clip' para evitar elipsis */
-    word-break: normal; /* No forzar la rotura de palabras */
-    word-wrap: normal; /* No forzar el ajuste de palabras */
+    white-space: normal; /* Permite que el texto se envuelva por defecto en escritorio */
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+    word-wrap: break-word;
     writing-mode: horizontal-tb;
 }
+
+/* Ajuste de tamaño de fuente para las tablas dentro de la sección de directivas */
+.section.directivas .data-table th,
+.section.directivas .data-table td {
+    font-size: 0.8em !important; /* Un poco más pequeña para las directivas, aplica a th y td */
+}
+
 
 /* Estilos para la primera columna (códigos/IDs/números) */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: auto; /* Eliminar ancho fijo */
-    min-width: unset;
+    width: 100px; /* Ancho fijo para la primera columna en escritorio */
+    min-width: 80px;
 }
 
 .data-table th {
@@ -361,8 +395,6 @@ body {
 /* Contenido de pestaña (oculto por defecto) */
 .tab-content {
     display: none;
-    padding: 30px; /* Mantener padding por defecto */
-    overflow: visible; /* Asegurar que el contenido no se recorte */
 }
 
 /* Muestra el contenido de la pestaña activa */
@@ -395,7 +427,7 @@ body {
 .modal {
     display: none; /* Oculto por defecto */
     position: fixed;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    z-index: 1000 !important; /* Asegura que esté por encima de otros elementos */
     left: 0;
     top: 0;
     width: 100%;
@@ -506,28 +538,28 @@ body {
 
 /* Estilos para el estado de vigencia y aprobación */
 .status-vigente {
-    background-color: #28a745; /* Verde */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    display: inline-block; /* Para que el padding y background funcionen correctamente */
+    background-color: #28a745 !important; /* Verde */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    display: inline-block !important; /* Para que el padding y background funcionen correctamente */
 }
 
 .status-vencido {
-    background-color: #dc3545; /* Rojo */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    display: inline-block; /* Para que el padding y background funcionen correctamente */
+    background-color: #dc3545 !important; /* Rojo */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    display: inline-block !important; /* Para que el padding y background funcionen correctamente */
 }
 
 /* Estilo específico para el texto "Aprobado" y "Rechazado" en la tabla de Eventos Masivos */
 .eventos-masivos-table .status-vigente,
 .eventos-masivos-table .status-vencido {
-    font-size: 0.7em; /* Tamaño de letra más pequeño */
-    padding: 3px 8px; /* Ajustar padding para el tamaño más pequeño */
+    font-size: 0.7em !important; /* Tamaño de letra más pequeño */
+    padding: 3px 8px !important; /* Ajustar padding para el tamaño más pequeño */
 }
 
 /* ========================================
@@ -728,68 +760,20 @@ body {
     background: #f39c12;
 }
 
-/* ======================================
-   NUEVOS ESTILOS PARA LA EXPANSIÓN DE TABLA EN DIRECTIVAS Y OTRAS SECCIONES
-   ====================================== */
-
-/* Cuando la clase 'full-width-table-active' está en el body, el contenedor se expande */
-body.full-width-table-active .container {
-    max-width: 100%; /* Elimina la restricción de ancho máximo */
-    padding: 0; /* Elimina el padding del contenedor */
-    border-radius: 0; /* Elimina el border-radius para una expansión completa */
-    overflow-x: visible; /* Asegura que el contenido no se recorte en el contenedor */
-}
-
-/* Ajustes específicos para las secciones cuando están activas y en modo de tabla completa */
-body.full-width-table-active .section.active {
-    padding: 0; /* Elimina el padding de la sección */
-    border-radius: 0;
-    box-shadow: none; /* Elimina la sombra para un aspecto más limpio */
-    overflow: visible; /* Asegura que el contenido dentro de la sección no se recorte */
-    background: linear-gradient(135deg, #e6eadd 0%, #ffffff 100%); /* Fondo blanco degradado */
-}
-
-/* Ajusta el contenido de las pestañas para también eliminar el padding para el ancho completo de la tabla */
-body.full-width-table-active .tab-content {
-    padding: 0; /* Elimina el padding de tab-content */
-    overflow: visible; /* Permitir que el contenido se desborde del tab-content */
-}
-
-/* Ajusta el encabezado de la sección y el contenedor de búsqueda para que también sean de ancho completo */
-body.full-width-table-active .section-header,
-body.full-width-table-active .search-container {
-    padding: 20px; /* Añadir un poco de padding para los elementos de texto */
-    max-width: 100%; /* Asegura que estos también abarquen todo el ancho */
-    box-sizing: border-box; /* Incluir el padding en el ancho */
-    margin: 0 auto; /* Mantener el contenido centrado si es más ancho que su flujo natural */
-}
-
-/* Clase para las tablas que deben ocupar el ancho completo de la pantalla */
-.data-table-full-width {
-    width: 100vw; /* Ocupar el ancho completo del viewport */
-    position: relative; /* Necesario para el cálculo de 'left' */
-    left: 50%; /* Centrar el elemento */
-    transform: translateX(-50%); /* Desplazarlo de nuevo por la mitad de su ancho para centrarlo de verdad */
-    margin-left: 0; /* Anular cualquier margen de centrado */
-    margin-right: 0; /* Anular cualquier margen de centrado */
-    max-width: unset; /* Eliminar la restricción de ancho máximo */
-}
-
-
 /* Media queries para responsividad en dispositivos móviles */
 @media (max-width: 768px) {
     /* Asegurarse de que el body no tenga padding o margin extra */
     body {
         padding: 0 !important;
         margin: 0 !important;
-        overflow-x: auto; /* Permite el scroll horizontal en el body para móvil */
+        overflow-x: hidden; /* Evita el scroll horizontal en el body */
     }
 
     /* Ajustes para el contenedor principal de la aplicación en móvil */
     .container {
-        padding: 0px; /* Elimina el padding para que el contenido ocupe todo el ancho */
-        max-width: 100%; /* Asegura que no tenga un ancho máximo en móvil */
-        width: 100%; /* Asegura que ocupe todo el ancho disponible */
+        padding: 0px !important; /* Elimina el padding para que el contenido ocupe todo el ancho */
+        max-width: 100% !important; /* Asegura que no tenga un ancho máximo en móvil */
+        width: 100% !important; /* Asegura que ocupe todo el ancho disponible */
     }
 
     /* Ajustes para el título principal de la página de inicio */
@@ -839,7 +823,7 @@ body.full-width-table-active .search-container {
     .form-grid {
         grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
     }
-
+    
     .section-header {
         flex-direction: column;
         gap: 20px;
@@ -876,132 +860,136 @@ body.full-width-table-active .search-container {
     }
 
     .search-input {
-        width: 100%; /* Asegura que el input de búsqueda ocupe todo el ancho disponible */
-        max-width: none; /* Elimina el límite de ancho máximo en móvil */
+        width: 100% !important; /* Asegura que el input de búsqueda ocupe todo el ancho disponible */
+        max-width: none !important; /* Elimina el límite de ancho máximo en móvil */
     }
-
+    
     /* Ajustes para el botón de búsqueda */
     .search-container .btn {
-        width: 100%; /* El botón de búsqueda también ocupa todo el ancho */
-        margin-top: 0; /* Elimina márgenes extra si los hay */
+        width: 100% !important; /* El botón de búsqueda también ocupa todo el ancho */
+        margin-top: 0 !important; /* Elimina márgenes extra si los hay */
     }
 
     /* Optimización específica para tablas en móviles */
     .data-table {
-        table-layout: auto; /* Permite que el ancho de las columnas se ajuste al contenido */
-        min-width: 100%; /* Asegura que la tabla no se encoja menos que el ancho del viewport */
-        overflow-x: auto; /* Hace la tabla desplazable si es más ancha que la pantalla */
+        table-layout: auto !important; /* Permite que el ancho de las columnas se ajuste al contenido */
+        min-width: 100% !important; /* Asegura que la tabla no se encoja menos que el ancho del viewport */
     }
 
     .data-table th,
     .data-table td {
-        padding: 8px; /* Reduce el padding para más espacio de contenido */
-        font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
-        white-space: nowrap; /* Impide que el texto se envuelva */
-        overflow: visible; /* Permite que el contenido se desborde si es necesario */
-        text-overflow: clip; /* Muestra el texto completo en lugar de puntos suspensivos */
-        word-break: normal;
+        padding: 8px !important; /* Reduce el padding para más espacio de contenido */
+        font-size: 0.8em !important; /* Reduce el tamaño de la fuente para mejor ajuste */
+        white-space: nowrap !important; /* Impide que el texto se envuelva */
+        overflow: hidden !important; /* Oculta el texto que se desborda */
+        text-overflow: ellipsis !important; /* Muestra puntos suspensivos */
+        word-break: normal !important; /* Desactivar la rotura de palabras si el texto no se envuelve */
         writing-mode: horizontal-tb !important; /* Fuerza que el texto en las celdas se vea horizontal */
     }
 
     /* Eliminar ancho fijo en la primera columna para que se ajuste dinámicamente */
     .data-table th:first-child,
     .data-table td:first-child {
-        width: auto;
-        min-width: unset; /* Elimina el min-width para mayor flexibilidad */
+        width: auto !important; 
+        min-width: unset !important; /* Elimina el min-width para mayor flexibilidad */
     }
-
+    
     /* Asegurar que el texto dentro de las tarjetas de menú y encabezados se ajuste correctamente */
     .menu-card h3,
     .menu-card p,
     .header h1,
     .menu-card p,
     .section-title {
-        white-space: normal !important; /* Permite que el texto se envuelva */
-        word-break: break-word !important; /* Asegura que palabras largas se rompan */
+        white-space: normal !important;
+        word-break: break-word !important;
         writing-mode: horizontal-tb !important;
     }
 
     /* ========================================
        ESTILOS MÓVIL PARA DIRECTIVAS (3 CUADROS)
        ======================================== */
-
+    
     /* Contenedor de directivas en móvil */
     .directivas-container {
-        padding: 15px;
-        gap: 20px;
-        margin: 0;
+        padding: 15px !important;
+        gap: 20px !important;
+        margin: 0 !important;
     }
-
+    
     /* Cuadros de directivas en móvil */
     .directiva-box {
-        padding: 20px 15px;
+        padding: 20px 15px !important;
     }
-
+    
     .directiva-box-title {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
+        font-size: 1.1rem !important;
+        margin-bottom: 8px !important;
     }
-
+    
     .directiva-box-count {
-        font-size: 0.9rem;
-        margin-bottom: 15px;
+        font-size: 0.9rem !important;
+        margin-bottom: 15px !important;
     }
-
+    
     .directiva-box-btn {
-        padding: 10px 20px;
-        font-size: 0.85rem;
-        width: auto;
-        min-width: 140px;
-        max-width: 180px;
-        border-radius: 18px;
+        padding: 10px 20px !important;
+        font-size: 0.85rem !important;
+        width: auto !important;
+        min-width: 140px !important;
+        max-width: 180px !important;
+        border-radius: 18px !important;
     }
-
+    
     /* Sección directivas sin padding extra */
     .section.directivas {
         padding: 5px !important;
+        /* Los siguientes ya no deberían ser necesarios con position:fixed, pero los mantengo comentados por si acaso
+           margin-left: 0 !important;
+           margin-right: 0 !important;
+        */
     }
 
     /* ========================================
        ESTILOS MÓVIL PARA MEDIDAS (2 CUADROS)
        ======================================== */
-
+    
     /* Contenedor de medidas en móvil */
     .medidas-container {
-        padding: 15px;
-        gap: 20px;
-        margin: 0;
+        padding: 15px !important;
+        gap: 20px !important;
+        margin: 0 !important;
     }
-
+    
     /* Cuadros de medidas en móvil */
     .medida-box {
-        padding: 20px 15px;
+        padding: 20px 15px !important;
     }
-
+    
     .medida-box-title {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
+        color: #27ae60 !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 8px !important;
     }
-
+    
     .medida-box-count {
-        font-size: 0.9rem;
-        margin-bottom: 15px;
+        font-size: 0.9rem !important;
+        margin-bottom: 15px !important;
     }
-
+    
 .medida-box-btn {
-        padding: 10px 20px;
-        font-size: 0.85rem;
-        width: auto;
-        min-width: 140px;
-        max-width: 180px;
-        border-radius: 18px;
+        padding: 10px 20px !important;
+        font-size: 0.85rem !important;
+        width: auto !important;
+        min-width: 140px !important;
+        max-width: 180px !important;
+        border-radius: 18px !important;
     }
-
+    
     /* Sección medidas sin padding extra */
     .section.medidas {
         padding: 5px !important;
     }
-
+    
     /* Texto en general ajustado para móvil */
     .directiva-box h3,
     .directiva-box p,
@@ -1021,70 +1009,70 @@ body.full-width-table-active .search-container {
 .status-vencido,
 .status-aprobado,
 .status-rechazado {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: bold;
-    text-align: center;
-    min-width: 90px;
-    line-height: 1.4;
-    color: white;
+    display: inline-block !important;
+    font-size: 0.75rem !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    min-width: 90px !important;
+    line-height: 1.4 !important;
+    color: white !important;
 }
 
 /* Colores individuales para cada estado */
 .status-vigente {
-    background-color: #28a745; /* Verde - Vigente */
+    background-color: #28a745 !important; /* Verde - Vigente */
 }
 
 .status-vencido {
-    background-color: #dc3545; /* Rojo - Vencido */
+    background-color: #dc3545 !important; /* Rojo - Vencido */
 }
 
 .status-aprobado {
-    background-color: #007bff; /* Azul - Aprobado */
+    background-color: #007bff !important; /* Azul - Aprobado */
 }
 
 .status-rechazado {
-    background-color: #6c757d; /* Gris oscuro - Rechazado */
+    background-color: #6c757d !important; /* Gris oscuro - Rechazado */
 }
 
 /* Nuevas clases para los colores de servicentros */
 .brand-copec {
-    background-color: #0862F5; /* Azul Copec */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    background-color: #0862F5 !important; /* Azul Copec */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
 }
 
 .brand-petrobras, .brand-aramco {
-    background-color: #007a33; /* Verde Petrobras/Aramco */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    background-color: #007a33 !important; /* Verde Petrobras/Aramco */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
 }
 
 .brand-shell {
-    background-color: #ffcc00; /* Amarillo Shell */
-    color: #333; /* Letras oscuras para contraste */
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    background-color: #ffcc00 !important; /* Amarillo Shell */
+    color: #333 !important; /* Letras oscuras para contraste */
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
 }
 
 /* Clase para marcas adicionales: fondo rojo, letras blancas */
 .brand-red-bg {
-    background-color: #dc3545; /* Rojo */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    background-color: #dc3545 !important; /* Rojo */
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
 }
 
 /* Clase para otras marcas (por defecto, solo negrita y rojo de texto) */
 .brand-other {
-    color: red;
-    font-weight: bold;
+    color: red !important;
+    font-weight: bold !important;
 }
