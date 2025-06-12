@@ -5,7 +5,7 @@
 html, body {
     margin: 0 !important;
     padding: 0 !important;
-    /* overflow-x: hidden !important; ELIMINADO/CAMBIADO para diagnóstico */
+    overflow-x: hidden !important; /* Previene el scroll horizontal no deseado */
 }
 
 * {
@@ -22,7 +22,7 @@ body {
 
 /* Clase para controlar el overflow del body cuando una sección fixed está activa */
 body.body-directivas-active {
-    overflow: visible !important; /* CAMBIADO para diagnóstico: permite barras de desplazamiento */
+    overflow: hidden !important;
 }
 
 /* Estilos para el contenedor principal de la aplicación */
@@ -144,10 +144,8 @@ body.body-directivas-active {
     position: fixed !important; /* Posicionamiento fijo relativo al viewport */
     top: 0 !important;
     left: 0 !important;
-    right: 0 !important; /* Estira de izquierda a derecha */
-    bottom: 0 !important; /* Nuevo: Estira de arriba a abajo */
-    /* width: 100vw !important;  Eliminado: Redundante con left/right 0 */
-    height: auto !important; /* Permitir que bottom:0 funcione */
+    width: 100vw !important; /* 100% del ancho del viewport */
+    height: 100vh !important; /* 100% del alto del viewport */
     z-index: 999 !important; /* Asegura que esté por encima de otros elementos (modal es 1000) */
     border-radius: 0 !important; /* Elimina los bordes redondeados */
     padding: 30px 40px !important; /* Mantiene un padding interno para el contenido */
