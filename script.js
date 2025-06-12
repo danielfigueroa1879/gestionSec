@@ -1283,6 +1283,7 @@ function verificarInterfaz() {
 
 // Funciones de navegación principal
 function showHome() {
+ if (isTableExpanded) { restoreTable(); }
     // Restaurar tabla si estaba en fullscreen
     if (isTableFullscreen) {
         restoreEmpresasRRHHPosition();
@@ -1456,14 +1457,12 @@ function showDirectivasSubSection(subSectionType) {
         let titleText = '';
         switch (subSectionType) {
             case 'empresas-rrhh':
-                titleText = '👥 Lista de Empresas de Recursos Humanos';
-                renderEmpresasRRHHList();
-                
-                // NUEVA LÓGICA: Expandir a fullscreen solo para empresas RRHH
-                setTimeout(() => {
-                    expandEmpresasRRHHToFullscreen();
-                }, 100);
-                break;
+    titleText = '👥 Lista de Empresas de Recursos Humanos';
+    renderEmpresasRRHHList();
+    
+    // AGREGAR ESTA LÍNEA:
+    setTimeout(() => { expandTableToFullscreen(); }, 100);
+    break;
             case 'guardias-propios':
                 titleText = '🛡️ Lista de Guardias Propios';
                 loadData(subSectionType);
@@ -1479,8 +1478,7 @@ function showDirectivasSubSection(subSectionType) {
 
 // Función para volver a la vista principal de Directivas
 function backToDirectivasMain() {
-    // Restaurar tabla si estaba en fullscreen
-    if (isTableFullscreen) {
+    if (isTableExpanded) { restoreTable(); }
         restoreEmpresasRRHHPosition();
     }
     
