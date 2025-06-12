@@ -13,6 +13,7 @@ body {
     min-height: 100vh;
     color: #333;
     writing-mode: horizontal-tb; /* Asegura que el texto se vea horizontal en todos los navegadores */
+    overflow-x: auto; /* Permitir desplazamiento horizontal en el cuerpo */
 }
 
 /* Estilos para el contenedor principal de la aplicación */
@@ -298,7 +299,8 @@ body {
 
 /* Estilos para las tablas de datos */
 .data-table {
-    width: 100%;
+    width: auto; /* Permitir que la tabla sea más ancha que el 100% si el contenido lo demanda */
+    min-width: 100%; /* Pero asegurar que sea al menos el 100% de su padre */
     border-collapse: collapse;
     margin-top: 20px;
     background: white;
@@ -307,7 +309,7 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin-left: auto;
     margin-right: auto;
-    table-layout: fixed; /* Por defecto, fijo para escritorio */
+    table-layout: auto; /* Permitir que el ancho de las columnas se ajuste dinámicamente */
 }
 
 .data-table th,
@@ -317,19 +319,19 @@ body {
     border-bottom: 1px solid #eee;
     vertical-align: middle;
     font-size: 0.9em;
-    white-space: normal; /* Permite que el texto se envuelva por defecto en escritorio */
-    overflow: visible;
-    text-overflow: clip;
-    word-break: break-word;
-    word-wrap: break-word;
+    white-space: nowrap; /* Evitar que el texto se envuelva para mostrar el contenido completo */
+    overflow: visible; /* Asegurar que el texto no se recorte */
+    text-overflow: clip; /* Mantener clipping como 'clip' para evitar elipsis */
+    word-break: normal; /* No forzar la rotura de palabras */
+    word-wrap: normal; /* No forzar el ajuste de palabras */
     writing-mode: horizontal-tb;
 }
 
 /* Estilos para la primera columna (códigos/IDs/números) */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: 100px; /* Ancho fijo para la primera columna en escritorio */
-    min-width: 80px;
+    width: auto; /* Eliminar ancho fijo */
+    min-width: unset;
 }
 
 .data-table th {
@@ -359,6 +361,8 @@ body {
 /* Contenido de pestaña (oculto por defecto) */
 .tab-content {
     display: none;
+    padding: 30px; /* Mantener padding por defecto */
+    overflow: visible; /* Asegurar que el contenido no se recorte */
 }
 
 /* Muestra el contenido de la pestaña activa */
@@ -725,7 +729,7 @@ body {
 }
 
 /* ======================================
-   NUEVOS ESTILOS PARA LA EXPANSIÓN DE TABLA EN DIRECTIVAS
+   NUEVOS ESTILOS PARA LA EXPANSIÓN DE TABLA EN DIRECTIVAS Y OTRAS SECCIONES
    ====================================== */
 
 /* Cuando la clase 'full-width-table-active' está en el body, el contenedor se expande */
@@ -733,28 +737,42 @@ body.full-width-table-active .container {
     max-width: 100%; /* Elimina la restricción de ancho máximo */
     padding: 0; /* Elimina el padding del contenedor */
     border-radius: 0; /* Elimina el border-radius para una expansión completa */
-    overflow-x: hidden; /* Evita scroll horizontal en el contenedor principal si el contenido es wider than the screen */
+    overflow-x: visible; /* Asegura que el contenido no se recorte en el contenedor */
 }
 
-/* Ajustes específicos para la sección de directivas cuando está activa y en modo de tabla completa */
-body.full-width-table-active #directivas.active {
+/* Ajustes específicos para las secciones cuando están activas y en modo de tabla completa */
+body.full-width-table-active .section.active {
     padding: 0; /* Elimina el padding de la sección */
-    border-radius: 0; /* Elimina el border-radius de la sección */
+    border-radius: 0;
     box-shadow: none; /* Elimina la sombra para un aspecto más limpio */
+    overflow: visible; /* Asegura que el contenido dentro de la sección no se recorte */
+    background: linear-gradient(135deg, #e6eadd 0%, #ffffff 100%); /* Fondo blanco degradado */
 }
 
-/* Asegura que la tabla dentro de la sección de directivas use todo el ancho disponible */
-body.full-width-table-active #directivas.active .data-table {
-    width: 100%; /* Asegura que la tabla ocupe el 100% del espacio de su padre */
-    margin: 0; /* Elimina cualquier margen predeterminado */
-    border-radius: 0; /* Elimina el border-radius de la tabla */
-    box-shadow: none; /* Elimina la sombra de la tabla */
+/* Ajusta el contenido de las pestañas para también eliminar el padding para el ancho completo de la tabla */
+body.full-width-table-active .tab-content {
+    padding: 0; /* Elimina el padding de tab-content */
+    overflow: visible; /* Permitir que el contenido se desborde del tab-content */
 }
 
-/* Ajustes para el padding de las celdas de la tabla para mantener la legibilidad */
-body.full-width-table-active #directivas.active .data-table th,
-body.full-width-table-active #directivas.active .data-table td {
-    padding: 12px 15px; /* Ajusta el padding para mantener el espacio visual */
+/* Ajusta el encabezado de la sección y el contenedor de búsqueda para que también sean de ancho completo */
+body.full-width-table-active .section-header,
+body.full-width-table-active .search-container {
+    padding: 20px; /* Añadir un poco de padding para los elementos de texto */
+    max-width: 100%; /* Asegura que estos también abarquen todo el ancho */
+    box-sizing: border-box; /* Incluir el padding en el ancho */
+    margin: 0 auto; /* Mantener el contenido centrado si es más ancho que su flujo natural */
+}
+
+/* Clase para las tablas que deben ocupar el ancho completo de la pantalla */
+.data-table-full-width {
+    width: 100vw; /* Ocupar el ancho completo del viewport */
+    position: relative; /* Necesario para el cálculo de 'left' */
+    left: 50%; /* Centrar el elemento */
+    transform: translateX(-50%); /* Desplazarlo de nuevo por la mitad de su ancho para centrarlo de verdad */
+    margin-left: 0; /* Anular cualquier margen de centrado */
+    margin-right: 0; /* Anular cualquier margen de centrado */
+    max-width: unset; /* Eliminar la restricción de ancho máximo */
 }
 
 
@@ -764,7 +782,7 @@ body.full-width-table-active #directivas.active .data-table td {
     body {
         padding: 0 !important;
         margin: 0 !important;
-        overflow-x: hidden; /* Evita el scroll horizontal en el body */
+        overflow-x: auto; /* Permite el scroll horizontal en el body para móvil */
     }
 
     /* Ajustes para el contenedor principal de la aplicación en móvil */
@@ -872,6 +890,7 @@ body.full-width-table-active #directivas.active .data-table td {
     .data-table {
         table-layout: auto; /* Permite que el ancho de las columnas se ajuste al contenido */
         min-width: 100%; /* Asegura que la tabla no se encoja menos que el ancho del viewport */
+        overflow-x: auto; /* Hace la tabla desplazable si es más ancha que la pantalla */
     }
 
     .data-table th,
@@ -879,9 +898,9 @@ body.full-width-table-active #directivas.active .data-table td {
         padding: 8px; /* Reduce el padding para más espacio de contenido */
         font-size: 0.8em; /* Reduce el tamaño de la fuente para mejor ajuste */
         white-space: nowrap; /* Impide que el texto se envuelva */
-        overflow: hidden; /* Oculta el texto que se desborda */
-        text-overflow: ellipsis; /* Muestra puntos suspensivos */
-        word-break: normal; /* Desactivar la rotura de palabras si el texto no se envuelve */
+        overflow: visible; /* Permite que el contenido se desborde si es necesario */
+        text-overflow: clip; /* Muestra el texto completo en lugar de puntos suspensivos */
+        word-break: normal;
         writing-mode: horizontal-tb !important; /* Fuerza que el texto en las celdas se vea horizontal */
     }
 
