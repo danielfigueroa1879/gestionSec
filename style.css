@@ -1104,11 +1104,11 @@ body {
     }
 
     /* Specific width adjustments for EMPRESA RR.HH. column on desktop */
-    /* Target the first column for 'EMPRESA RR.HH.' in the Empresas RRHH results table */
+    /* Target the first column for 'NRO' in the Empresas RRHH results table */
     #empresas-rrhh-results .data-table th:first-child,
     #empresas-rrhh-results .data-table td:first-child {
-        width: 350px !important; /* Increased width for 'EMPRESA RR.HH.' column */
-        min-width: 300px !important; /* Ensure it doesn't shrink too much */
+        width: 120px !important; /* Reduced width for 'NRO' column */
+        min-width: 100px !important; /* Ensure it doesn't shrink too much */
     }
 
     /* For the specific directivas details table, 'EMPRESA RR.HH.' is the second column (after 'numero') */
@@ -1118,11 +1118,11 @@ body {
         min-width: 300px !important; /* Ensure it doesn't shrink too much */
     }
 
-    /* Revert the second column in #empresas-rrhh-results to default (RUT EMPRESA RR.HH.) */
+    /* Adjust the second column in #empresas-rrhh-results (EMPRESA RR.HH.) */
     #empresas-rrhh-results .data-table th:nth-child(2),
     #empresas-rrhh-results .data-table td:nth-child(2) {
-        width: auto !important; /* Revert to auto width */
-        min-width: unset !important; /* Remove min-width */
+        width: 250px !important; /* Set to 250px for 'EMPRESA RR.HH.' */
+        min-width: 200px !important; /* Ensure it doesn't shrink too much */
     }
 
     /* Ensure the very first column ('numero' for specific details) is not too wide */
